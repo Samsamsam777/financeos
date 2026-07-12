@@ -27,9 +27,11 @@ export function createViews(context) {
             <div class="meta">${esc(category(transaction.categoryId)?.name ?? "—")} · ${esc(account(transaction.accountId)?.name ?? "—")}</div>
           </div>
         </div>
-        <div class="transaction-amount ${amountClass}">
-          ${transaction.type === "income" ? "+" : "-"}${euro(transaction.amount)}
-          ${editable ? `<div><button class="btn ghost" data-edit="${transaction.id}">Bearbeiten</button></div>` : ""}
+        <div class="transaction-end">
+          <div class="transaction-amount ${amountClass}">
+            ${transaction.type === "income" ? "+" : "-"}${euro(transaction.amount)}
+          </div>
+          ${editable ? `<button class="row-edit" data-edit="${transaction.id}" aria-label="Buchung bearbeiten">${icons.edit}</button>` : `<span class="row-chevron">${icons.chevron}</span>`}
         </div>
       </div>
     `;
@@ -75,22 +77,24 @@ export function createViews(context) {
       pending: () => {
         const oldestPending = sortNewest(pending).at(-1);
         const oldestLabel = oldestPending
-          ? new Date(oldestPending.date + "T00:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})
-          : "—";
+          ? new Date(`${oldestPending.date}T00:00:00`).toLocaleDateString("de-DE", {
+              day: "2-digit",
+              month: "2-digit",
+              year: "numeric"
+            })
+          : null;
+
         return `
-        <section class="dashboard-module">
-          <div class="section-title"><h2 class="section-heading">Zu prüfen</h2><span class="small">${oldestPending ? `seit ${oldestLabel}` : "nichts offen"}</span></div>
-          <button class="card pending-card pending-action" data-nav="pending">
-            <div class="pending-row">
-              <div class="pending-left">
-                <div class="pending-icon">${icons.pending}</div>
-                <span class="pending-copy"><strong>Unklare Buchungen</strong><span class="meta">Später zuordnen</span></span>
-              </div>
-              <span class="pending-count" aria-label="${pending.length} offene Zuordnungen">${pending.length}</span>
-            </div>
-          </button>
-        </section>
-      `;
+          <section class="dashboard-module pending-module">
+            <button class="card pending-bar" data-nav="pending">
+              <span class="pending-icon">${icons.pending}</span>
+              <span class="pending-label">Zu prüfen</span>
+              <span class="pending-count">${pending.length}</span>
+              <span class="pending-date">${oldestLabel ? `seit ${oldestLabel}` : "nichts offen"}</span>
+              <span class="row-chevron">${icons.chevron}</span>
+            </button>
+          </section>
+        `;
       },
       loans: () => loanPreview(dashboardConfig.loans.count),
       transactions: () => transactionPreview(dashboardConfig.transactions.count)
@@ -129,24 +133,36 @@ export function createViews(context) {
       <section class="dashboard-module">
         <div class="section-title">
           <h2 class="section-heading">Kredite</h2>
-          <button class="section-link" data-nav="loans">Alle Kredite →</button>
+          <button class="section-link" data-nav="loans">Alle anzeigen ${icons.chevron}</button>
         </div>
-        <div class="loan-list">
+        <div class="card grouped-card loan-group">
           ${loans.map(loan => {
             const { percent } = loanProgress(loan);
-            const visualEnd = Math.min(100, percent + 4);
             return `
-              <div class="card progress-card loan-strip" data-loan="${loan.id}" style="--progress-end:${visualEnd}%">
-                <div class="progress-fill loan-fill"></div>
-                <div class="progress-content loan-content">
-                  <div class="progress-icon loan-icon">${loanIcon(loan.type)}</div>
-                  <div class="progress-title loan-name">${esc(loan.name)}</div>
-                  <div class="progress-value loan-percent">${Math.round(percent)} %</div>
-                </div>
-              </div>
+              <button class="grouped-row loan-row" data-loan="${loan.id}">
+                <span class="grouped-icon loan-symbol">${loanIcon(loan.type)}</span>
+                <span class="grouped-main">
+                  <span class="grouped-title">${esc(loan.name)}</span>
+                  <span class="grouped-meta">Rate ${euro(loan.rate)} · ${loan.interest} % Zins</span>
+                  <span class="slim-progress" aria-hidden="true">
+                    <span class="slim-progress-fill" style="--row-progress:${percent}%"></span>
+                  </span>
+                </span>
+                <span class="grouped-values">
+                  <strong>${euro(loan.remaining)}</strong>
+                  <span>von ${euro(loan.principal)}</span>
+                  <span class="grouped-percent">${Math.round(percent)} %</span>
+                </span>
+                <span class="row-chevron">${icons.chevron}</span>
+              </button>
             `;
           }).join("")}
-          ${hiddenCount ? `<button class="loan-more" data-nav="loans">+${hiddenCount} weitere →</button>` : ""}
+          ${hiddenCount ? `
+            <button class="grouped-more" data-nav="loans">
+              +${hiddenCount} weitere Kredite
+              <span class="row-chevron">${icons.chevron}</span>
+            </button>
+          ` : ""}
         </div>
       </section>
     `;
@@ -158,7 +174,7 @@ export function createViews(context) {
 
     return `
       <section class="dashboard-module">
-        <div class="section-title"><h2 class="section-heading">Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle Buchungen →</button></div>
+        <div class="section-title"><h2 class="section-heading">Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle anzeigen ${icons.chevron}</button></div>
         <div class="card transaction-list">${transactions.map(item => transactionRow(item)).join("")}</div>
       </section>
     `;
@@ -234,32 +250,34 @@ export function createViews(context) {
       .sort((a, b) => b.percent - a.percent);
 
     return `
-      <div class="section-title">
+      <div class="section-title page-section-title">
         <h2 class="page-heading">Budgets</h2>
         <span class="section-context">${key}</span>
       </div>
-      <div class="progress-stack">
+      <div class="card grouped-card budget-group">
         ${items.map(item => {
           const displayPercent = Math.round(item.percent);
-          const visualEnd = Math.min(100, item.percent + 3);
-          const tone = item.percent > 100 ? "danger" : item.percent >= 80 ? "warning" : "budget";
+          const stateClass = item.percent > 100
+            ? "is-danger"
+            : item.percent >= 80 ? "is-warning" : "";
           return `
-            <button class="card progress-card budget-card progress-${tone}"
-              data-budget="${item.id}"
-              style="--progress-end:${visualEnd}%"
-              aria-label="${esc(item.name)}: ${displayPercent} Prozent verbraucht">
-              <span class="progress-fill"></span>
-              <span class="progress-content">
-                <span class="progress-icon">${categoryIcon(item.name)}</span>
-                <span class="progress-copy">
-                  <span class="progress-title">${esc(item.name)}</span>
-                  <span class="progress-meta">${euro(item.used)} von ${euro(item.budget)}</span>
+            <button class="grouped-row budget-row ${stateClass}" data-budget="${item.id}">
+              <span class="grouped-icon budget-symbol">${categoryIcon(item.name)}</span>
+              <span class="grouped-main">
+                <span class="grouped-title">${esc(item.name)}</span>
+                <span class="grouped-meta">${euro(item.used)} von ${euro(item.budget)}</span>
+                <span class="slim-progress" aria-hidden="true">
+                  <span class="slim-progress-fill" style="--row-progress:${Math.min(100, item.percent)}%"></span>
                 </span>
-                <span class="progress-value">${displayPercent} %</span>
               </span>
+              <span class="grouped-values">
+                <strong>${displayPercent} %</strong>
+                <span>${euro(Math.max(0, item.budget - item.used))} frei</span>
+              </span>
+              <span class="row-chevron">${icons.chevron}</span>
             </button>
           `;
-        }).join("") || '<div class="card empty">Keine Budgets eingerichtet</div>'}
+        }).join("") || '<div class="empty">Keine Budgets eingerichtet</div>'}
       </div>
     `;
   }

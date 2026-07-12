@@ -59,6 +59,7 @@ function shell(content) {
     animateNumber(element, Number(element.dataset.animateNumber), value => euro(value));
   });
   animateLoanFills();
+  bindHeaderBehavior();
 }
 
 function navigate(target) {
@@ -116,31 +117,10 @@ function bindView() {
 
 function bindDashboard() {
   document.querySelectorAll("[data-loan]").forEach(element => {
-    let timer;
-    let longPress = false;
-    const loanId = element.dataset.loan;
-
-    const start = () => {
-      longPress = false;
-      timer = setTimeout(() => {
-        longPress = true;
-        showLoanQuickView(loanId);
-      }, 550);
+    element.onclick = event => {
+      if (event.defaultPrevented) return;
+      openLoan(element.dataset.loan);
     };
-    const cancel = () => clearTimeout(timer);
-
-    element.addEventListener("touchstart", start, { passive: true });
-    element.addEventListener("touchmove", cancel, { passive: true });
-    element.addEventListener("touchend", () => {
-      cancel();
-      if (!longPress) openLoan(loanId);
-    });
-    element.addEventListener("mousedown", start);
-    element.addEventListener("mouseleave", cancel);
-    element.addEventListener("mouseup", () => {
-      cancel();
-      if (!longPress) openLoan(loanId);
-    });
   });
 }
 
@@ -481,6 +461,19 @@ function editRule(id) {
     closeSheet();
     render();
   };
+}
+
+
+function bindHeaderBehavior() {
+  const header = document.querySelector(".app-header");
+  if (!header) return;
+
+  const update = () => {
+    header.classList.toggle("is-scrolled", window.scrollY > 12);
+  };
+
+  window.onscroll = update;
+  update();
 }
 
 render();

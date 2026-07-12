@@ -108,3 +108,14 @@ On iPhone, visual press states and motion provide the interaction feedback.
 Credits and budgets share one component structure, icon language, dimensions,
 motion, and press behavior. Violet dominates ordinary progress. Blue appears
 later; turquoise and green are reserved for near-completion.
+
+
+## FinanceOS 3.2 — Mockup-aligned material
+
+- The fixed top financial overview remains specific to FinanceOS.
+- Dashboard modules below it use grouped iOS-style material cards.
+- Headers are transparent at rest and gain dark blurred material only while scrolling.
+- A touch-down state never performs navigation; navigation occurs after a completed tap.
+- Typography is deliberately smaller than financial values.
+- Purple is the shared icon tint; green, red and yellow remain semantic colors.
+- Credit and budget progress use slim bars inside grouped rows rather than filling the whole card.

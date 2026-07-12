@@ -1,4 +1,4 @@
-const CACHE = "financeos-v3-1-polish";
+const CACHE = "financeos-v3-2-mockup-alignment";
 const ASSETS = [
   "./",
   "./index.html",

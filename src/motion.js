@@ -62,12 +62,9 @@ export function enterPage(container) {
 }
 
 export function animateLoanFills() {
-  document.querySelectorAll(".progress-card").forEach(card => {
-    const target = card.style.getPropertyValue("--progress-end") || "0%";
-    card.style.setProperty("--progress-animated-end", "0%");
-    requestAnimationFrame(() => {
-      card.style.setProperty("--progress-animated-end", target);
-    });
+  document.querySelectorAll(".slim-progress-fill").forEach(fill => {
+    fill.classList.remove("is-visible");
+    requestAnimationFrame(() => fill.classList.add("is-visible"));
   });
 }
 

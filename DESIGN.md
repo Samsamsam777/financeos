@@ -101,3 +101,10 @@ On iPhone, visual press states and motion provide the interaction feedback.
 - The ambient background remains fixed while content scrolls.
 - The title remains sticky with subtle blur.
 - Loan previews use representative line icons and a dark-to-light progress fill.
+
+
+## FinanceOS 3.1 — ProgressCard system
+
+Credits and budgets share one component structure, icon language, dimensions,
+motion, and press behavior. Violet dominates ordinary progress. Blue appears
+later; turquoise and green are reserved for near-completion.

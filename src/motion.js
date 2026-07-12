@@ -62,17 +62,17 @@ export function enterPage(container) {
 }
 
 export function animateLoanFills() {
-  document.querySelectorAll(".loan-strip").forEach(strip => {
-    const target = strip.style.getPropertyValue("--loan-visual-end") || "0%";
-    strip.style.setProperty("--loan-animated-end", "0%");
+  document.querySelectorAll(".progress-card").forEach(card => {
+    const target = card.style.getPropertyValue("--progress-end") || "0%";
+    card.style.setProperty("--progress-animated-end", "0%");
     requestAnimationFrame(() => {
-      strip.style.setProperty("--loan-animated-end", target);
+      card.style.setProperty("--progress-animated-end", target);
     });
   });
 }
 
 export function bindPressFeedback(root = document) {
-  root.querySelectorAll("button, .card[data-loan], .page-row[data-loan]").forEach(element => {
+  root.querySelectorAll("button, .card[data-loan], .page-row[data-loan], .transaction-row[data-transaction]").forEach(element => {
     if (element.dataset.pressBound) return;
     element.dataset.pressBound = "true";
 

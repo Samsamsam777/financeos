@@ -1,26 +1,19 @@
-FinanceOS 3.0 – Clean Rebuild
+FinanceOS 3.1 – Polish Sprint
 
-Diese Version wurde auf dem stabilen 2.2.1-Funktionsstand neu aufgebaut.
-Sie ist kein weiterer CSS-Patch.
+Umgesetzt:
+- Header kompakter, transparenter und mit stärkerem Blur
+- „Zu prüfen“: weißes Line-Icon und kleinere gelbe Zahl
+- Zahl entspricht typografisch den Kredit-Prozentwerten
+- Kreditverlauf bleibt länger violett; Blau, Türkis und Grün erscheinen später
+- Karten minimal heller bei weiterhin dunklem Hintergrund
+- einheitliches 0,98-Press-Feedback mit dezenter Abdunklung
+- Budgets als vollständige Fortschrittskacheln
+- gemeinsame ProgressCard-Komponente für Kredite und Budgets
+- passende Line-Icons je Budgetkategorie
+- sämtliche JavaScript-Module syntaktisch geprüft
 
-Neu aufgebaut:
-- vollständiges, zusammenhängendes Komponenten-CSS
-- eigener sichtbarer Ambient-Hintergrund-Layer
-- fixierter FinanceOS-Header mit dezentem Blur
-- saubere SVG-Größenbegrenzung
-- korrekte Kredit-Icon-Zuordnung für Auto, Haus und Konsum
-- bereinigte „Zu prüfen“-Kachel
-- einheitliches Line-Icon für „Anpassen“
-- klare Typografie-Hierarchie
-- konsistente Karten, Abstände, Navbar und Bottom Sheets
-- bestehende Daten und Funktionen bleiben kompatibel
+Hinweis:
+Der lokale Chromium-Renderer der Arbeitsumgebung startet nicht zuverlässig.
+Der abschließende visuelle Test erfolgt deshalb auf dem iPhone.
 
-Installation:
-1. FinanceOS-Backup erstellen.
-2. ZIP entpacken.
-3. Gesamten Inhalt in das lokale GitHub-Repository kopieren.
-4. Vorhandene Dateien ersetzen.
-5. Commit: FinanceOS 3.0 Clean Rebuild
-6. Push origin.
-7. Deployment abwarten.
-8. Homescreen-App vollständig schließen und neu öffnen.
+Commit: FinanceOS 3.1 Polish Sprint

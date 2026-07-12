@@ -24,7 +24,15 @@ export const icons = {
   edit: svg('<path d="m4 16-1 5 5-1L19 9l-4-4Z"/><path d="m13 7 4 4"/>'),
   trash: svg('<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>'),
   backup: svg('<path d="M12 3v12M7 8l5-5 5 5M5 20h14"/>'),
-  arrange: svg('<path d="M8 5h11M8 12h11M8 19h11M3 5h.01M3 12h.01M3 19h.01"/>')
+  arrange: svg('<path d="M8 5h11M8 12h11M8 19h11M3 5h.01M3 12h.01M3 19h.01"/>'),
+  cart: svg('<path d="M3 4h2l2.2 10.2h9.9L20 7H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>'),
+  building: svg('<path d="M5 21V4h10v17M15 9h4v12M8 8h4M8 12h4M8 16h4"/>'),
+  restaurant: svg('<path d="M7 3v8M4 3v5a3 3 0 0 0 6 0V3M7 11v10M16 3v18M16 3c3 2 4 5 4 8h-4"/>'),
+  transport: svg('<path d="M5 16h14M7 16l1-8h8l1 8M8 19h.01M16 19h.01M9 11h6"/>'),
+  shopping: svg('<path d="M6 8h12l1 12H5L6 8ZM9 9V6a3 3 0 0 1 6 0v3"/>'),
+  subscription: svg('<path d="M4 7h16v10H4zM8 11h8M8 14h5"/>'),
+  health: svg('<path d="M12 21s-7-4.4-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.6-7 10-7 10Z"/><path d="M9 12h6M12 9v6"/>'),
+  leisure: svg('<path d="M7 9h10l2 9-4-2-3 2-3-2-4 2 2-9ZM9 12h.01M15 12h.01"/>')
 };
 
 export function loanIcon(type) {
@@ -53,4 +61,18 @@ export function merchantVisual(description = "", type = "expense") {
   }
   if (type === "income") return { mark: "↗", className: "income" };
   return { mark: description.trim().charAt(0).toUpperCase() || "?", className: "default" };
+}
+
+
+export function categoryIcon(name = "") {
+  const value = name.toLowerCase();
+  if (value.includes("lebensmittel")) return icons.cart;
+  if (value.includes("wohn")) return icons.building;
+  if (value.includes("restaurant")) return icons.restaurant;
+  if (value.includes("mobil")) return icons.transport;
+  if (value.includes("shopping")) return icons.shopping;
+  if (value.includes("abo") || value.includes("abonnement")) return icons.subscription;
+  if (value.includes("gesund")) return icons.health;
+  if (value.includes("freizeit")) return icons.leisure;
+  return icons.budget;
 }

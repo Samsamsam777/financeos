@@ -1,5 +1,5 @@
 import { APP_VERSION } from "./constants.js";
-import { icons, loanIcon, merchantVisual } from "./icons.js";
+import { categoryIcon, icons, loanIcon, merchantVisual } from "./icons.js";
 import {
   accountBalance, euro, filterTransactions, loanProgress,
   monthKey, monthSummary, sortNewest, today, totalBalance
@@ -136,12 +136,12 @@ export function createViews(context) {
             const { percent } = loanProgress(loan);
             const visualEnd = Math.min(100, percent + 4);
             return `
-              <div class="card loan-strip" data-loan="${loan.id}" style="--loan-progress:${percent}%;--loan-visual-end:${visualEnd}%">
-                <div class="loan-fill"></div>
-                <div class="loan-content">
-                  <div class="loan-icon">${loanIcon(loan.type)}</div>
-                  <div class="loan-name">${esc(loan.name)}</div>
-                  <div class="loan-percent">${Math.round(percent)} %</div>
+              <div class="card progress-card loan-strip" data-loan="${loan.id}" style="--progress-end:${visualEnd}%">
+                <div class="progress-fill loan-fill"></div>
+                <div class="progress-content loan-content">
+                  <div class="progress-icon loan-icon">${loanIcon(loan.type)}</div>
+                  <div class="progress-title loan-name">${esc(loan.name)}</div>
+                  <div class="progress-value loan-percent">${Math.round(percent)} %</div>
                 </div>
               </div>
             `;
@@ -167,7 +167,7 @@ export function createViews(context) {
   function transactions(filters) {
     const items = filterTransactions(data(), filters);
     return `
-      <div class="section-title"><h2>Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
+      <div class="section-title"><h2 class="page-heading">Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
       <div class="card page-card filters">
         <div class="form">
           ${field("Suche", `<input id="filterQuery" value="${esc(filters.query)}" placeholder="Händler, Kategorie oder Betrag">`)}
@@ -185,7 +185,7 @@ export function createViews(context) {
 
   function addTransaction() {
     return `
-      <div class="section-title"><h2>Neue Buchung</h2></div>
+      <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
       <div class="card page-card">
         <form id="transactionForm" class="form">
           ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
@@ -204,7 +204,7 @@ export function createViews(context) {
   function pending() {
     const items = sortNewest(data().transactions.filter(item => item.status === "pending"));
     return `
-      <div class="section-title"><h2>Später zuordnen</h2><span class="count-badge">${items.length}</span></div>
+      <div class="section-title"><h2 class="page-heading">Zu prüfen</h2><span class="count-badge">${items.length}</span></div>
       <div class="card page-list">
         ${items.length ? items.map(item => `
           <div class="page-row">
@@ -222,25 +222,44 @@ export function createViews(context) {
       monthKey(item.date) === key && item.type === "expense"
     );
 
+    const items = data().categories
+      .filter(item => item.budget > 0)
+      .map(item => {
+        const used = transactions
+          .filter(transaction => transaction.categoryId === item.id)
+          .reduce((sum, transaction) => sum + Number(transaction.amount), 0);
+        const percent = Math.max(0, item.budget ? used / item.budget * 100 : 0);
+        return { ...item, used, percent };
+      })
+      .sort((a, b) => b.percent - a.percent);
+
     return `
-      <div class="section-title"><h2>Budgets</h2><span class="small">${key}</span></div>
-      <div class="card page-list">
-        ${data().categories.filter(item => item.budget > 0).map(item => {
-          const used = transactions
-            .filter(transaction => transaction.categoryId === item.id)
-            .reduce((sum, transaction) => sum + Number(transaction.amount), 0);
-          const percent = Math.min(100, item.budget ? used / item.budget * 100 : 0);
+      <div class="section-title">
+        <h2 class="page-heading">Budgets</h2>
+        <span class="section-context">${key}</span>
+      </div>
+      <div class="progress-stack">
+        ${items.map(item => {
+          const displayPercent = Math.round(item.percent);
+          const visualEnd = Math.min(100, item.percent + 3);
+          const tone = item.percent > 100 ? "danger" : item.percent >= 80 ? "warning" : "budget";
           return `
-            <div class="page-row">
-              <div style="flex:1">
-                <strong>${esc(item.name)}</strong>
-                <div class="meta">${euro(used)} von ${euro(item.budget)}</div>
-                <div class="progress"><span style="width:${percent}%"></span></div>
-              </div>
-              <div>${Math.round(percent)} %</div>
-            </div>
+            <button class="card progress-card budget-card progress-${tone}"
+              data-budget="${item.id}"
+              style="--progress-end:${visualEnd}%"
+              aria-label="${esc(item.name)}: ${displayPercent} Prozent verbraucht">
+              <span class="progress-fill"></span>
+              <span class="progress-content">
+                <span class="progress-icon">${categoryIcon(item.name)}</span>
+                <span class="progress-copy">
+                  <span class="progress-title">${esc(item.name)}</span>
+                  <span class="progress-meta">${euro(item.used)} von ${euro(item.budget)}</span>
+                </span>
+                <span class="progress-value">${displayPercent} %</span>
+              </span>
+            </button>
           `;
-        }).join("")}
+        }).join("") || '<div class="card empty">Keine Budgets eingerichtet</div>'}
       </div>
     `;
   }
@@ -254,7 +273,7 @@ export function createViews(context) {
           return `
             <div class="page-row" data-loan="${loan.id}">
               <div style="display:flex;align-items:center;gap:10px">
-                <div class="loan-icon">${loanIcon(loan.type)}</div>
+                <div class="progress-icon loan-icon">${loanIcon(loan.type)}</div>
                 <div><strong>${esc(loan.name)}</strong><div class="meta">${euro(paid)} abbezahlt · ${Math.round(percent)} %</div></div>
               </div>
               <strong>${euro(loan.remaining)}</strong>
@@ -267,7 +286,7 @@ export function createViews(context) {
 
   function more() {
     return `
-      <div class="section-title"><h2>Mehr</h2></div>
+      <div class="section-title"><h2 class="page-heading">Mehr</h2></div>
       <div class="grid">
         <button class="card btn" data-nav="dashboard-settings">Dashboard anpassen</button>
         <button class="card btn" data-nav="pending">Später zuordnen</button>
@@ -280,7 +299,7 @@ export function createViews(context) {
 
   function manage() {
     return `
-      <div class="section-title"><h2>Konten</h2><button class="btn primary" id="addAccount">＋</button></div>
+      <div class="section-title"><h2 class="page-heading">Konten</h2><button class="btn primary" id="addAccount">＋</button></div>
       <div class="card page-list">${data().accounts.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">${euro(item.start)} Startsaldo</div></div><button class="btn ghost" data-account="${item.id}">Bearbeiten</button></div>`).join("")}</div>
       <div class="section-title"><h2>Kategorien</h2><button class="btn primary" id="addCategory">＋</button></div>
       <div class="card page-list">${data().categories.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">Budget ${euro(item.budget)}</div></div><button class="btn ghost" data-category="${item.id}">Bearbeiten</button></div>`).join("")}</div>
@@ -342,7 +361,7 @@ export function createViews(context) {
 
   function accounts() {
     return `
-      <div class="section-title"><h2>Konten</h2></div>
+      <div class="section-title"><h2 class="page-heading">Konten</h2></div>
       <div class="card page-list">
         ${data().accounts.map(item => `
           <div class="page-row">
@@ -357,7 +376,7 @@ export function createViews(context) {
   function income() {
     const items = sortNewest(data().transactions.filter(item => item.type === "income"));
     return `
-      <div class="section-title"><h2>Einnahmen</h2></div>
+      <div class="section-title"><h2 class="page-heading">Einnahmen</h2></div>
       <div class="card transaction-list">
         ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Einnahmen</div>'}
       </div>
@@ -367,7 +386,7 @@ export function createViews(context) {
   function expenses() {
     const items = sortNewest(data().transactions.filter(item => item.type === "expense"));
     return `
-      <div class="section-title"><h2>Ausgaben</h2></div>
+      <div class="section-title"><h2 class="page-heading">Ausgaben</h2></div>
       <div class="card transaction-list">
         ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Ausgaben</div>'}
       </div>

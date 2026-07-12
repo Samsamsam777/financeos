@@ -1,4 +1,4 @@
-const CACHE = "financeos-v3-clean-rebuild";
+const CACHE = "financeos-v3-1-polish";
 const ASSETS = [
   "./",
   "./index.html",

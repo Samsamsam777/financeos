@@ -45,7 +45,7 @@ export function createViews(context) {
     const modules = {
       balance: () => `
         <section class="dashboard-module hero-module">
-          <div class="card hero">
+          <button class="card hero hero-button" data-nav="accounts">
             <div class="hero-row">
               <div class="hero-icon">${icons.wallet}</div>
               <div class="hero-copy">
@@ -54,51 +54,69 @@ export function createViews(context) {
                 <div class="hero-sub"><span>Verfügbar diesen Monat</span><strong>${euro(summary.available)}</strong></div>
               </div>
             </div>
-          </div>
+          </button>
         </section>
       `,
       summary: () => `
         <section class="dashboard-module summary-module">
           <div class="card summary-card">
-            <div class="summary-item">
+            <button class="summary-item summary-action" data-nav="income">
               <div class="metric-head"><div class="metric-icon income">${icons.income}</div><div class="metric-label">Einnahmen</div></div>
               <div class="metric-value" data-animate-number="${summary.income}">${euro(summary.income)}</div>
-            </div>
+            </button>
             <div class="summary-divider" aria-hidden="true"></div>
-            <div class="summary-item">
+            <button class="summary-item summary-action" data-nav="expenses">
               <div class="metric-head"><div class="metric-icon expense">${icons.expense}</div><div class="metric-label">Ausgaben</div></div>
               <div class="metric-value" data-animate-number="${summary.expense}">${euro(summary.expense)}</div>
-            </div>
+            </button>
           </div>
         </section>
       `,
-      pending: () => `
+      pending: () => {
+        const oldestPending = sortNewest(pending).at(-1);
+        const oldestLabel = oldestPending
+          ? new Date(oldestPending.date + "T00:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})
+          : "—";
+        return `
         <section class="dashboard-module">
-          <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
-          <div class="card pending-card">
+          <div class="section-title"><h2>Zu prüfen</h2><span class="small">älteste ${oldestLabel}</span></div>
+          <button class="card pending-card pending-action" data-nav="pending">
             <div class="pending-row">
               <div class="pending-left">
                 <div class="pending-icon">${icons.pending}</div>
-                <div class="pending-copy"><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div>
+                <div class="pending-copy"><strong>Unklare Buchungen</strong><div class="meta">Später zuordnen und Händler lernen</div></div>
               </div>
-              <button class="pending-count" data-nav="pending" aria-label="${pending.length} offene Zuordnungen">${pending.length}</button>
+              <span class="pending-count" aria-label="${pending.length} offene Zuordnungen">${pending.length}</span>
             </div>
-          </div>
+          </button>
         </section>
-      `,
+      `;
+      },
       loans: () => loanPreview(dashboardConfig.loans.count),
       transactions: () => transactionPreview(dashboardConfig.transactions.count)
     };
 
-    return Object.entries(dashboardConfig)
-      .filter(([, config]) => config.enabled !== false)
-      .sort(([, a], [, b]) => Number(a.order) - Number(b.order))
-      .map(([key]) => modules[key]?.() ?? "")
+    const fixed = modules.balance() + modules.summary();
+    const configurable = ["pending", "loans", "transactions"]
+      .filter(key => dashboardConfig[key]?.enabled !== false)
+      .sort((a, b) => Number(dashboardConfig[a]?.order || 99) - Number(dashboardConfig[b]?.order || 99))
+      .map(key => modules[key]?.() ?? "")
       .join("");
+
+    const customize = `
+      <section class="dashboard-module dashboard-customize">
+        <button class="card customize-card" data-nav="dashboard-settings">
+          <span class="customize-icon">↕</span>
+          <span>Anpassen</span>
+        </button>
+      </section>
+    `;
+
+    return fixed + configurable + customize;
   }
 
   function loanPreview(count = 2) {
-    const loans = data().loans.slice(0, Math.max(0, Number(count)));
+    const loans = [...data().loans].sort((a,b)=>Number(b.remaining)-Number(a.remaining)).slice(0, Math.max(0, Number(count)));
     if (!loans.length) return "";
 
     return `
@@ -301,9 +319,44 @@ export function createViews(context) {
     `;
   }
 
+
+  function accounts() {
+    return `
+      <div class="section-title"><h2>Konten</h2></div>
+      <div class="card page-list">
+        ${data().accounts.map(item => `
+          <div class="page-row">
+            <div><strong>${esc(item.name)}</strong><div class="meta">${esc(item.type)}</div></div>
+            <strong>${euro(accountBalance(data(), item.id))}</strong>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function income() {
+    const items = sortNewest(data().transactions.filter(item => item.type === "income"));
+    return `
+      <div class="section-title"><h2>Einnahmen</h2></div>
+      <div class="card transaction-list">
+        ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Einnahmen</div>'}
+      </div>
+    `;
+  }
+
+  function expenses() {
+    const items = sortNewest(data().transactions.filter(item => item.type === "expense"));
+    return `
+      <div class="section-title"><h2>Ausgaben</h2></div>
+      <div class="card transaction-list">
+        ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Ausgaben</div>'}
+      </div>
+    `;
+  }
+
   return {
     dashboard, transactions, addTransaction, pending, budgets,
     loans, more, manage, dashboardSettings, settings,
-    transactionRow
+    accounts, income, expenses, transactionRow
   };
 }

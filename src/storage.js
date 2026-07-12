@@ -31,6 +31,24 @@ const seed = {
       remaining: 14382,
       rate: 420,
       interest: 4.2
+    },
+    {
+      id: "l2",
+      name: "Hauskredit",
+      type: "home",
+      principal: 280000,
+      remaining: 251400,
+      rate: 1450,
+      interest: 3.1
+    },
+    {
+      id: "l3",
+      name: "Konsumkredit",
+      type: "card",
+      principal: 8000,
+      remaining: 6120,
+      rate: 210,
+      interest: 6.4
     }
   ]
 };
@@ -81,6 +99,29 @@ function migrate(data) {
     type: loan.type ?? inferLoanType(loan.name),
     ...loan
   }));
+
+  if (data.loans.length === 1 && data.loans[0]?.id === "l1") {
+    data.loans.push(
+      {
+        id: "l2",
+        name: "Hauskredit",
+        type: "home",
+        principal: 280000,
+        remaining: 251400,
+        rate: 1450,
+        interest: 3.1
+      },
+      {
+        id: "l3",
+        name: "Konsumkredit",
+        type: "card",
+        principal: 8000,
+        remaining: 6120,
+        rate: 210,
+        interest: 6.4
+      }
+    );
+  }
 
   return data;
 }

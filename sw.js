@@ -1,4 +1,4 @@
-const CACHE = "financeos-v2-1-1-ui-patch";
+const CACHE = "financeos-v2-2-interactive-dashboard";
 const ASSETS = [
   "./",
   "./index.html",

@@ -657,3 +657,103 @@ textarea{
 .nav-icon{
   margin-bottom:1px;
 }
+
+
+/* FinanceOS 2.2 interactive dashboard */
+body{
+  background-attachment:fixed;
+}
+body::before{
+  position:fixed;
+}
+
+.sticky-header{
+  position:sticky;
+  top:env(safe-area-inset-top);
+  z-index:35;
+  margin-left:calc(var(--space-page-inline) * -1);
+  margin-right:calc(var(--space-page-inline) * -1);
+  padding-left:var(--space-page-inline);
+  padding-right:var(--space-page-inline);
+  background:linear-gradient(180deg,rgba(5,10,20,.94),rgba(5,10,20,.72),transparent);
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+}
+
+.hero-button,
+.summary-action,
+.pending-action,
+.customize-card{
+  width:100%;
+  color:inherit;
+  text-align:left;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.hero-button{
+  display:block;
+}
+
+.summary-action{
+  border:0;
+  background:transparent;
+  padding:0;
+  min-height:0;
+  border-radius:0;
+}
+
+.pending-action{
+  border:0;
+  padding:0;
+}
+
+.dashboard-customize{
+  margin-top:var(--space-4);
+  margin-bottom:var(--space-4);
+}
+.customize-card{
+  min-height:44px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:var(--space-2);
+  padding:var(--space-2) var(--space-3);
+  background:rgba(23,35,58,.72);
+  color:var(--color-muted);
+  border:0;
+}
+.customize-icon{
+  font-size:1rem;
+  color:var(--color-accent);
+}
+
+.loan-fill{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(58,45,122,.88) 0%,
+      rgba(83,65,184,.93) 34%,
+      rgba(70,85,206,.94) 62%,
+      rgba(63,111,224,.93) 80%,
+      rgba(72,148,225,.90) 100%
+    );
+  mask-image:linear-gradient(90deg,#000 0%,#000 84%,rgba(0,0,0,.92) 94%,rgba(0,0,0,.72) 100%);
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 84%,rgba(0,0,0,.92) 94%,rgba(0,0,0,.72) 100%);
+}
+
+.loan-content{
+  color:var(--color-text);
+}
+
+.loan-icon{
+  background:rgba(255,255,255,.10);
+}
+
+@media (prefers-reduced-transparency:reduce){
+  .sticky-header{
+    backdrop-filter:none;
+    -webkit-backdrop-filter:none;
+    background:var(--color-bg);
+  }
+}

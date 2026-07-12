@@ -90,3 +90,14 @@ On iPhone, visual press states and motion provide the interaction feedback.
 - Loan gradients reserve green/turquoise for late-stage repayment.
 - Navigation distributes optical whitespace evenly above and below the label.
 - Ambient background color must remain visibly present while surfaces stay calm.
+
+
+## FinanceOS 2.2 dashboard behavior
+
+- Balance and income/expense summary are fixed at the top of the dashboard.
+- Only modules below the summary may be reordered or hidden.
+- Every primary dashboard card is actionable and leads to the expected detail view.
+- The oldest unresolved transaction date is shown next to “Zu prüfen”.
+- The ambient background remains fixed while content scrolls.
+- The title remains sticky with subtle blur.
+- Loan previews use representative line icons and a dark-to-light progress fill.

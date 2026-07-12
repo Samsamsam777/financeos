@@ -36,7 +36,7 @@ function navButton(id, label, icon) {
 function shell(content) {
   app.innerHTML = `
     <main class="app" id="pageRoot">
-      <div class="topbar">
+      <div class="topbar sticky-header">
         <div class="brand"><h1>FinanceOS</h1></div>
       </div>
       ${content}
@@ -78,7 +78,10 @@ function render() {
     more: views.more,
     manage: views.manage,
     "dashboard-settings": views.dashboardSettings,
-    settings: views.settings
+    settings: views.settings,
+    accounts: views.accounts,
+    income: views.income,
+    expenses: views.expenses
   }[view]?.() ?? views.more();
 
   shell(content);
@@ -95,7 +98,7 @@ function bindView() {
   bindNavigation();
 
   if (view === "dashboard") bindDashboard();
-  if (view === "transactions") bindTransactions();
+  if (["transactions","income","expenses"].includes(view)) bindTransactions();
   if (view === "add") bindAddTransaction();
   if (view === "pending") bindPending();
   if (view === "loans") bindLoans();
@@ -136,22 +139,25 @@ function bindDashboard() {
 
 function bindTransactions() {
   const ids = ["filterQuery", "filterAccount", "filterCategory", "filterPerson", "filterSort"];
-  const update = () => {
-    filters = {
-      query: document.querySelector("#filterQuery").value,
-      account: document.querySelector("#filterAccount").value,
-      category: document.querySelector("#filterCategory").value,
-      person: document.querySelector("#filterPerson").value,
-      sort: document.querySelector("#filterSort").value
-    };
-    render();
-  };
+  const available = ids.map(id => document.querySelector(`#${id}`)).filter(Boolean);
 
-  ids.forEach(id => {
-    const element = document.querySelector(`#${id}`);
-    element.onchange = update;
-    if (id === "filterQuery") element.oninput = update;
-  });
+  if (available.length) {
+    const update = () => {
+      filters = {
+        query: document.querySelector("#filterQuery")?.value ?? "",
+        account: document.querySelector("#filterAccount")?.value ?? "",
+        category: document.querySelector("#filterCategory")?.value ?? "",
+        person: document.querySelector("#filterPerson")?.value ?? "",
+        sort: document.querySelector("#filterSort")?.value ?? "newest"
+      };
+      render();
+    };
+
+    available.forEach(element => {
+      element.onchange = update;
+      if (element.id === "filterQuery") element.oninput = update;
+    });
+  }
 
   document.querySelectorAll("[data-edit]").forEach(button => {
     button.onclick = () => openTransaction(button.dataset.edit);

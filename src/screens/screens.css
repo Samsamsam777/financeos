@@ -95,3 +95,49 @@
     background:#080b16;
   }
 }
+
+
+/* 4.0.1 — unified entry sheet */
+.entry-sheet{padding:0 2px}
+.sheet-heading{
+  display:flex;
+  align-items:center;
+  gap:var(--space-3);
+  margin:0 0 var(--space-4);
+}
+.sheet-heading h2{
+  margin:0;
+  font-size:var(--font-title);
+  font-weight:var(--weight-bold);
+  letter-spacing:-.025em;
+}
+.sheet-heading p{
+  margin:3px 0 0;
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.sheet-icon{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  flex:0 0 auto;
+  border-radius:var(--radius-md);
+  color:#fff;
+  background:var(--color-accent);
+}
+.sheet-icon svg{width:20px;height:20px}
+.sheet-form-card{
+  padding:var(--space-4);
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:var(--radius-lg);
+  background:linear-gradient(155deg,rgba(34,40,56,.96),rgba(23,29,43,.98));
+}
+.form-grid-two{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:var(--space-3);
+}
+.entry-form .entry-actions{margin-top:var(--space-2)}
+.entry-form .btn.primary{width:100%}
+@media(max-width:360px){.form-grid-two{grid-template-columns:1fr}}

@@ -1,4 +1,4 @@
-export const APP_VERSION = "4.0.0";
+export const APP_VERSION = "4.0.1";
 export const STORAGE_KEY = "financeos_v01";
 
 export const DEFAULT_DASHBOARD = {

@@ -1,4 +1,4 @@
-FinanceOS 4.0 – Design System
+FinanceOS 4.0.1 – Design System Refinement
 
 FinanceOS 4.0 restructures the UI architecture rather than adding features.
 
@@ -28,3 +28,10 @@ Testing:
 
 Commit:
 FinanceOS 4.0 Design System
+
+
+4.0.1 refinement:
+- Plus action now opens a native-style FinanceOS bottom sheet
+- entry form uses the same material, typography, spacing and motion tokens
+- type and amount are grouped compactly
+- page headings normalized across credits, settings and dashboard configuration

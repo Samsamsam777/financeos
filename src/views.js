@@ -192,23 +192,39 @@ export function createViews(context) {
     `;
   }
 
+  function transactionFormMarkup() {
+    return `
+      <form id="transactionForm" class="form entry-form">
+        ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
+        <div class="form-grid-two">
+          ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
+          ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" step="0.01" placeholder="0,00" required>`)}
+        </div>
+        ${field("Beschreibung", `<input name="description" placeholder="z. B. REWE Markt" required>`)}
+        ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+        ${field("Kategorie", `<select name="categoryId"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+        ${field("Person", `<select name="person">${data().settings.people.map(item => `<option>${esc(item)}</option>`).join("")}</select>`)}
+        <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
+      </form>
+    `;
+  }
+
   function addTransaction() {
     return `
       <div class="entry-screen">
-      <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
-      <div class="card page-card entry-card">
-        <form id="transactionForm" class="form">
-          ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
-          ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
-          ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" step="0.01" placeholder="0,00" required>`)}
-          ${field("Beschreibung", `<input name="description" placeholder="z. B. REWE Markt" required>`)}
-          ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
-          ${field("Kategorie", `<select name="categoryId"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
-          ${field("Person (optional)", `<select name="person">${data().settings.people.map(item => `<option>${esc(item)}</option>`).join("")}</select>`)}
-          <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
-        </form>
+        <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
+        <div class="card page-card entry-card">${transactionFormMarkup()}</div>
       </div>
+    `;
+  }
+
+  function addTransactionSheet() {
+    return `
+      <div class="sheet-heading">
+        <span class="sheet-icon">${icons.plus}</span>
+        <div><h2>Neue Buchung</h2><p>Ausgabe oder Einnahme erfassen</p></div>
       </div>
+      <div class="sheet-form-card">${transactionFormMarkup()}</div>
     `;
   }
 
@@ -269,7 +285,7 @@ export function createViews(context) {
 
   function loans() {
     return `
-      <div class="section-title"><h2 class="section-heading">Kredite</h2></div>
+      <div class="section-title"><h2 class="page-heading">Kredite</h2></div>
       <div class="card page-list">
         ${data().loans.map(loan => {
           const { paid, percent } = loanProgress(loan);
@@ -304,9 +320,9 @@ export function createViews(context) {
     return `
       <div class="section-title"><h2 class="page-heading">Konten</h2><button class="btn primary" id="addAccount">＋</button></div>
       <div class="card page-list">${data().accounts.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">${euro(item.start)} Startsaldo</div></div><button class="btn ghost" data-account="${item.id}">Bearbeiten</button></div>`).join("")}</div>
-      <div class="section-title"><h2>Kategorien</h2><button class="btn primary" id="addCategory">＋</button></div>
+      <div class="section-title"><h2 class="section-heading">Kategorien</h2><button class="btn primary" id="addCategory">＋</button></div>
       <div class="card page-list">${data().categories.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">Budget ${euro(item.budget)}</div></div><button class="btn ghost" data-category="${item.id}">Bearbeiten</button></div>`).join("")}</div>
-      <div class="section-title"><h2>Händlerregeln</h2><button class="btn primary" id="addRule">＋</button></div>
+      <div class="section-title"><h2 class="section-heading">Händlerregeln</h2><button class="btn primary" id="addRule">＋</button></div>
       <div class="card page-list">${data().rules.map(item => `<div class="page-row"><div><strong>${esc(item.needle)}</strong><div class="meta">→ ${esc(category(item.categoryId)?.name ?? "—")}</div></div><button class="btn ghost" data-rule="${item.id}">Bearbeiten</button></div>`).join("")}</div>
     `;
   }
@@ -321,7 +337,7 @@ export function createViews(context) {
     const keys = Object.keys(labels);
 
     return `
-      <div class="section-title"><h2>Dashboard anpassen</h2></div>
+      <div class="section-title"><h2 class="page-heading">Dashboard anpassen</h2></div>
       <div class="card page-card form">
         <div class="notice">
           Gesamtkontostand sowie Einnahmen und Ausgaben bleiben immer oben.
@@ -351,7 +367,7 @@ export function createViews(context) {
 
   function settings() {
     return `
-      <div class="section-title"><h2>Einstellungen & Daten</h2></div>
+      <div class="section-title"><h2 class="page-heading">Einstellungen & Daten</h2></div>
       <div class="card page-card form">
         <button class="btn primary" id="backupButton">Backup erstellen</button>
         <label class="btn ghost" style="text-align:center">Backup wiederherstellen<input id="restoreInput" type="file" accept="application/json" hidden></label>
@@ -399,6 +415,6 @@ export function createViews(context) {
   return {
     dashboard, transactions, addTransaction, pending, budgets,
     loans, more, manage, dashboardSettings, settings,
-    accounts, income, expenses, transactionRow
+    accounts, income, expenses, addTransactionSheet, transactionRow
   };
 }

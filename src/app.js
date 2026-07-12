@@ -63,6 +63,10 @@ function shell(content) {
 }
 
 function navigate(target) {
+  if (target === "add") {
+    openAddTransactionSheet();
+    return;
+  }
   if (view === target) return;
   haptic("selection");
   view = target;
@@ -151,6 +155,14 @@ function bindTransactions() {
   });
 }
 
+function openAddTransactionSheet() {
+  haptic("selection");
+  showSheet(`<div class="entry-sheet">${views.addTransactionSheet()}</div>`);
+  bindAddTransaction();
+  bindPressFeedback(document.querySelector("#modal"));
+  setTimeout(() => document.querySelector('#transactionForm input[name="amount"]')?.focus(), 280);
+}
+
 function bindAddTransaction() {
   document.querySelector("#transactionForm").onsubmit = event => {
     event.preventDefault();
@@ -172,7 +184,9 @@ function bindAddTransaction() {
     saveData(data);
     haptic("success");
     showToast("Buchung gespeichert", "success");
-    navigate("dashboard");
+    closeSheet();
+    view = "dashboard";
+    render();
   };
 }
 

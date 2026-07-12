@@ -450,6 +450,15 @@ button.is-pressed,
   -webkit-backdrop-filter:blur(var(--blur-sheet));
 }
 .sheet-toolbar{display:flex;justify-content:flex-end;margin-bottom:var(--space-1)}
+.sheet-toolbar .icon-btn{
+  width:34px;
+  min-height:34px;
+  padding:0;
+  border-radius:var(--radius-pill);
+  color:var(--color-text-2);
+  background:rgba(255,255,255,.07);
+  font-size:1.25rem;
+}
 .sheet-enter{animation:sheet-enter var(--motion-sheet) var(--ease-spring) both}
 .sheet-exit{animation:sheet-exit var(--motion-normal) ease-in both}
 @keyframes sheet-enter{from{transform:translateY(100%)}to{transform:none}}

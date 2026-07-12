@@ -1,5 +1,5 @@
 import { APP_VERSION } from "./constants.js";
-import { animateLoanFills, animateNumber, bindPressFeedback, enterPage, haptic, showToast } from "./motion.js";
+import { animateLoanFills, animateNumber, bindPressFeedback, enterPage, haptic, showToast, staggerRows } from "./motion.js";
 import { icons, loanIcon } from "./icons.js";
 import { detectCategory, euro, loanProgress, today } from "./logic.js";
 import {
@@ -35,8 +35,9 @@ function navButton(id, label, icon) {
 
 function shell(content) {
   app.innerHTML = `
+    <div class="ambient-layer" aria-hidden="true"></div>
     <main class="app" id="pageRoot">
-      <div class="topbar sticky-header">
+      <div class="topbar app-header">
         <div class="brand"><h1>FinanceOS</h1></div>
       </div>
       ${content}
@@ -58,6 +59,7 @@ function shell(content) {
     animateNumber(element, Number(element.dataset.animateNumber), value => euro(value));
   });
   animateLoanFills();
+  staggerRows();
 }
 
 function navigate(target) {

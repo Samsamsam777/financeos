@@ -88,3 +88,12 @@ export function bindPressFeedback(root = document) {
     element.addEventListener("mouseleave", release);
   });
 }
+
+
+export function staggerRows(root = document) {
+  if (reducedMotion()) return;
+  root.querySelectorAll(".transaction-row, .loan-strip").forEach((element, index) => {
+    element.style.setProperty("--stagger-index", String(Math.min(index, 10)));
+    element.classList.add("stagger-enter");
+  });
+}

@@ -23,11 +23,22 @@ export const icons = {
   search: svg('<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>'),
   edit: svg('<path d="m4 16-1 5 5-1L19 9l-4-4Z"/><path d="m13 7 4 4"/>'),
   trash: svg('<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>'),
-  backup: svg('<path d="M12 3v12M7 8l5-5 5 5M5 20h14"/>')
+  backup: svg('<path d="M12 3v12M7 8l5-5 5 5M5 20h14"/>'),
+  arrange: svg('<path d="M8 5h11M8 12h11M8 19h11M3 5h.01M3 12h.01M3 19h.01"/>')
 };
 
 export function loanIcon(type) {
-  return icons[type] ?? icons.document;
+  const map = {
+    auto: "car",
+    home: "house",
+    consumer: "consumer",
+    education: "education",
+    motorcycle: "motorcycle",
+    boat: "boat",
+    card: "card",
+    generic: "document"
+  };
+  return icons[map[type] ?? type] ?? icons.document;
 }
 
 export function merchantVisual(description = "", type = "expense") {

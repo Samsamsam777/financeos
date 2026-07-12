@@ -75,22 +75,30 @@ export function createViews(context) {
       pending: () => {
         const oldestPending = sortNewest(pending).at(-1);
         const oldestLabel = oldestPending
-          ? new Date(oldestPending.date + "T00:00:00").toLocaleDateString("de-DE",{day:"2-digit",month:"2-digit"})
-          : "—";
+          ? new Date(`${oldestPending.date}T00:00:00`).toLocaleDateString("de-DE", {
+              day: "2-digit",
+              month: "2-digit"
+            })
+          : null;
+
         return `
-        <section class="dashboard-module">
-          <div class="section-title"><h2>Zu prüfen</h2><span class="small">${oldestPending ? `seit ${oldestLabel}` : "nichts offen"}</span></div>
-          <button class="card pending-card pending-action" data-nav="pending">
-            <div class="pending-row">
-              <div class="pending-left">
-                <div class="pending-icon">${icons.pending}</div>
-                <div class="pending-copy"><strong>Unklare Buchungen</strong><div class="meta">Später zuordnen und Händler lernen</div></div>
-              </div>
-              <span class="pending-count" aria-label="${pending.length} offene Zuordnungen">${pending.length}</span>
+          <section class="dashboard-module">
+            <div class="section-title">
+              <h2>Zu prüfen</h2>
+              <span class="section-context">${oldestLabel ? `seit ${oldestLabel}` : "nichts offen"}</span>
             </div>
-          </button>
-        </section>
-      `;
+            <button class="card pending-card pending-action" data-nav="pending">
+              <span class="pending-left">
+                <span class="pending-icon">${icons.pending}</span>
+                <span class="pending-copy">
+                  <strong>Unklare Buchungen</strong>
+                  <span class="meta">Später zuordnen und Händler lernen</span>
+                </span>
+              </span>
+              <span class="pending-count" aria-label="${pending.length} offene Buchungen">${pending.length}</span>
+            </button>
+          </section>
+        `;
       },
       loans: () => loanPreview(dashboardConfig.loans.count),
       transactions: () => transactionPreview(dashboardConfig.transactions.count)
@@ -106,7 +114,7 @@ export function createViews(context) {
     const customize = `
       <section class="dashboard-module dashboard-customize">
         <button class="card customize-card" data-nav="dashboard-settings">
-          <span class="customize-icon">↕</span>
+          <span class="customize-icon">${icons.arrange}</span>
           <span>Anpassen</span>
         </button>
       </section>
@@ -128,7 +136,7 @@ export function createViews(context) {
     return `
       <section class="dashboard-module">
         <div class="section-title">
-          <h2>Kredite</h2>
+          <h2 class="section-heading">Kredite</h2>
           <button class="section-link" data-nav="loans">Alle Kredite →</button>
         </div>
         <div class="loan-list">
@@ -158,7 +166,7 @@ export function createViews(context) {
 
     return `
       <section class="dashboard-module">
-        <div class="section-title"><h2>Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle Buchungen →</button></div>
+        <div class="section-title"><h2 class="section-heading">Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle Buchungen →</button></div>
         <div class="card transaction-list">${transactions.map(item => transactionRow(item)).join("")}</div>
       </section>
     `;
@@ -167,7 +175,7 @@ export function createViews(context) {
   function transactions(filters) {
     const items = filterTransactions(data(), filters);
     return `
-      <div class="section-title"><h2>Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
+      <div class="section-title"><h2 class="page-heading">Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
       <div class="card page-card filters">
         <div class="form">
           ${field("Suche", `<input id="filterQuery" value="${esc(filters.query)}" placeholder="Händler, Kategorie oder Betrag">`)}
@@ -185,7 +193,7 @@ export function createViews(context) {
 
   function addTransaction() {
     return `
-      <div class="section-title"><h2>Neue Buchung</h2></div>
+      <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
       <div class="card page-card">
         <form id="transactionForm" class="form">
           ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
@@ -204,7 +212,7 @@ export function createViews(context) {
   function pending() {
     const items = sortNewest(data().transactions.filter(item => item.status === "pending"));
     return `
-      <div class="section-title"><h2>Später zuordnen</h2><span class="count-badge">${items.length}</span></div>
+      <div class="section-title"><h2 class="page-heading">Zu prüfen</h2><span class="count-badge">${items.length}</span></div>
       <div class="card page-list">
         ${items.length ? items.map(item => `
           <div class="page-row">
@@ -223,7 +231,7 @@ export function createViews(context) {
     );
 
     return `
-      <div class="section-title"><h2>Budgets</h2><span class="small">${key}</span></div>
+      <div class="section-title"><h2 class="page-heading">Budgets</h2><span class="small">${key}</span></div>
       <div class="card page-list">
         ${data().categories.filter(item => item.budget > 0).map(item => {
           const used = transactions
@@ -247,7 +255,7 @@ export function createViews(context) {
 
   function loans() {
     return `
-      <div class="section-title"><h2>Kredite</h2></div>
+      <div class="section-title"><h2 class="page-heading">Kredite</h2></div>
       <div class="card page-list">
         ${data().loans.map(loan => {
           const { paid, percent } = loanProgress(loan);

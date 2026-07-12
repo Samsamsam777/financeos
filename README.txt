@@ -1,18 +1,37 @@
-FinanceOS 2.2.1 – Completion Patch
+FinanceOS 3.0 – Apple Polish
 
-Vollständig korrigiert:
-- Dashboard-Buchungen sind antippbar und öffnen Details
-- Auto-, Haus- und Konsumkredit haben eigene Line-Icons
-- Konsumkredit verwendet ein Einkaufstaschen-Symbol
-- Kredite werden nach höchster Restschuld sortiert
-- maximal drei Kredite erscheinen auf dem Dashboard
-- weitere Kredite werden als „+N weitere →“ angezeigt
-- der Kreditverlauf liegt über die gesamte Kartenbreite
-- Grün erscheint dadurch erst bei echter, sehr hoher Tilgung
-- Dashboard-Anpassung verwaltet ausschließlich Module unterhalb der fixen Finanzübersicht
-- Gesamtkontostand sowie Einnahmen/Ausgaben bleiben unveränderbar
-- „Zu prüfen“ zeigt „seit DD.MM.“ für die älteste offene Buchung
-- falscher Toast „Buchung gespeichert“ bei Dashboard-Anpassung korrigiert
+Behoben und überarbeitet:
+- sichtbarer, feststehender Ambient-Hintergrund auf eigener Ebene
+- Hintergrund kann nicht mehr hinter einer schwarzen Body-Fläche verschwinden
+- animierte Farbflächen bleiben beim Scrollen fix
+- korrekte Icon-Zuordnung:
+  Auto → Auto-Line-Icon
+  Haus → Haus-Line-Icon
+  Konsum → Einkaufstaschen-Line-Icon
+- „Zu prüfen“ technisch und visuell bereinigt
+- keine konkurrierenden oder verschachtelten Klickflächen
+- „Anpassen“ verwendet ein einheitliches Line-Icon
+- neue Typografie-Hierarchie:
+  Seitenüberschrift
+  Abschnittsüberschrift
+  Kartentitel
+  Metadaten
+  Finanzwert
+- klebender FinanceOS-Header mit ruhigem Blur
+- Kartenkontrast verfeinert
+- Kreditverlauf weiterhin dunkel links und hell rechts
+- Türkis und Grün erscheinen erst spät
+- dezente Stagger-Animation für Kredit- und Buchungslisten
+- alle JavaScript-Module wurden syntaktisch geprüft
 
-Commit:
-FinanceOS 2.2.1 Completion Patch
+Installation:
+1. FinanceOS-Backup erstellen.
+2. ZIP entpacken.
+3. Gesamten Inhalt in das lokale GitHub-Repository kopieren.
+4. Vorhandene Dateien ersetzen.
+5. Commit: FinanceOS 3.0 Apple Polish
+6. Push origin.
+7. Deployment abwarten.
+8. Homescreen-App vollständig schließen und neu öffnen.
+
+Bestehende Daten bleiben kompatibel.

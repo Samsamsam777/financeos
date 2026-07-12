@@ -101,3 +101,13 @@ On iPhone, visual press states and motion provide the interaction feedback.
 - The ambient background remains fixed while content scrolls.
 - The title remains sticky with subtle blur.
 - Loan previews use representative line icons and a dark-to-light progress fill.
+
+
+## FinanceOS 3.0 — final visual language
+
+- Ambient color exists on its own fixed layer and is never hidden behind the document background.
+- Page headings, section headings, card titles, metadata, and values use distinct typographic roles.
+- Semantic loan types are mapped to one consistent line-icon system.
+- Dashboard modules use one primary click target; nested competing controls are avoided.
+- Decorative arrows are replaced by the shared icon library.
+- Motion remains subtle: orientation and feedback, never spectacle.

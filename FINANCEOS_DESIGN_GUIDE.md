@@ -676,3 +676,37 @@ App gewesen.
 Das Design System ist keine Empfehlung.
 
 Es ist die verbindliche Grundlage von FinanceOS.
+
+
+# FinanceOS 4.1 Ergänzungen
+
+## Zurücknavigation
+
+Jede Unterseite besitzt einen klaren Zurück-Button.
+
+Root-Tabs besitzen keinen Zurück-Button.
+
+Der Zurück-Button verwendet das gemeinsame Line-Icon und eine Touchfläche von
+mindestens 44 px.
+
+## Formular-Fokus
+
+Browser-Standard-Fokusringe werden vollständig durch FinanceOS-Fokus ersetzt:
+
+- violette Kontur
+- weicher Fokus-Ring
+- keine blaue Browser-Standarddarstellung
+
+## Mehr-Menü
+
+Das Mehr-Menü verwendet GroupedCard und SettingsRow.
+
+Große generische Vollflächen-Buttons sind nicht zulässig.
+
+## Materialtiefe
+
+Karten verwenden Raised Surface und einen sehr zurückhaltenden Schatten.
+
+Header und Navigation sind Overlay-Material.
+
+Bottom Sheets verwenden Sheet-Material.

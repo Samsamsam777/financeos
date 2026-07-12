@@ -76,4 +76,10 @@
   --motion-progress:520ms;
   --ease-standard:cubic-bezier(.2,.8,.2,1);
   --ease-spring:cubic-bezier(.22,1,.36,1);
+
+  --color-surface-input:#111725;
+  --color-focus:#865cff;
+  --color-focus-ring:rgba(134,92,255,.30);
+  --shadow-raised:0 16px 38px rgba(0,0,0,.16);
+  --shadow-overlay:0 20px 52px rgba(0,0,0,.30);
 }

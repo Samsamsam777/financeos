@@ -141,3 +141,35 @@
 .entry-form .entry-actions{margin-top:var(--space-2)}
 .entry-form .btn.primary{width:100%}
 @media(max-width:360px){.form-grid-two{grid-template-columns:1fr}}
+
+
+/* FinanceOS 4.1 screen refinements */
+.filters{
+  padding:var(--space-4);
+  margin-bottom:var(--space-4);
+}
+.filters .grid{
+  gap:var(--space-3);
+}
+.transaction-list{
+  padding-top:var(--space-2);
+  padding-bottom:var(--space-2);
+}
+.transaction-row{
+  min-height:62px;
+  padding:var(--space-3) 0;
+}
+.entry-card{
+  background:
+    linear-gradient(160deg,rgba(41,47,64,.98),rgba(25,31,45,.99));
+}
+.entry-card .form{gap:var(--space-4)}
+.entry-card .field label{
+  margin-bottom:var(--space-2);
+}
+.sheet .entry-screen{
+  max-width:720px;
+}
+.sheet .page-heading{
+  font-size:var(--font-title)!important;
+}

@@ -41,3 +41,14 @@ FinanceOS 4.0.2:
 - vollständige Produkt- und Designphilosophie in FINANCEOS_DESIGN_GUIDE.md
 - Entwicklungsphasen und Roadmap dokumentiert
 - Freeze-, Sprint- und Feedback-Regeln verbindlich festgehalten
+
+
+FinanceOS 4.1 Refinement:
+- Zurück-Buttons auf allen Unterseiten
+- Header transparent im Ruhezustand, Material bei Scroll
+- stärker abgestufte Materialtiefe
+- einheitliche FinanceOS-Fokuszustände für Inputs und Selects
+- Mehr-Menü als GroupedCard
+- Kreditdetailseite verwendet dieselbe Komponentenfamilie
+- Buchungsfilter und Buchungsabstände verfeinert
+- Motion- und Haptik-Abstraktion vereinheitlicht

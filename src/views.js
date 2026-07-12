@@ -212,7 +212,11 @@ export function createViews(context) {
   function addTransaction() {
     return `
       <div class="entry-screen">
-        <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
+        <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Neue Buchung</h2>
+      </div>
+      <div class="section-title page-title-spacer"></div>
         <div class="card page-card entry-card">${transactionFormMarkup()}</div>
       </div>
     `;
@@ -231,7 +235,11 @@ export function createViews(context) {
   function pending() {
     const items = sortNewest(data().transactions.filter(item => item.status === "pending"));
     return `
-      <div class="section-title"><h2 class="page-heading">Zu prüfen</h2><span class="count-badge">${items.length}</span></div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Zu prüfen</h2>
+      </div>
+      <div class="section-title page-title-spacer"><span class="count-badge">${items.length}</span></div>
       <div class="card page-list">
         ${items.length ? items.map(item => `
           <div class="page-row">
@@ -284,41 +292,60 @@ export function createViews(context) {
   }
 
   function loans() {
+    const rows = [...data().loans]
+      .sort((a,b) => Number(b.remaining) - Number(a.remaining))
+      .map(loan => {
+        const { paid, percent } = loanProgress(loan);
+        return `
+          <button class="grouped-row loan-detail-row" data-loan="${loan.id}">
+            <span class="grouped-icon loan-symbol">${loanIcon(loan.type)}</span>
+            <span class="grouped-main">
+              <span class="grouped-title">${esc(loan.name)}</span>
+              <span class="grouped-meta">${euro(paid)} abbezahlt · ${Math.round(percent)} %</span>
+            </span>
+            <span class="grouped-values"><strong>${euro(loan.remaining)}</strong></span>
+            <span class="row-chevron">${icons.chevron}</span>
+          </button>
+        `;
+      }).join("");
+
     return `
-      <div class="section-title"><h2 class="page-heading">Kredite</h2></div>
-      <div class="card page-list">
-        ${data().loans.map(loan => {
-          const { paid, percent } = loanProgress(loan);
-          return `
-            <div class="page-row" data-loan="${loan.id}">
-              <div style="display:flex;align-items:center;gap:10px">
-                <div class="progress-icon loan-icon">${loanIcon(loan.type)}</div>
-                <div><strong>${esc(loan.name)}</strong><div class="meta">${euro(paid)} abbezahlt · ${Math.round(percent)} %</div></div>
-              </div>
-              <strong>${euro(loan.remaining)}</strong>
-            </div>
-          `;
-        }).join("")}
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Kredite</h2>
       </div>
+      <div class="card grouped-card loan-detail-group">${rows}</div>
     `;
   }
 
   function more() {
+    const rows = [
+      ["dashboard-settings", "Dashboard anpassen", icons.arrange],
+      ["pending", "Später zuordnen", icons.pending],
+      ["loans", "Kredite", icons.credit],
+      ["manage", "Konten, Kategorien & Regeln", icons.settings],
+      ["settings", "Einstellungen & Backup", icons.backup]
+    ].map(([target, label, icon]) => `
+      <button class="settings-row" data-nav="${target}">
+        <span class="settings-icon">${icon}</span>
+        <span class="settings-label">${label}</span>
+        <span class="row-chevron">${icons.chevron}</span>
+      </button>
+    `).join("");
+
     return `
       <div class="section-title"><h2 class="page-heading">Mehr</h2></div>
-      <div class="grid">
-        <button class="card btn" data-nav="dashboard-settings">Dashboard anpassen</button>
-        <button class="card btn" data-nav="pending">Später zuordnen</button>
-        <button class="card btn" data-nav="loans">Kredite</button>
-        <button class="card btn" data-nav="manage">Konten, Kategorien & Regeln</button>
-        <button class="card btn" data-nav="settings">Einstellungen & Backup</button>
-      </div>
+      <div class="card grouped-card settings-group">${rows}</div>
     `;
   }
 
   function manage() {
     return `
-      <div class="section-title"><h2 class="page-heading">Konten</h2><button class="btn primary" id="addAccount">＋</button></div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Konten</h2>
+      </div>
+      <div class="section-title page-title-spacer"><button class="btn primary" id="addAccount">＋</button></div>
       <div class="card page-list">${data().accounts.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">${euro(item.start)} Startsaldo</div></div><button class="btn ghost" data-account="${item.id}">Bearbeiten</button></div>`).join("")}</div>
       <div class="section-title"><h2 class="section-heading">Kategorien</h2><button class="btn primary" id="addCategory">＋</button></div>
       <div class="card page-list">${data().categories.map(item => `<div class="page-row"><div><strong>${esc(item.name)}</strong><div class="meta">Budget ${euro(item.budget)}</div></div><button class="btn ghost" data-category="${item.id}">Bearbeiten</button></div>`).join("")}</div>
@@ -337,7 +364,11 @@ export function createViews(context) {
     const keys = Object.keys(labels);
 
     return `
-      <div class="section-title"><h2 class="page-heading">Dashboard anpassen</h2></div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Dashboard anpassen</h2>
+      </div>
+      <div class="section-title page-title-spacer"></div>
       <div class="card page-card form">
         <div class="notice">
           Gesamtkontostand sowie Einnahmen und Ausgaben bleiben immer oben.
@@ -395,7 +426,11 @@ export function createViews(context) {
   function income() {
     const items = sortNewest(data().transactions.filter(item => item.type === "income"));
     return `
-      <div class="section-title"><h2 class="page-heading">Einnahmen</h2></div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Einnahmen</h2>
+      </div>
+      <div class="section-title page-title-spacer"></div>
       <div class="card transaction-list">
         ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Einnahmen</div>'}
       </div>
@@ -405,7 +440,11 @@ export function createViews(context) {
   function expenses() {
     const items = sortNewest(data().transactions.filter(item => item.type === "expense"));
     return `
-      <div class="section-title"><h2 class="page-heading">Ausgaben</h2></div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Ausgaben</h2>
+      </div>
+      <div class="section-title page-title-spacer"></div>
       <div class="card transaction-list">
         ${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Ausgaben</div>'}
       </div>

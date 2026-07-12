@@ -82,3 +82,6 @@ svg{
     transition-duration:.01ms!important;
   }
 }
+
+html{scroll-behavior:smooth}
+body{-webkit-tap-highlight-color:transparent}

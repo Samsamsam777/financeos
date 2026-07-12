@@ -24,6 +24,7 @@ export const icons = {
   edit: svg('<path d="m4 16-1 5 5-1L19 9l-4-4Z"/><path d="m13 7 4 4"/>'),
   trash: svg('<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>'),
   backup: svg('<path d="M12 3v12M7 8l5-5 5 5M5 20h14"/>'),
+  back: svg('<path d="M15 18l-6-6 6-6"/>'),
   arrange: svg('<path d="M8 5h11M8 12h11M8 19h11M3 5h.01M3 12h.01M3 19h.01"/>'),
   cart: svg('<path d="M3 4h2l2.2 10.2h9.9L20 7H7"/><circle cx="9" cy="19" r="1.4"/><circle cx="17" cy="19" r="1.4"/>'),
   building: svg('<path d="M5 21V4h10v17M15 9h4v12M8 8h4M8 12h4M8 16h4"/>'),

@@ -11,6 +11,7 @@ import { createViews } from "./views.js";
 
 let data = loadData();
 let view = "dashboard";
+const viewHistory = [];
 let filters = { query: "", account: "", category: "", person: "", sort: "newest" };
 
 const app = document.querySelector("#app");
@@ -62,14 +63,20 @@ function shell(content) {
   bindHeaderBehavior();
 }
 
-function navigate(target) {
-  if (target === "add") {
-    openAddTransactionSheet();
-    return;
-  }
+function goBack() {
+  const target = viewHistory.pop() ?? "dashboard";
+  view = target;
+  haptic("selection");
+  window.scrollTo({ top: 0, behavior: "instant" });
+  render();
+}
+
+function navigate(target, options = {}) {
   if (view === target) return;
+  if (!options.replace) viewHistory.push(view);
   haptic("selection");
   view = target;
+  window.scrollTo({ top: 0, behavior: "instant" });
   render();
 }
 
@@ -101,6 +108,9 @@ function bindNavigation() {
 }
 
 function bindView() {
+  document.querySelectorAll("[data-back]").forEach(button => {
+    button.onclick = () => goBack();
+  });
   bindNavigation();
   document.querySelectorAll("[data-transaction]").forEach(row => {
     row.onclick = event => {

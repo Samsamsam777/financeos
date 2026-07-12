@@ -6,9 +6,11 @@ const reducedMotion = () =>
 export function haptic(type = "selection") {
   const patterns = {
     selection: 8,
-    success: [10, 30, 12],
-    warning: [18, 40, 18],
-    error: [25, 45, 25]
+    light: 8,
+    medium: [10, 22, 10],
+    success: [10, 28, 12],
+    warning: [18, 38, 18],
+    error: [24, 42, 24]
   };
   if ("vibrate" in navigator) {
     try { navigator.vibrate(patterns[type] ?? patterns.selection); } catch {}

@@ -1,5 +1,5 @@
 import { APP_VERSION } from "./constants.js";
-import { animateLoanFills, animateNumber, bindPressFeedback, enterPage, haptic, showToast, staggerRows } from "./motion.js";
+import { animateLoanFills, animateNumber, bindPressFeedback, enterPage, haptic, showToast } from "./motion.js";
 import { icons, loanIcon } from "./icons.js";
 import { detectCategory, euro, loanProgress, today } from "./logic.js";
 import {
@@ -59,7 +59,6 @@ function shell(content) {
     animateNumber(element, Number(element.dataset.animateNumber), value => euro(value));
   });
   animateLoanFills();
-  staggerRows();
 }
 
 function navigate(target) {

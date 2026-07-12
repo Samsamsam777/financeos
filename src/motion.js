@@ -67,7 +67,6 @@ export function animateLoanFills() {
     strip.style.setProperty("--loan-animated-end", "0%");
     requestAnimationFrame(() => {
       strip.style.setProperty("--loan-animated-end", target);
-      setTimeout(() => strip.dataset.animated = "true", 560);
     });
   });
 }
@@ -86,14 +85,5 @@ export function bindPressFeedback(root = document) {
     element.addEventListener("mousedown", press);
     element.addEventListener("mouseup", release);
     element.addEventListener("mouseleave", release);
-  });
-}
-
-
-export function staggerRows(root = document) {
-  if (reducedMotion()) return;
-  root.querySelectorAll(".transaction-row, .loan-strip").forEach((element, index) => {
-    element.style.setProperty("--stagger-index", String(Math.min(index, 10)));
-    element.classList.add("stagger-enter");
   });
 }

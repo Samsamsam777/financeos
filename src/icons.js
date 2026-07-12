@@ -28,7 +28,7 @@ export const icons = {
 };
 
 export function loanIcon(type) {
-  const map = {
+  const mapping = {
     auto: "car",
     home: "house",
     consumer: "consumer",
@@ -38,7 +38,7 @@ export function loanIcon(type) {
     card: "card",
     generic: "document"
   };
-  return icons[map[type] ?? type] ?? icons.document;
+  return icons[mapping[type] ?? type] ?? icons.document;
 }
 
 export function merchantVisual(description = "", type = "expense") {

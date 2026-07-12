@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0b1020">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<title>FinanceOS v0.2</title>
+<style>
+:root{
+ --bg:#0b1020;--panel:#141b2f;--panel2:#1a2440;--text:#f7f8fc;--muted:#9aa4b2;
+ --accent:#7667f8;--accent2:#28c7b7;--danger:#ff6b6b;--warn:#f2c14e;--ok:#55d98d;
+ --border:#293654;--radius:20px;--shadow:0 16px 40px rgba(0,0,0,.3)
+}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--text);font-family:Inter,system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+body{min-height:100vh}
+button,input,select,textarea{font:inherit}
+.app{max-width:920px;margin:0 auto;padding:18px 14px 126px}
+.topbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+.brand h1{margin:0;font-size:1.35rem}.brand p{margin:3px 0 0;color:var(--muted);font-size:.82rem}
+.btn,.icon-btn{border:0;border-radius:14px;padding:12px 14px;background:var(--panel2);color:var(--text);font-weight:750}
+.btn.primary{background:linear-gradient(135deg,var(--accent),#4b92ff)}
+.btn.ghost{background:transparent;border:1px solid var(--border)}
+.btn.danger{color:var(--danger);border-color:#55313b}
+.card{background:linear-gradient(180deg,var(--panel),#11182a);border:1px solid var(--border);border-radius:var(--radius);padding:16px;box-shadow:var(--shadow)}
+.grid{display:grid;gap:12px}.grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
+.kpi .label{font-size:.78rem;color:var(--muted)}.kpi .value{font-size:1.45rem;font-weight:850;margin-top:7px}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin:22px 2px 10px}
+.section-title h2{font-size:1rem;margin:0}
+.list{display:flex;flex-direction:column;gap:0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:13px 0;border-bottom:1px solid var(--border)}
+.row:last-child{border-bottom:0}
+.meta,.small{color:var(--muted);font-size:.8rem}
+.amount.negative{color:#ff8c8c}.amount.positive{color:#74e8a7}.amount.pending{color:#ffd978}
+.badge{display:inline-flex;align-items:center;border-radius:999px;padding:5px 9px;background:#2a3551;color:#dce2ff;font-size:.72rem;font-weight:800}
+.badge.warn{background:#46391d;color:#ffd978}
+.progress{height:10px;background:#26304a;border-radius:999px;overflow:hidden}
+.progress span{display:block;height:100%;background:linear-gradient(90deg,var(--accent),var(--accent2))}
+.form{display:grid;gap:12px}
+.field label{display:block;color:var(--muted);font-size:.78rem;margin:0 0 6px}
+.field input,.field select,.field textarea{width:100%;padding:13px 14px;border:1px solid var(--border);border-radius:13px;background:#0f1628;color:var(--text)}
+.search{position:relative}.search input{padding-left:38px}.search span{position:absolute;left:13px;top:12px;color:var(--muted)}
+.empty{text-align:center;color:var(--muted);padding:28px 8px}
+.all-link{width:100%;margin-top:12px}
+.nav{position:fixed;left:0;right:0;bottom:0;background:rgba(11,16,32,.96);backdrop-filter:blur(16px);border-top:1px solid var(--border);z-index:50;padding:10px 8px calc(10px + env(safe-area-inset-bottom))}
+.nav-inner{max-width:920px;margin:0 auto;display:grid;grid-template-columns:repeat(5,1fr);align-items:end}
+.nav button{border:0;background:none;color:var(--muted);padding:10px 2px 8px;font-size:.82rem;font-weight:700;min-height:62px}
+.nav button .nav-icon{font-size:1.45rem;line-height:1.2;margin-bottom:4px}
+.nav button.active{color:white}
+.nav .plus{width:62px;height:62px;min-height:62px;border-radius:50%;background:var(--accent);font-size:2rem;color:#fff;margin:-22px auto 0;box-shadow:0 10px 28px rgba(118,103,248,.45)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.66);display:flex;align-items:flex-end;justify-content:center;z-index:80}
+.sheet{width:100%;max-width:920px;background:var(--panel);border:1px solid var(--border);border-radius:24px 24px 0 0;padding:18px 16px calc(18px + env(safe-area-inset-bottom));max-height:90vh;overflow:auto}
+.notice{padding:12px;border-radius:14px;background:#1d2947;color:#cbd5ff;font-size:.85rem}
+@media(max-width:560px){
+ .kpi .value{font-size:1.2rem}.card{padding:14px}.app{padding-left:12px;padding-right:12px}
+ .nav button{font-size:.78rem}.nav button .nav-icon{font-size:1.35rem}
+}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<script>
+const KEY="financeos_v01";
+const seed={
+ settings:{people:["Gemeinsam","Sam","Partnerin","Unklar"],currency:"EUR"},
+ accounts:[
+  {id:"a1",name:"Gemeinschaftskonto",type:"Girokonto",start:2500},
+  {id:"a2",name:"Kreditkarte",type:"Kreditkarte",start:0},
+  {id:"a3",name:"Bargeld",type:"Bargeld",start:100}
+ ],
+ categories:[
+  {id:"c1",name:"Lebensmittel",budget:450},{id:"c2",name:"Wohnen",budget:1200},
+  {id:"c3",name:"Restaurants",budget:180},{id:"c4",name:"Mobilität",budget:220},
+  {id:"c5",name:"Shopping",budget:200},{id:"c6",name:"Abonnements",budget:80},
+  {id:"c7",name:"Gesundheit",budget:100},{id:"c8",name:"Freizeit",budget:180},
+  {id:"c9",name:"Gehalt",budget:0},{id:"c10",name:"Später zuordnen",budget:0}
+ ],
+ rules:[
+  {needle:"REWE",categoryId:"c1"},{needle:"EDEKA",categoryId:"c1"},
+  {needle:"LIDL",categoryId:"c1"},{needle:"ALDI",categoryId:"c1"},
+  {needle:"SPOTIFY",categoryId:"c6"},{needle:"NETFLIX",categoryId:"c6"},
+  {needle:"DB VERTRIEB",categoryId:"c4"},{needle:"SHELL",categoryId:"c4"},
+  {needle:"AMAZON",categoryId:"c5"},{needle:"GEHALT",categoryId:"c9"}
+ ],
+ transactions:[],
+ loans:[{id:"l1",name:"Autokredit",principal:25000,remaining:14382,rate:420,interest:4.2}]
+};
+function clone(x){return JSON.parse(JSON.stringify(x))}
+function uid(){return crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random()}
+function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
+function seedExamples(d){
+ const dt=new Date().toISOString().slice(0,10);
+ d.transactions=[
+  {id:uid(),createdAt:Date.now()-2000,date:dt,type:"income",amount:3200,description:"Gehalt",accountId:"a1",categoryId:"c9",person:"Gemeinsam",status:"done"},
+  {id:uid(),createdAt:Date.now()-1000,date:dt,type:"expense",amount:74.6,description:"REWE Markt",accountId:"a1",categoryId:"c1",person:"Gemeinsam",status:"done"},
+  {id:uid(),createdAt:Date.now(),date:dt,type:"expense",amount:47.9,description:"PAYPAL *M32H8KD",accountId:"a1",categoryId:"c10",person:"Unklar",status:"pending"}
+ ]
+}
+function load(){
+ try{
+  const x=localStorage.getItem(KEY);
+  if(x){
+   const d=JSON.parse(x);
+   d.transactions=(d.transactions||[]).map((t,i)=>({...t,createdAt:t.createdAt||Date.parse(t.date)||i}));
+   return d
+  }
+ }catch(e){}
+ const d=clone(seed);seedExamples(d);save(d);return d
+}
+const euro=n=>new Intl.NumberFormat("de-DE",{style:"currency",currency:"EUR"}).format(Number(n||0));
+const today=()=>new Date().toISOString().slice(0,10);
+const monthKey=d=>String(d).slice(0,7);
+let data=load(),view="today",query="";
+const app=document.getElementById("app");
+const cat=id=>data.categories.find(x=>x.id===id);
+const acc=id=>data.accounts.find(x=>x.id===id);
+function detect(desc){
+ const t=desc.toUpperCase();const r=data.rules.find(x=>t.includes(x.needle.toUpperCase()));
+ return r?r.categoryId:data.categories.find(c=>c.name==="Später zuordnen").id
+}
+function sortNewest(list){
+ return [...list].sort((a,b)=>{
+  const dateCompare=String(b.date).localeCompare(String(a.date));
+  if(dateCompare!==0)return dateCompare;
+  return Number(b.createdAt||0)-Number(a.createdAt||0)
+ })
+}
+function balance(id){
+ const a=acc(id);let s=Number(a?.start||0);
+ data.transactions.filter(t=>t.accountId===id).forEach(t=>s+=t.type==="income"?Number(t.amount):t.type==="expense"?-Number(t.amount):0);
+ return s
+}
+function summary(){
+ const m=today().slice(0,7),tx=data.transactions.filter(t=>monthKey(t.date)===m);
+ const income=tx.filter(t=>t.type==="income").reduce((s,t)=>s+Number(t.amount),0);
+ const expense=tx.filter(t=>t.type==="expense").reduce((s,t)=>s+Number(t.amount),0);
+ return {income,expense,available:income-expense,rate:income?(income-expense)/income:0}
+}
+function navBtn(id,label,icon){
+ return `<button data-nav="${id}" class="${view===id?"active":""}"><div class="nav-icon">${icon}</div>${label}</button>`
+}
+function shell(content){
+ app.innerHTML=`<main class="app"><div class="topbar"><div class="brand"><h1>FinanceOS</h1><p>Privat. Offline. Dein Haushalt.</p></div><button class="icon-btn" data-nav="settings">⚙</button></div>${content}</main>
+ <nav class="nav"><div class="nav-inner">${navBtn("today","Heute","⌂")}${navBtn("transactions","Buchungen","≡")}<button class="plus" data-nav="add">＋</button>${navBtn("budgets","Budgets","◔")}${navBtn("more","Mehr","•••")}</div></nav>`;
+ bindNav()
+}
+function bindNav(){document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{view=b.dataset.nav;render()})}
+function kpi(label,value){return `<div class="card kpi"><div class="label">${label}</div><div class="value">${value}</div></div>`}
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]))}
+function txRow(t,withAction=false){
+ const pending=t.status==="pending";
+ const cls=pending?"pending":t.type==="income"?"positive":"negative";
+ return `<div class="row"><div><strong>${pending?"◌ ":""}${escapeHtml(t.description)}</strong><div class="meta">${cat(t.categoryId)?.name||"—"} · ${acc(t.accountId)?.name||"—"} · ${t.person||"Gemeinsam"}</div></div>
+ <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:6px;padding:7px 9px">Bearbeiten</button>`:""}</div></div>`
+}
+function renderToday(){
+ const s=summary(),pending=data.transactions.filter(t=>t.status==="pending");
+ const recent=sortNewest(data.transactions).slice(0,10);
+ const loan=data.loans[0];
+ shell(`<div class="grid two">${kpi("Verfügbar",euro(s.available))}${kpi("Ausgaben",euro(s.expense))}${kpi("Einnahmen",euro(s.income))}${kpi("Sparquote",Math.round(s.rate*100)+" %")}</div>
+ <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
+ <div class="card">
+  <div class="row"><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div><button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button></div>
+  ${loan?`<div class="row"><div style="flex:1"><strong>${loan.name}</strong><div class="meta">${euro(loan.principal-loan.remaining)} von ${euro(loan.principal)} abbezahlt</div><div class="progress" style="margin-top:8px"><span style="width:${Math.min(100,(loan.principal-loan.remaining)/loan.principal*100)}%"></span></div></div><div>${Math.round((loan.principal-loan.remaining)/loan.principal*100)} %</div></div>`:""}
+ </div>
+ <div class="section-title"><h2>Konten</h2></div><div class="card list">${data.accounts.map(a=>`<div class="row"><div><strong>${a.name}</strong><div class="meta">${a.type}</div></div><strong>${euro(balance(a.id))}</strong></div>`).join("")}</div>
+ <div class="section-title"><h2>Letzte Buchungen</h2><span class="small">max. 10</span></div>
+ <div class="card list">${recent.map(t=>txRow(t)).join("")||'<div class="empty">Keine Buchungen</div>'}</div>
+ <button class="btn ghost all-link" data-nav="transactions">Alle Buchungen anzeigen →</button>`);
+}
+function renderTransactions(){
+ let tx=sortNewest(data.transactions);
+ if(query.trim()){const q=query.toLowerCase();tx=tx.filter(t=>t.description.toLowerCase().includes(q)||String(t.amount).includes(q)||(cat(t.categoryId)?.name||"").toLowerCase().includes(q))}
+ shell(`<div class="section-title"><h2>Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
+ <div class="field search"><span>⌕</span><input id="search" value="${escapeHtml(query)}" placeholder="Händler, Kategorie oder Betrag"></div>
+ <div class="card list" style="margin-top:12px">${tx.map(t=>txRow(t,true)).join("")||'<div class="empty">Keine Treffer</div>'}</div>`);
+ document.getElementById("search").oninput=e=>{query=e.target.value;renderTransactions()};
+ document.querySelectorAll("[data-edit]").forEach(b=>b.onclick=()=>openEdit(b.dataset.edit))
+}
+function field(label,control){return `<div class="field"><label>${label}</label>${control}</div>`}
+function renderAdd(){
+ shell(`<div class="section-title"><h2>Neue Buchung</h2></div><div class="card"><form id="txForm" class="form">
+ ${field("Datum",`<input name="date" type="date" value="${today()}" required>`)}
+ ${field("Typ",`<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
+ ${field("Betrag",`<input name="amount" type="number" inputmode="decimal" step="0.01" placeholder="0,00" required>`)}
+ ${field("Beschreibung",`<input name="description" placeholder="z. B. REWE Markt" required>`)}
+ ${field("Konto",`<select name="accountId">${data.accounts.map(a=>`<option value="${a.id}">${a.name}</option>`).join("")}</select>`)}
+ ${field("Kategorie",`<select name="categoryId"><option value="">Automatisch erkennen</option>${data.categories.map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select>`)}
+ ${field("Person (optional)",`<select name="person">${data.settings.people.map(p=>`<option>${p}</option>`).join("")}</select>`)}
+ <button class="btn primary">Buchung speichern</button></form></div>`);
+ document.getElementById("txForm").onsubmit=e=>{
+  e.preventDefault();const f=new FormData(e.target),description=f.get("description"),categoryId=f.get("categoryId")||detect(description);
+  data.transactions.push({id:uid(),createdAt:Date.now(),date:f.get("date"),type:f.get("type"),amount:Number(f.get("amount")),description,accountId:f.get("accountId"),categoryId,person:f.get("person"),status:cat(categoryId)?.name==="Später zuordnen"?"pending":"done"});
+  save(data);view="today";render()
+ }
+}
+function renderPending(){
+ const list=sortNewest(data.transactions.filter(t=>t.status==="pending"));
+ shell(`<div class="section-title"><h2>Später zuordnen</h2><span class="badge warn">${list.length} offen</span></div>
+ <div class="card list">${list.map(t=>`<div class="row"><div><strong>${escapeHtml(t.description)}</strong><div class="meta">${euro(t.amount)} · ${t.person}</div></div><button class="btn" data-resolve="${t.id}">Zuordnen</button></div>`).join("")||'<div class="empty">Alles erledigt</div>'}</div>`);
+ document.querySelectorAll("[data-resolve]").forEach(b=>b.onclick=()=>openResolve(b.dataset.resolve))
+}
+function renderBudgets(){
+ const m=today().slice(0,7),tx=data.transactions.filter(t=>monthKey(t.date)===m&&t.type==="expense");
+ shell(`<div class="section-title"><h2>Budgets</h2><span class="small">${m}</span></div><div class="card list">${data.categories.filter(c=>c.budget>0).map(c=>{const used=tx.filter(t=>t.categoryId===c.id).reduce((s,t)=>s+Number(t.amount),0),pct=Math.min(100,c.budget?used/c.budget*100:0);return `<div class="row"><div style="flex:1"><strong>${c.name}</strong><div class="meta">${euro(used)} von ${euro(c.budget)}</div><div class="progress" style="margin-top:8px"><span style="width:${pct}%"></span></div></div><div>${Math.round(pct)} %</div></div>`}).join("")}</div>`)
+}
+function renderMore(){shell(`<div class="section-title"><h2>Mehr</h2></div><div class="grid"><button class="card btn" data-nav="pending">Später zuordnen</button><button class="card btn" data-nav="loans">Kredite</button><button class="card btn" data-nav="settings">Einstellungen & Backup</button></div>`)}
+function renderLoans(){
+ shell(`<div class="section-title"><h2>Kredite</h2></div><div class="card list">${data.loans.map(l=>{const paid=l.principal-l.remaining,pct=paid/l.principal*100;return `<div><div class="row"><div><strong>${l.name}</strong><div class="meta">Rate ${euro(l.rate)} · ${l.interest}% Zins</div></div><strong>${euro(l.remaining)}</strong></div><div class="progress"><span style="width:${pct}%"></span></div><div class="small" style="margin-top:8px">${euro(paid)} abbezahlt · ${Math.round(pct)} %</div></div>`}).join("")}</div>`)
+}
+function renderSettings(){
+ shell(`<div class="section-title"><h2>Einstellungen & Daten</h2></div>
+ <div class="card form"><button class="btn primary" id="backup">Backup erstellen</button><label class="btn ghost" style="text-align:center">Backup wiederherstellen<input id="restore" type="file" accept="application/json" hidden></label>
+ <button class="btn ghost" id="addRule">Händlerregel hinzufügen</button><button class="btn ghost" id="addCategory">Kategorie hinzufügen</button><button class="btn ghost" id="addAccount">Konto hinzufügen</button>
+ <button class="btn danger ghost" id="reset">Beispieldaten zurücksetzen</button><div class="notice">FinanceOS v0.2 · Backups auf dem iPhone über „In Dateien sichern“ in iCloud Drive ablegen.</div></div>`);
+ document.getElementById("backup").onclick=doBackup;
+ document.getElementById("restore").onchange=doRestore;
+ document.getElementById("reset").onclick=()=>{if(confirm("Wirklich alles zurücksetzen?")){localStorage.removeItem(KEY);location.reload()}};
+ document.getElementById("addRule").onclick=addRule;
+ document.getElementById("addCategory").onclick=addCategory;
+ document.getElementById("addAccount").onclick=addAccount
+}
+function openEdit(id){
+ const t=data.transactions.find(x=>x.id===id);if(!t)return;
+ showModal(`<h2>Buchung bearbeiten</h2><form id="editForm" class="form">
+ ${field("Beschreibung",`<input name="description" value="${escapeHtml(t.description)}">`)}
+ ${field("Betrag",`<input name="amount" type="number" step="0.01" value="${t.amount}">`)}
+ ${field("Kategorie",`<select name="categoryId">${data.categories.map(c=>`<option value="${c.id}" ${c.id===t.categoryId?"selected":""}>${c.name}</option>`).join("")}</select>`)}
+ ${field("Person",`<select name="person">${data.settings.people.map(p=>`<option ${p===t.person?"selected":""}>${p}</option>`).join("")}</select>`)}
+ <button class="btn primary">Speichern</button><button type="button" class="btn danger ghost" id="deleteTx">Löschen</button></form>`);
+ document.getElementById("editForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);t.description=f.get("description");t.amount=Number(f.get("amount"));t.categoryId=f.get("categoryId");t.person=f.get("person");t.status=cat(t.categoryId)?.name==="Später zuordnen"?"pending":"done";save(data);closeModal();renderTransactions()};
+ document.getElementById("deleteTx").onclick=()=>{if(confirm("Buchung löschen?")){data.transactions=data.transactions.filter(x=>x.id!==id);save(data);closeModal();renderTransactions()}}
+}
+function openResolve(id){
+ const t=data.transactions.find(x=>x.id===id);
+ showModal(`<h2>Zuordnen</h2><div class="small">${escapeHtml(t.description)} · ${euro(t.amount)}</div><form id="resolveForm" class="form" style="margin-top:14px">
+ ${field("Kategorie",`<select name="categoryId">${data.categories.filter(c=>c.name!=="Später zuordnen").map(c=>`<option value="${c.id}">${c.name}</option>`).join("")}</select>`)}
+ ${field("Person",`<select name="person">${data.settings.people.map(p=>`<option ${p===t.person?"selected":""}>${p}</option>`).join("")}</select>`)}
+ <label class="small"><input type="checkbox" name="learn" checked> Händlerregel aus dieser Beschreibung lernen</label><button class="btn primary">Speichern</button></form>`);
+ document.getElementById("resolveForm").onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);t.categoryId=f.get("categoryId");t.person=f.get("person");t.status="done";if(f.get("learn"))data.rules.push({needle:t.description.toUpperCase(),categoryId:t.categoryId});save(data);closeModal();renderPending()}
+}
+function showModal(content){document.body.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="sheet"><div style="display:flex;justify-content:flex-end"><button class="icon-btn" id="closeModal">✕</button></div>${content}</div></div>`);document.getElementById("closeModal").onclick=closeModal}
+function closeModal(){document.getElementById("modal")?.remove()}
+function doBackup(){const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"}),a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`financeos-backup-${today()}.json`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}
+async function doRestore(e){try{const txt=await e.target.files[0].text(),obj=JSON.parse(txt);if(!obj.accounts||!obj.transactions)throw Error("Ungültiges Backup");data=obj;save(data);view="today";render()}catch(err){alert(err.message)}}
+function addRule(){const needle=prompt("Suchbegriff, z. B. PAYPAL *HÄNDLER");if(!needle)return;const choice=prompt(data.categories.map(c=>`${c.id} = ${c.name}`).join("\n")+"\n\nKategorie-ID:");if(!cat(choice))return alert("Ungültige Kategorie");data.rules.push({needle,categoryId:choice});save(data);alert("Regel gespeichert")}
+function addCategory(){const name=prompt("Name der Kategorie");if(!name)return;const budget=Number(prompt("Monatsbudget (0 erlaubt)","0")||0);data.categories.push({id:uid(),name,budget});save(data);alert("Kategorie gespeichert")}
+function addAccount(){const name=prompt("Kontoname");if(!name)return;const start=Number(prompt("Startsaldo","0")||0);data.accounts.push({id:uid(),name,type:"Sonstiges",start});save(data);alert("Konto gespeichert")}
+function render(){if(view==="today")renderToday();else if(view==="transactions")renderTransactions();else if(view==="add")renderAdd();else if(view==="pending")renderPending();else if(view==="budgets")renderBudgets();else if(view==="loans")renderLoans();else if(view==="settings")renderSettings();else renderMore();bindNav()}
+render();
+</script>
+</body>
+</html>

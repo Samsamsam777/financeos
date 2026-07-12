@@ -11,13 +11,16 @@ export function showSheet(content) {
     <div class="modal" id="modal">
       <div class="sheet sheet-enter">
         <div class="sheet-toolbar">
-          <button class="icon-btn" id="closeModal" aria-label="Schließen">×</button>
+          <button class="icon-btn sheet-close" id="closeModal" aria-label="Schließen"><span></span><span></span></button>
         </div>
         ${content}
       </div>
     </div>
   `);
   document.querySelector("#closeModal").onclick = closeSheet;
+  document.querySelector("#modal").onclick = event => {
+    if (event.target.id === "modal") closeSheet();
+  };
 }
 
 export function closeSheet() {

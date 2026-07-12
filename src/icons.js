@@ -52,16 +52,30 @@ export function loanIcon(type) {
 
 export function merchantVisual(description = "", type = "expense") {
   const value = description.toUpperCase();
-  if (value.includes("PAYPAL")) return { mark: "P", className: "paypal" };
-  if (value.includes("REWE")) return { mark: "REWE", className: "rewe" };
-  if (value.includes("AMAZON")) return { mark: "a", className: "amazon" };
-  if (value.includes("SPOTIFY")) return { mark: "●", className: "spotify" };
-  if (value.includes("NETFLIX")) return { mark: "N", className: "netflix" };
+  const spotify = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 9.2c4.7-1.5 9.8-1 14 1.2"/><path d="M6.3 13c3.9-1.1 8.1-.7 11.5 1.1"/><path d="M7.5 16.5c3-.8 6.2-.5 8.9.8"/></svg>';
+  const apple = '<span class="brand-glyph">●</span>';
+  const paypal = '<span class="brand-word brand-paypal">P</span>';
+  const rewe = '<span class="brand-word brand-rewe">REWE</span>';
+  const lidl = '<span class="brand-word brand-lidl">LIDL</span>';
+  const netflix = '<span class="brand-word brand-netflix">N</span>';
+  const amazon = '<span class="brand-word brand-amazon">a</span>';
+
+  if (value.includes("APPLE")) return { mark: apple, className: "apple", html: true };
+  if (value.includes("PAYPAL")) return { mark: paypal, className: "paypal", html: true };
+  if (value.includes("REWE")) return { mark: rewe, className: "rewe", html: true };
+  if (value.includes("LIDL")) return { mark: lidl, className: "lidl", html: true };
+  if (value.includes("AMAZON")) return { mark: amazon, className: "amazon", html: true };
+  if (value.includes("SPOTIFY")) return { mark: spotify, className: "spotify", html: true };
+  if (value.includes("NETFLIX")) return { mark: netflix, className: "netflix", html: true };
   if (value.includes("SHELL") || value.includes("ARAL") || value.includes("TANK")) {
-    return { mark: "⛽", className: "fuel" };
+    return { mark: icons.transport, className: "fuel", html: true };
   }
-  if (type === "income") return { mark: "↗", className: "income" };
-  return { mark: description.trim().charAt(0).toUpperCase() || "?", className: "default" };
+  if (type === "income") return { mark: icons.income, className: "income", html: true };
+  return {
+    mark: description.trim().charAt(0).toUpperCase() || "?",
+    className: "default",
+    html: false
+  };
 }
 
 

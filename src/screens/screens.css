@@ -173,3 +173,90 @@
 .sheet .page-heading{
   font-size:var(--font-title)!important;
 }
+
+
+/* FinanceOS 4.2 screen polish */
+.transactions-heading{
+  align-items:center;
+}
+.compact-new{
+  min-height:40px;
+  padding:8px 13px;
+  display:flex;
+  align-items:center;
+  gap:6px;
+  border-radius:var(--radius-md);
+}
+.compact-new svg{width:16px;height:16px}
+
+.filters{
+  padding:14px;
+  border-radius:var(--radius-lg);
+}
+.filters-title{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  margin-bottom:12px;
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.filters-title span{
+  color:var(--color-accent);
+}
+.filters-title svg{width:15px;height:15px}
+.filters .form{gap:12px}
+.filters .grid{gap:12px}
+
+.transaction-list{
+  padding-inline:14px;
+}
+.transaction-row{
+  min-height:58px;
+  padding:10px 0;
+}
+.transaction-copy strong{
+  font-size:var(--font-headline);
+}
+.transaction-copy .meta{
+  margin-top:3px;
+}
+
+.entry-sheet .sheet-heading{
+  margin-bottom:14px;
+}
+.sheet-form-card{
+  padding:14px;
+  background:
+    linear-gradient(160deg,rgba(42,48,65,.96),rgba(25,31,45,.98));
+}
+.entry-form{
+  gap:13px;
+}
+.entry-form .btn.primary{
+  min-height:50px;
+  border-radius:16px;
+  font-size:.9rem;
+}
+
+/* Known-brand logo geometry */
+.merchant-icon.lidl{
+  background:#1c4f9d;
+}
+.merchant-icon.spotify{
+  background:#1ed760;
+  color:#07130b;
+}
+.merchant-icon.spotify svg{
+  width:23px;
+  height:23px;
+}
+
+/* Cards are visual foreground; ambient stays behind */
+.grouped-card,
+.transaction-list,
+.filters,
+.page-card{
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+}

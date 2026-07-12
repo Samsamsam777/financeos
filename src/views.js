@@ -22,7 +22,7 @@ export function createViews(context) {
     return `
       <div class="transaction-row" data-transaction="${transaction.id}">
         <div class="transaction-left">
-          <div class="merchant-icon ${visual.className}">${esc(visual.mark)}</div>
+          <div class="merchant-icon ${visual.className}">${visual.html ? visual.mark : esc(visual.mark)}</div>
           <div class="transaction-copy">
             <strong>${esc(transaction.description)}</strong>
             <div class="meta">${esc(category(transaction.categoryId)?.name ?? "—")} · ${esc(account(transaction.accountId)?.name ?? "—")}</div>
@@ -176,8 +176,12 @@ export function createViews(context) {
   function transactions(filters) {
     const items = filterTransactions(data(), filters);
     return `
-      <div class="section-title"><h2 class="page-heading">Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
+      <div class="section-title transactions-heading">
+        <h2 class="page-heading">Buchungen</h2>
+        <button class="btn primary compact-new" data-open-add>${icons.plus}<span>Neu</span></button>
+      </div>
       <div class="card page-card filters">
+        <div class="filters-title"><span>${icons.search}</span><strong>Filtern</strong></div>
         <div class="form">
           ${field("Suche", `<input id="filterQuery" value="${esc(filters.query)}" placeholder="Händler, Kategorie oder Betrag">`)}
           <div class="grid two">

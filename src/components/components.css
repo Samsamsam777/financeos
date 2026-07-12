@@ -648,3 +648,225 @@ button.is-pressed,
 
 .loan-detail-row{min-height:68px}
 .loan-detail-group{margin-top:var(--space-2)}
+
+
+/* =========================================================
+   FinanceOS 4.2 — Final Polish
+   ========================================================= */
+
+/* Header: deliberate iOS-like navigation material */
+.app-header{
+  min-height:52px;
+  padding-top:max(10px,env(safe-area-inset-top));
+  padding-bottom:8px;
+  background:transparent;
+  box-shadow:none;
+}
+.brand h1{
+  font-size:clamp(1.55rem,7vw,2rem);
+  font-weight:680;
+  letter-spacing:-.045em;
+}
+.app-header.is-scrolled{
+  background:rgba(7,10,21,.88);
+  border-bottom-color:rgba(255,255,255,.065);
+  box-shadow:0 10px 34px rgba(0,0,0,.18);
+  backdrop-filter:blur(24px) saturate(145%);
+  -webkit-backdrop-filter:blur(24px) saturate(145%);
+}
+.app-header.is-scrolled .brand h1{
+  font-size:clamp(1.02rem,3.8vw,1.16rem);
+  transition:font-size var(--motion-normal) var(--ease-standard);
+}
+
+/* Material: cards dominate, ambient remains atmosphere */
+.material-card,
+.card{
+  border-color:rgba(255,255,255,.085);
+  background:
+    linear-gradient(158deg,rgba(46,51,67,.985),rgba(27,32,46,.99));
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.045),
+    inset 0 -1px 0 rgba(0,0,0,.10),
+    var(--shadow-raised);
+}
+
+/* Softer Apple-like progress */
+.slim-progress{
+  height:3px;
+  background:rgba(255,255,255,.085);
+}
+.slim-progress-fill{
+  background:
+    linear-gradient(
+      90deg,
+      #784ce9 0%,
+      #7262ec 44%,
+      #5b86e8 70%,
+      #45b4ce 92%,
+      #54cf91 100%
+    );
+  filter:saturate(.92);
+  transition:
+    transform var(--motion-progress) var(--ease-spring),
+    filter var(--motion-normal) ease;
+}
+
+/* Smaller, medium section hierarchy */
+.section-heading,
+.section-title h2{
+  font-weight:var(--weight-medium);
+  letter-spacing:-.004em;
+}
+.page-heading{
+  font-weight:700!important;
+}
+
+/* iOS-like form controls */
+.field label{
+  margin-left:2px;
+  margin-bottom:6px;
+  color:rgba(207,211,223,.70);
+  font-size:var(--font-caption);
+  font-weight:var(--weight-medium);
+}
+.field input,
+.field select,
+.field textarea{
+  min-height:48px;
+  padding:12px 14px;
+  border:0;
+  border-radius:var(--radius-md);
+  color:var(--color-text-1);
+  background:rgba(13,18,31,.92);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.025);
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  border:0;
+  outline:none;
+  background:rgba(16,22,37,.98);
+  box-shadow:
+    inset 0 0 0 1.5px var(--color-focus),
+    0 0 0 3px var(--color-focus-ring);
+}
+.field select{
+  background-color:rgba(13,18,31,.92);
+  background-position:
+    calc(100% - 18px) calc(50% - 3px),
+    calc(100% - 13px) calc(50% - 3px);
+  background-size:4px 4px,4px 4px;
+}
+
+/* Built-in known merchant marks */
+.merchant-icon svg{
+  width:21px;
+  height:21px;
+  stroke-width:2;
+}
+.merchant-icon.apple{
+  color:#fff;
+  background:linear-gradient(145deg,#5b6070,#282d39);
+}
+.merchant-icon.apple .brand-glyph{
+  width:15px;
+  height:18px;
+  display:block;
+  position:relative;
+  border-radius:48% 48% 44% 44%;
+  background:currentColor;
+}
+.merchant-icon.apple .brand-glyph::before{
+  content:"";
+  position:absolute;
+  width:7px;
+  height:4px;
+  right:-1px;
+  top:-4px;
+  border-radius:70% 10% 70% 10%;
+  background:currentColor;
+  transform:rotate(-28deg);
+}
+.merchant-icon.apple .brand-glyph::after{
+  content:"";
+  position:absolute;
+  width:5px;
+  height:8px;
+  right:-2px;
+  top:5px;
+  border-radius:50%;
+  background:#343946;
+}
+.brand-word{font-weight:800;line-height:1}
+.brand-rewe{font-size:.47rem;letter-spacing:.02em}
+.brand-lidl{font-size:.45rem;color:#2258a8;background:#f7dc28;border-radius:50%;padding:7px 3px}
+.brand-paypal{font-size:1rem}
+.brand-netflix{font-size:1rem;color:#ff3046}
+.brand-amazon{font-size:1rem;color:#ffb74d}
+
+/* Unified settings rows */
+.settings-row{
+  min-height:54px;
+}
+.settings-icon{
+  width:30px;
+  height:30px;
+  border-radius:10px;
+}
+
+/* Sheet material and controls */
+.modal{
+  backdrop-filter:blur(6px);
+  -webkit-backdrop-filter:blur(6px);
+}
+.sheet{
+  background:
+    linear-gradient(165deg,rgba(31,38,54,.99),rgba(22,27,40,.995));
+  border:1px solid rgba(255,255,255,.075);
+  box-shadow:var(--shadow-sheet);
+}
+.sheet-toolbar{
+  min-height:36px;
+}
+.sheet-close{
+  width:36px;
+  height:36px;
+  position:relative;
+  border-radius:50%;
+  background:rgba(255,255,255,.08);
+}
+.sheet-close span{
+  position:absolute;
+  width:15px;
+  height:1.5px;
+  border-radius:999px;
+  background:currentColor;
+}
+.sheet-close span:first-child{transform:rotate(45deg)}
+.sheet-close span:last-child{transform:rotate(-45deg)}
+
+/* Motion */
+.stagger-item{
+  animation:stagger-in 260ms var(--ease-standard) both;
+  animation-delay:calc(var(--stagger-index) * var(--motion-stagger));
+}
+@keyframes stagger-in{
+  from{opacity:0;transform:translate3d(0,5px,0)}
+  to{opacity:1;transform:none}
+}
+.nav .plus.is-released{
+  animation:fab-release var(--motion-fab) var(--ease-spring);
+}
+@keyframes fab-release{
+  0%{transform:translateY(-17px) scale(.95)}
+  58%{transform:translateY(-17px) scale(1.045)}
+  100%{transform:translateY(-17px) scale(1)}
+}
+[data-navigation-direction="back"] .page-enter{
+  animation-name:page-enter-back;
+}
+@keyframes page-enter-back{
+  from{opacity:0;transform:translate3d(-8px,0,0)}
+  to{opacity:1;transform:none}
+}

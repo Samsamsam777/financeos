@@ -52,3 +52,17 @@ FinanceOS 4.1 Refinement:
 - Kreditdetailseite verwendet dieselbe Komponentenfamilie
 - Buchungsfilter und Buchungsabstände verfeinert
 - Motion- und Haptik-Abstraktion vereinheitlicht
+
+
+FinanceOS 4.2 Final Polish:
+- Header vollständig verfeinert: transparent im Ruhezustand, kompaktes Material beim Scrollen
+- Kartenmaterial mit klarerer Tiefe
+- weichere, dünnere Progress Bars
+- Mehr-Menü bleibt GroupedCard
+- Filter und Formularfelder vollständig iOS-artig gestaltet
+- globale Typografie 5–8 % verkleinert
+- Section Header leichter und eleganter
+- bekannte Händler erhalten eingebaute Offline-Marken
+- Stagger-, Seiten-, Progress- und FAB-Mikrointeraktionen
+- Haptik-Abstraktion auf unterstützten Geräten
+- Plus öffnet immer das gemeinsame FinanceOS-Bottom-Sheet

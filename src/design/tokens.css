@@ -39,13 +39,13 @@
   --radius-fab:50%;
 
   /* Typography */
-  --font-display:clamp(1.50rem,5vw,1.70rem);
-  --font-title:clamp(1.16rem,4vw,1.28rem);
-  --font-section:.90rem;
-  --font-headline:.86rem;
-  --font-body:.80rem;
-  --font-caption:.69rem;
-  --font-micro:.64rem;
+  --font-display:clamp(1.42rem,4.7vw,1.60rem);
+  --font-title:clamp(1.08rem,3.7vw,1.20rem);
+  --font-section:.84rem;
+  --font-headline:.81rem;
+  --font-body:.76rem;
+  --font-caption:.65rem;
+  --font-micro:.61rem;
 
   --weight-regular:450;
   --weight-medium:560;
@@ -61,7 +61,7 @@
   --icon-lg:24px;
 
   /* Material */
-  --shadow-card:0 12px 30px rgba(0,0,0,.10);
+  --shadow-card:0 14px 34px rgba(0,0,0,.18);
   --shadow-floating:0 16px 38px rgba(111,72,244,.34);
   --shadow-sheet:0 -18px 46px rgba(0,0,0,.30);
   --blur-header:20px;
@@ -73,13 +73,15 @@
   --motion-fast:160ms;
   --motion-normal:220ms;
   --motion-sheet:280ms;
-  --motion-progress:520ms;
+  --motion-progress:620ms;
+  --motion-stagger:18ms;
+  --motion-fab:360ms;
   --ease-standard:cubic-bezier(.2,.8,.2,1);
   --ease-spring:cubic-bezier(.22,1,.36,1);
 
   --color-surface-input:#111725;
   --color-focus:#865cff;
   --color-focus-ring:rgba(134,92,255,.30);
-  --shadow-raised:0 16px 38px rgba(0,0,0,.16);
+  --shadow-raised:0 18px 42px rgba(0,0,0,.24);
   --shadow-overlay:0 20px 52px rgba(0,0,0,.30);
 }

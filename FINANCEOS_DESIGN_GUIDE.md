@@ -710,3 +710,27 @@ Karten verwenden Raised Surface und einen sehr zurückhaltenden Schatten.
 Header und Navigation sind Overlay-Material.
 
 Bottom Sheets verwenden Sheet-Material.
+
+
+# FinanceOS 4.2 — Final Polish
+
+## Typografie
+
+Die globale Skala wurde um ungefähr 5–8 % reduziert. Finanzwerte behalten ihre
+Priorität. Abschnittstitel verwenden Medium/Semibold statt schwerem Bold.
+
+## Händleridentität
+
+Bekannte Händler verwenden eingebaute lokale Marken. Es werden keine externen
+Tracker oder Logo-Dienste geladen. Unbekannte Händler erhalten weiterhin eine
+Initiale.
+
+## Motion
+
+Listen werden dezent gestaffelt eingeblendet. Der Floating Action Button federt
+beim Loslassen zurück. Seitenbewegung berücksichtigt die Navigationsrichtung.
+
+## Freeze
+
+Dashboard-Struktur, Dashboard-Kreditlayout, Navigation, Plus-Button und
+Ambient-Hintergrund bleiben strukturell eingefroren.

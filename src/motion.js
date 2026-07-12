@@ -22,6 +22,8 @@ export function animateNumber(element, endValue, formatter, duration = MOTION.nu
   element.dataset.animating = "true";
   if (reducedMotion()) {
     element.textContent = formatter(endValue);
+    element.dataset.value = String(endValue);
+    element.dataset.animating = "false";
     return;
   }
   const start = performance.now();
@@ -75,14 +77,28 @@ export function bindPressFeedback(root = document) {
     if (element.dataset.pressBound) return;
     element.dataset.pressBound = "true";
 
-    const press = () => element.classList.add("is-pressed");
-    const release = () => element.classList.remove("is-pressed");
+    const press = () => {
+      element.classList.remove("is-released");
+      element.classList.add("is-pressed");
+      if (element.classList.contains("plus")) haptic("light");
+    };
 
-    element.addEventListener("touchstart", press, { passive: true });
-    element.addEventListener("touchend", release, { passive: true });
-    element.addEventListener("touchcancel", release, { passive: true });
-    element.addEventListener("mousedown", press);
-    element.addEventListener("mouseup", release);
-    element.addEventListener("mouseleave", release);
+    const release = () => {
+      const wasPressed = element.classList.contains("is-pressed");
+      element.classList.remove("is-pressed");
+      if (!wasPressed) return;
+      element.classList.add("is-released");
+      setTimeout(() => element.classList.remove("is-released"), 360);
+    };
+
+    element.addEventListener("pointerdown", press, { passive: true });
+    element.addEventListener("pointerup", release, { passive: true });
+    element.addEventListener("pointercancel", release, { passive: true });
+    element.addEventListener("pointerleave", release, { passive: true });
+  });
+
+  root.querySelectorAll(".transaction-row, .grouped-row").forEach((element, index) => {
+    element.style.setProperty("--stagger-index", String(Math.min(index, 12)));
+    element.classList.add("stagger-item");
   });
 }

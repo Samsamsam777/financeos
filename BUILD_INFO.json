@@ -1,13 +1,14 @@
 {
-  "version": "4.1.0",
-  "source": "src(2).zip",
+  "version": "4.2.0",
+  "source": "src(3).zip",
+  "javascript_files_checked": 10,
   "checks": {
-    "back_buttons": true,
-    "history": true,
-    "focus_tokens": true,
-    "grouped_more_menu": true,
-    "shared_loan_detail": true,
-    "header_scroll_state": true
-  },
-  "javascript_files_checked": 10
+    "version_4_2": true,
+    "add_uses_sheet": true,
+    "known_merchants": true,
+    "focus_system": true,
+    "fab_release": true,
+    "stagger_motion": true,
+    "soft_progress": true
+  }
 }

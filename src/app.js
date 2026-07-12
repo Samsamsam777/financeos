@@ -75,8 +75,14 @@ function navigate(target, options = {}) {
   if (view === target) return;
   if (!options.replace) viewHistory.push(view);
   haptic("selection");
+  const previous = view;
   view = target;
-  window.scrollTo({ top: 0, behavior: "instant" });
+  document.documentElement.dataset.navigationDirection =
+    ["dashboard", "transactions", "budgets", "more"].indexOf(target) >=
+    ["dashboard", "transactions", "budgets", "more"].indexOf(previous)
+      ? "forward"
+      : "back";
+  window.scrollTo({ top: 0, behavior: "auto" });
   render();
 }
 
@@ -103,7 +109,22 @@ function render() {
 
 function bindNavigation() {
   document.querySelectorAll("[data-nav]").forEach(button => {
-    button.onclick = () => navigate(button.dataset.nav);
+    button.onclick = event => {
+      const target = button.dataset.nav;
+      if (target === "add") {
+        event.preventDefault();
+        openAddTransactionSheet();
+        return;
+      }
+      navigate(target);
+    };
+  });
+
+  document.querySelectorAll("[data-open-add]").forEach(button => {
+    button.onclick = event => {
+      event.preventDefault();
+      openAddTransactionSheet();
+    };
   });
 }
 
@@ -168,6 +189,7 @@ function bindTransactions() {
 function openAddTransactionSheet() {
   haptic("selection");
   showSheet(`<div class="entry-sheet">${views.addTransactionSheet()}</div>`);
+  haptic("medium");
   bindAddTransaction();
   bindPressFeedback(document.querySelector("#modal"));
   setTimeout(() => document.querySelector('#transactionForm input[name="amount"]')?.focus(), 280);

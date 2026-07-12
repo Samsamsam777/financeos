@@ -85,3 +85,11 @@ svg{
 
 html{scroll-behavior:smooth}
 body{-webkit-tap-highlight-color:transparent}
+
+
+/* FinanceOS 4.2 global polish */
+body{
+  font-size:var(--font-body);
+  overscroll-behavior-y:none;
+}
+button{-webkit-user-select:none;user-select:none}

@@ -1,27 +1,46 @@
-FinanceOS v0.6.1 – UI Polish
+FinanceOS 1.0 – Design System
 
-Geändert:
-- Navbar flacher
-- Navigationsschrift und Symbole leicht größer
-- Plus-Button auf 56 px vergrößert
-- Plus-Button ragt ungefähr zu einem Drittel über die Navbar
-- Hero-Karte minimal flacher
-- größerer Abstand zwischen Hero und Einnahmen/Ausgaben
-- Gesamtkontostand grün bei positivem und rot bei negativem Gesamtwert
-- Einnahmen/Ausgaben wieder mit neutralem Kartenrahmen
-- nur die Pfeilsymbole bleiben grün bzw. rot
-- sinnvolleres Symbol für offene Zuordnungen
-- Kreditkacheln etwas flacher und mit kräftigerem Verlauf
-- Kredittyp bestimmt das Symbol: Auto, Haus, Studium, Motorrad, Boot usw.
-- Händlerdarstellung für PayPal, REWE, Amazon, Spotify, Netflix und Tankstellen verbessert
+Diese Version bereinigt den Quellcode und vereinheitlicht die gesamte App.
+
+Neu strukturiert:
+- app.js: Navigation, Events und Bearbeitungsabläufe
+- views.js: alle Ansichten
+- storage.js: Daten, Migration, Backup und Restore
+- logic.js: Finanzberechnungen und Filter
+- icons.js: einheitliche SVG-Line-Icons
+- ui.js: gemeinsame UI-Hilfen
+- constants.js: Version und Standardwerte
+- styles.css: zentrales Designsystem
+
+Designsystem:
+- ruhiger Apple-inspirierter Dark Mode
+- weniger sichtbare Rahmen
+- klarerer Kontrast zwischen Hintergrund und Karten
+- reduzierte Kartenhöhen
+- einheitliche Radien und Abstände
+- eigene Line-Icons statt Emojis
+- gleiche Designsprache auf Dashboard, Buchungen, Budgets, Krediten,
+  Verwaltung, Einstellungen und Eingabemasken
+- größere, klar freigestellte Plus-Schaltfläche
+- Kreditkachel bleibt der Fortschrittsbalken
+
+Daten:
+- bestehender localStorage-Schlüssel bleibt erhalten
+- bestehende Buchungen, Konten, Kategorien, Regeln und Dashboard-Einstellungen
+  werden weiterverwendet
+- ältere Dashboard-Einstellung „today“ wird automatisch zu „summary“ migriert
 
 Installation:
-1. ZIP entpacken.
-2. Gesamten Inhalt in dein lokales FinanceOS-Repository kopieren.
-3. Vorhandene Dateien ersetzen.
-4. GitHub Desktop öffnen.
-5. Commit: FinanceOS v0.6.1 UI Polish
-6. Push origin.
-7. Nach Deployment die App vollständig schließen und neu öffnen.
+1. Vor dem Update in FinanceOS ein Backup erstellen.
+2. ZIP entpacken.
+3. Den gesamten Inhalt in dein lokales GitHub-Repository kopieren.
+4. Vorhandene Dateien ersetzen.
+5. GitHub Desktop öffnen.
+6. Commit: FinanceOS 1.0 Design System
+7. Push origin.
+8. Nach dem Deployment die Homescreen-App vollständig schließen und neu öffnen.
 
-Datenmodell und bestehende Finanzdaten werden nicht verändert.
+Falls noch die alte Version angezeigt wird:
+- App vollständig aus dem App-Switcher entfernen
+- erneut öffnen
+- nur wenn nötig die Websitedaten für samsamsam777.github.io löschen

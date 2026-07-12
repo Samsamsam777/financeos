@@ -1,4 +1,25 @@
+export const esc = value =>
+  String(value ?? "").replace(/[&<>"']/g, character => ({
+    "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;"
+  })[character]);
 
-export const esc=s=>String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
-export const field=(label,control)=>`<div class="field"><label>${label}</label>${control}</div>`;
-export const kpi=(label,value)=>`<div class="card kpi"><div class="label">${label}</div><div class="value">${value}</div></div>`;
+export const field = (label, control) =>
+  `<div class="field"><label>${label}</label>${control}</div>`;
+
+export function showSheet(content) {
+  document.body.insertAdjacentHTML("beforeend", `
+    <div class="modal" id="modal">
+      <div class="sheet">
+        <div class="sheet-toolbar">
+          <button class="icon-btn" id="closeModal" aria-label="Schließen">×</button>
+        </div>
+        ${content}
+      </div>
+    </div>
+  `);
+  document.querySelector("#closeModal").onclick = closeSheet;
+}
+
+export function closeSheet() {
+  document.querySelector("#modal")?.remove();
+}

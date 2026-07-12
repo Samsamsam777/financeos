@@ -1,64 +1,139 @@
+import {
+  STORAGE_KEY, DEFAULT_DASHBOARD, DEFAULT_PEOPLE,
+  DEFAULT_CATEGORIES, DEFAULT_RULES
+} from "./constants.js";
 
-const KEY="financeos_v01";
-export const seed={
- settings:{people:["Gemeinsam","Sam","Partnerin","Unklar"],currency:"EUR",dashboard:{balance:{enabled:true,order:1},today:{enabled:true,order:2},pending:{enabled:true,order:3},loans:{enabled:true,order:4,count:2},transactions:{enabled:true,order:5,count:6}}},
- accounts:[
-  {id:"a1",name:"Gemeinschaftskonto",type:"Girokonto",start:2500},
-  {id:"a2",name:"Kreditkarte",type:"Kreditkarte",start:0},
-  {id:"a3",name:"Bargeld",type:"Bargeld",start:100}
- ],
- categories:[
-  {id:"c1",name:"Lebensmittel",budget:450},{id:"c2",name:"Wohnen",budget:1200},
-  {id:"c3",name:"Restaurants",budget:180},{id:"c4",name:"Mobilität",budget:220},
-  {id:"c5",name:"Shopping",budget:200},{id:"c6",name:"Abonnements",budget:80},
-  {id:"c7",name:"Gesundheit",budget:100},{id:"c8",name:"Freizeit",budget:180},
-  {id:"c9",name:"Gehalt",budget:0},{id:"c10",name:"Später zuordnen",budget:0}
- ],
- rules:[
-  {id:"r1",needle:"REWE",categoryId:"c1"},{id:"r2",needle:"EDEKA",categoryId:"c1"},
-  {id:"r3",needle:"LIDL",categoryId:"c1"},{id:"r4",needle:"ALDI",categoryId:"c1"},
-  {id:"r5",needle:"SPOTIFY",categoryId:"c6"},{id:"r6",needle:"NETFLIX",categoryId:"c6"},
-  {id:"r7",needle:"DB VERTRIEB",categoryId:"c4"},{id:"r8",needle:"SHELL",categoryId:"c4"},
-  {id:"r9",needle:"AMAZON",categoryId:"c5"},{id:"r10",needle:"GEHALT",categoryId:"c9"}
- ],
- transactions:[],
- loans:[{id:"l1",name:"Autokredit",principal:25000,remaining:14382,rate:420,interest:4.2}]
+export const makeId = () =>
+  crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+
+const clone = value => JSON.parse(JSON.stringify(value));
+
+const seed = {
+  settings: {
+    currency: "EUR",
+    people: DEFAULT_PEOPLE,
+    dashboard: DEFAULT_DASHBOARD
+  },
+  accounts: [
+    { id: "a1", name: "Gemeinschaftskonto", type: "Girokonto", start: 2500 },
+    { id: "a2", name: "Kreditkarte", type: "Kreditkarte", start: 0 },
+    { id: "a3", name: "Bargeld", type: "Bargeld", start: 100 }
+  ],
+  categories: DEFAULT_CATEGORIES,
+  rules: DEFAULT_RULES,
+  transactions: [],
+  loans: [
+    {
+      id: "l1",
+      name: "Autokredit",
+      type: "auto",
+      principal: 25000,
+      remaining: 14382,
+      rate: 420,
+      interest: 4.2
+    }
+  ]
 };
-const clone=x=>JSON.parse(JSON.stringify(x));
-const uid=()=>crypto.randomUUID?crypto.randomUUID():Date.now()+"-"+Math.random();
-function seedExamples(d){
- const dt=new Date().toISOString().slice(0,10);
- d.transactions=[
-  {id:uid(),createdAt:Date.now()-2000,date:dt,type:"income",amount:3200,description:"Gehalt",accountId:"a1",categoryId:"c9",person:"Gemeinsam",status:"done"},
-  {id:uid(),createdAt:Date.now()-1000,date:dt,type:"expense",amount:74.6,description:"REWE Markt",accountId:"a1",categoryId:"c1",person:"Gemeinsam",status:"done"},
-  {id:uid(),createdAt:Date.now(),date:dt,type:"expense",amount:47.9,description:"PAYPAL *M32H8KD",accountId:"a1",categoryId:"c10",person:"Unklar",status:"pending"}
- ]
+
+function seedExamples(data) {
+  const date = new Date().toISOString().slice(0, 10);
+  data.transactions = [
+    {
+      id: makeId(), createdAt: Date.now() - 2000, date, type: "income",
+      amount: 3200, description: "Gehalt", accountId: "a1",
+      categoryId: "c9", person: "Gemeinsam", status: "done"
+    },
+    {
+      id: makeId(), createdAt: Date.now() - 1000, date, type: "expense",
+      amount: 74.60, description: "REWE Markt", accountId: "a1",
+      categoryId: "c1", person: "Gemeinsam", status: "done"
+    },
+    {
+      id: makeId(), createdAt: Date.now(), date, type: "expense",
+      amount: 47.90, description: "PAYPAL *M32H8KD", accountId: "a1",
+      categoryId: "c10", person: "Unklar", status: "pending"
+    }
+  ];
 }
-export function load(){
- try{
-  const raw=localStorage.getItem(KEY);
-  if(raw){
-   const d=JSON.parse(raw);
-   d.settings ||= clone(seed.settings); d.settings.dashboard ||= clone(seed.settings.dashboard); d.accounts ||= []; d.categories ||= [];
-   d.rules=(d.rules||[]).map(r=>({...r,id:r.id||uid()}));
-   d.transactions=(d.transactions||[]).map((t,i)=>({...t,createdAt:t.createdAt||Date.parse(t.date)||i}));
-   d.loans ||= [];
-   return d
+
+function migrate(data) {
+  data.settings ??= {};
+  data.settings.currency ??= "EUR";
+  data.settings.people ??= clone(DEFAULT_PEOPLE);
+  data.settings.dashboard ??= clone(DEFAULT_DASHBOARD);
+
+  if (data.settings.dashboard.today && !data.settings.dashboard.summary) {
+    data.settings.dashboard.summary = data.settings.dashboard.today;
+    delete data.settings.dashboard.today;
   }
- }catch(e){}
- const d=clone(seed);seedExamples(d);save(d);return d
+
+  data.accounts ??= [];
+  data.categories ??= clone(DEFAULT_CATEGORIES);
+  data.rules = (data.rules ?? []).map(rule => ({
+    ...rule,
+    id: rule.id ?? makeId()
+  }));
+  data.transactions = (data.transactions ?? []).map((transaction, index) => ({
+    ...transaction,
+    createdAt: transaction.createdAt ?? Date.parse(transaction.date) ?? index
+  }));
+  data.loans = (data.loans ?? []).map(loan => ({
+    type: loan.type ?? inferLoanType(loan.name),
+    ...loan
+  }));
+
+  return data;
 }
-export function save(d){localStorage.setItem(KEY,JSON.stringify(d))}
-export function reset(){localStorage.removeItem(KEY);location.reload()}
-export function makeId(){return uid()}
-export function backup(d){
- const blob=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});
- const a=document.createElement("a");a.href=URL.createObjectURL(blob);
- a.download=`financeos-backup-${new Date().toISOString().slice(0,10)}.json`;a.click();
- setTimeout(()=>URL.revokeObjectURL(a.href),1000)
+
+function inferLoanType(name = "") {
+  const value = name.toLowerCase();
+  if (value.includes("auto") || value.includes("fahrzeug")) return "auto";
+  if (value.includes("haus") || value.includes("immobil") || value.includes("wohnung")) return "home";
+  if (value.includes("stud")) return "education";
+  if (value.includes("motorrad")) return "motorcycle";
+  if (value.includes("boot")) return "boat";
+  if (value.includes("karte")) return "card";
+  return "generic";
 }
-export async function restore(file){
- const txt=await file.text(),obj=JSON.parse(txt);
- if(!obj.accounts||!obj.transactions)throw Error("Ungültiges Backup");
- save(obj);location.reload()
+
+export function loadData() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) return migrate(JSON.parse(raw));
+  } catch (error) {
+    console.error("FinanceOS storage read failed", error);
+  }
+
+  const data = clone(seed);
+  seedExamples(data);
+  saveData(data);
+  return data;
+}
+
+export function saveData(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+export function resetData() {
+  localStorage.removeItem(STORAGE_KEY);
+  location.reload();
+}
+
+export function createBackup(data) {
+  const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement("a");
+  anchor.href = url;
+  anchor.download = `financeos-backup-${new Date().toISOString().slice(0, 10)}.json`;
+  anchor.click();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+export async function restoreBackup(file) {
+  const parsed = JSON.parse(await file.text());
+  if (!Array.isArray(parsed.accounts) || !Array.isArray(parsed.transactions)) {
+    throw new Error("Ungültiges FinanceOS-Backup");
+  }
+  saveData(migrate(parsed));
+  location.reload();
 }

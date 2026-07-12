@@ -16,20 +16,23 @@ function shell(content){
  bindNav()
 }
 function bindNav(){document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{view=b.dataset.nav;render()})}
-function merchantMark(t){
+function merchantVisual(t){
  const d=(t.description||"").toUpperCase();
- if(d.includes("PAYPAL"))return "P";
- if(d.includes("REWE"))return "R";
- if(d.includes("AMAZON"))return "a";
- if(d.includes("SHELL")||d.includes("TANK"))return "⛽";
- if(t.type==="income")return "↗";
- return (t.description||"?").trim().charAt(0).toUpperCase()
+ if(d.includes("PAYPAL"))return {mark:"P",className:"paypal"};
+ if(d.includes("REWE"))return {mark:"REWE",className:"rewe"};
+ if(d.includes("AMAZON"))return {mark:"a",className:"amazon"};
+ if(d.includes("SPOTIFY"))return {mark:"●",className:"spotify"};
+ if(d.includes("NETFLIX"))return {mark:"N",className:"netflix"};
+ if(d.includes("SHELL")||d.includes("ARAL")||d.includes("TANK"))return {mark:"⛽",className:"fuel"};
+ if(t.type==="income")return {mark:"↗",className:"income"};
+ return {mark:(t.description||"?").trim().charAt(0).toUpperCase(),className:"default"}
 }
 function txRow(t,withAction=false){
  const pending=t.status==="pending",cls=pending?"pending":t.type==="income"?"positive":"negative";
+ const visual=merchantVisual(t);
  return `<div class="row transaction-row">
    <div class="transaction-left">
-     <div class="merchant-icon">${esc(merchantMark(t))}</div>
+     <div class="merchant-icon ${visual.className}">${esc(visual.mark)}</div>
      <div class="transaction-copy"><strong>${esc(t.description)}</strong><div class="meta">${cat(t.categoryId)?.name||"—"} · ${acc(t.accountId)?.name||"—"}</div></div>
    </div>
    <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:5px;padding:6px 8px">Bearbeiten</button>`:""}</div>
@@ -42,13 +45,13 @@ function renderToday(){
  const totalBalance=data.accounts.reduce((sum,a)=>sum+accountBalance(data,a.id),0);
 
  const modules=[
-  {key:"balance",html:()=>`<section class="dashboard-module">
+  {key:"balance",html:()=>`<section class="dashboard-module hero-module">
     <div class="card hero">
       <div class="hero-row">
-        <div class="hero-icon">▣</div>
+        <div class="hero-icon">▰</div>
         <div class="hero-copy">
           <div class="label">Gesamtkontostand</div>
-          <div class="value">${euro(totalBalance)}</div>
+          <div class="value ${totalBalance>0?"balance-positive":totalBalance<0?"balance-negative":"balance-zero"}">${euro(totalBalance)}</div>
           <div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div>
         </div>
       </div>
@@ -69,7 +72,7 @@ function renderToday(){
   {key:"pending",html:()=>`<section class="dashboard-module">
     <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
     <div class="card pending-card"><div class="row">
-      <div class="pending-left"><div class="pending-icon">□</div><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div></div>
+      <div class="pending-left"><div class="pending-icon">?</div><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div></div>
       <button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button>
     </div></div>
   </section>`},
@@ -86,6 +89,18 @@ function renderToday(){
  bindLoanInteractions()
 }
 
+
+function loanMark(l){
+ const n=(l.name||"").toLowerCase();
+ if(n.includes("auto")||n.includes("fahrzeug"))return "🚗";
+ if(n.includes("haus")||n.includes("immobil")||n.includes("wohnung"))return "🏠";
+ if(n.includes("stud"))return "🎓";
+ if(n.includes("motorrad"))return "🏍️";
+ if(n.includes("boot")||n.includes("schiff"))return "🛥️";
+ if(n.includes("kreditkarte")||n.includes("karte"))return "💳";
+ return "📄"
+}
+
 function renderLoanPreview(count){
  const loans=data.loans.slice(0,Math.max(0,Number(count)||0));
  if(!loans.length)return "";
@@ -97,7 +112,7 @@ function renderLoanPreview(count){
       return `<div class="card loan-strip" data-loan="${l.id}">
         <div class="loan-strip-fill" style="width:${pct}%"></div>
         <div class="loan-strip-content">
-          <div class="loan-icon">▱</div>
+          <div class="loan-icon">${loanMark(l)}</div>
           <strong>${esc(l.name)}</strong>
           <span class="pct">${Math.round(pct)} %</span>
         </div>
@@ -174,7 +189,7 @@ function renderSettings(){
  <button class="btn primary" id="backupBtn">Backup erstellen</button>
  <label class="btn ghost" style="text-align:center">Backup wiederherstellen<input id="restoreInput" type="file" accept="application/json" hidden></label>
  <button class="btn danger ghost" id="resetBtn">Beispieldaten zurücksetzen</button>
- <div class="notice">FinanceOS v0.3 · Beim Backup auf dem iPhone „In Dateien sichern“ und anschließend iCloud Drive wählen.</div></div>`);
+ <div class="notice">FinanceOS v0.6.1 · Beim Backup auf dem iPhone „In Dateien sichern“ und anschließend iCloud Drive wählen.</div></div>`);
  backupBtn.onclick=()=>backup(data);restoreInput.onchange=async e=>{try{await restore(e.target.files[0])}catch(err){alert(err.message)}};resetBtn.onclick=()=>{if(confirm("Wirklich alles zurücksetzen?"))reset()}
 }
 function modal(content){document.body.insertAdjacentHTML("beforeend",`<div class="modal" id="modal"><div class="sheet"><div style="display:flex;justify-content:flex-end"><button class="icon-btn" id="closeModal">✕</button></div>${content}</div></div>`);closeModal.onclick=()=>document.getElementById("modal")?.remove()}

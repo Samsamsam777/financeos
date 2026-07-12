@@ -25,11 +25,11 @@ body{min-height:100vh}
 button,input,select,textarea{font:inherit}
 .app{
   max-width:920px;margin:0 auto;
-  padding:calc(12px + env(safe-area-inset-top)) 14px 94px
+  padding:calc(12px + env(safe-area-inset-top)) 14px 84px
 }
 .topbar{
   display:flex;justify-content:center;align-items:center;text-align:center;
-  min-height:54px;margin-bottom:20px
+  min-height:52px;margin-bottom:22px
 }
 .brand h1{
   margin:0;font-size:1.42rem;line-height:1.05;font-weight:800;letter-spacing:-.035em
@@ -52,7 +52,7 @@ button,input,select,textarea{font:inherit}
   box-shadow:none
 }
 .hero{
-  padding:16px 16px 15px;
+  padding:13px 15px 12px;
   background:
     radial-gradient(circle at 88% 15%,rgba(123,97,255,.18),transparent 36%),
     linear-gradient(180deg,rgba(23,34,61,.98),rgba(16,24,43,.98))
@@ -63,22 +63,23 @@ button,input,select,textarea{font:inherit}
   border-radius:14px;font-weight:800
 }
 .hero-icon{
-  width:44px;height:44px;
+  width:40px;height:40px;
   background:rgba(123,97,255,.20);color:#cfc6ff;font-size:1.18rem
 }
 .hero-copy{min-width:0;flex:1}
 .hero .label{color:var(--muted);font-size:.78rem;font-weight:600}
 .hero .value{
-  font-size:1.78rem;font-weight:800;letter-spacing:-.045em;margin-top:4px
+  font-size:1.74rem;font-weight:800;letter-spacing:-.045em;margin-top:3px
 }
 .hero .sub{
   display:flex;justify-content:space-between;gap:12px;
-  margin-top:10px;color:var(--muted);font-size:.78rem
+  margin-top:8px;color:var(--muted);font-size:.78rem
 }
 .grid{display:grid;gap:10px}
+.hero-module{margin-bottom:14px}
 .grid.two{grid-template-columns:repeat(2,minmax(0,1fr))}
 .metric-card{
-  min-height:86px;padding:13px 14px;
+  min-height:78px;padding:11px 13px;
   display:flex;flex-direction:column;justify-content:center
 }
 .metric-head{display:flex;align-items:center;gap:9px}
@@ -87,8 +88,7 @@ button,input,select,textarea{font:inherit}
 .metric-icon.expense{background:rgba(255,93,108,.14);color:var(--red)}
 .metric-label{font-size:.76rem;color:var(--muted)}
 .metric-value{font-size:1.18rem;font-weight:800;margin-top:7px}
-.metric-card.income{border-color:rgba(56,211,122,.20)}
-.metric-card.expense{border-color:rgba(255,93,108,.20)}
+.metric-card.income,.metric-card.expense{border-color:var(--border)}
 .section-title{
   display:flex;justify-content:space-between;align-items:center;
   margin:21px 2px 9px
@@ -116,34 +116,34 @@ button,input,select,textarea{font:inherit}
 .badge.warn{background:rgba(255,189,74,.16);color:#ffd47f}
 .pending-card .row{padding:7px 0}
 .pending-icon{
-  width:34px;height:34px;border-radius:11px;
+  width:32px;height:32px;border-radius:10px;
   display:grid;place-items:center;
-  background:rgba(255,189,74,.13);color:var(--amber);margin-right:10px
+  background:rgba(255,189,74,.14);color:var(--amber);margin-right:10px;font-weight:800
 }
 .pending-left{display:flex;align-items:center}
 .loan-strip{
-  position:relative;overflow:hidden;min-height:42px;padding:0;cursor:pointer
+  position:relative;overflow:hidden;min-height:38px;padding:0;cursor:pointer
 }
 .loan-strip-fill{
   position:absolute;inset:0 auto 0 0;
-  background:linear-gradient(90deg,rgba(109,79,255,.82),rgba(44,194,180,.72));
+  background:linear-gradient(90deg,rgba(109,79,255,.96),rgba(34,205,185,.88));
   border-radius:inherit;transition:width .25s ease
 }
 .loan-strip-content{
   position:relative;z-index:1;
   display:grid;grid-template-columns:auto 1fr auto;
-  align-items:center;gap:10px;padding:8px 12px
+  align-items:center;gap:9px;padding:5px 11px
 }
 .loan-icon{
-  width:28px;height:28px;border-radius:9px;
-  background:rgba(255,255,255,.12);color:#fff;font-size:.9rem
+  width:26px;height:26px;border-radius:8px;
+  background:rgba(255,255,255,.14);color:#fff;font-size:.86rem
 }
 .loan-strip-content strong{font-size:.92rem}
 .loan-strip-content .pct{font-weight:800}
 .transaction-row{padding:9px 0}
 .transaction-left{display:flex;align-items:center;min-width:0}
 .merchant-icon{
-  width:34px;height:34px;border-radius:11px;
+  width:32px;height:32px;border-radius:10px;
   background:rgba(123,97,255,.13);color:#cbc2ff;
   margin-right:10px;font-size:.82rem
 }
@@ -163,26 +163,26 @@ button,input,select,textarea{font:inherit}
 .nav{
   position:fixed;left:0;right:0;bottom:0;
   background:rgba(9,15,31,.97);backdrop-filter:blur(18px);
-  border-top:1px solid var(--border);z-index:50;
-  padding:4px 8px calc(4px + env(safe-area-inset-bottom))
+  border-top:1px solid var(--border);z-index:50;overflow:visible;
+  padding:2px 8px calc(2px + env(safe-area-inset-bottom))
 }
 .nav-inner{
   max-width:920px;margin:0 auto;
   display:grid;grid-template-columns:repeat(5,1fr);
-  align-items:end;height:52px
+  align-items:center;height:44px;overflow:visible
 }
 .nav button{
   border:0;background:none;color:var(--muted);
-  padding:5px 2px 2px;font-size:.75rem;font-weight:650;min-height:44px
+  padding:3px 2px 1px;font-size:.78rem;font-weight:650;min-height:40px
 }
-.nav button .nav-icon{font-size:1.15rem;line-height:1.1;margin-bottom:2px}
+.nav button .nav-icon{font-size:1.22rem;line-height:1.05;margin-bottom:1px}
 .nav button.active{color:var(--accent)}
 .nav .plus{
-  width:48px;height:48px;min-height:48px;border-radius:50%;
-  background:var(--accent-strong);font-size:1.55rem;color:#fff;
-  margin:0 auto;transform:translateY(-16px);
-  box-shadow:0 8px 22px rgba(109,79,255,.35);
-  border:3px solid var(--bg)
+  width:56px;height:56px;min-height:56px;border-radius:50%;
+  background:var(--accent-strong);font-size:1.82rem;color:#fff;
+  margin:0 auto;transform:translateY(-13px);
+  box-shadow:0 9px 24px rgba(109,79,255,.40);
+  border:4px solid var(--bg)
 }
 .modal{
   position:fixed;inset:0;background:rgba(0,0,0,.66);
@@ -209,9 +209,39 @@ button,input,select,textarea{font:inherit}
 .toggle{width:20px;height:20px}
 @media(max-width:560px){
   .app{padding-left:12px;padding-right:12px}
-  .hero .value{font-size:1.68rem}
+  .hero .value{font-size:1.64rem}
   .card{padding:13px}
   .loan-strip{padding:0}
-  .nav button{font-size:.74rem}
-  .nav button .nav-icon{font-size:1.14rem}
+  .nav button{font-size:.77rem}
+  .nav button .nav-icon{font-size:1.20rem}
+}
+
+
+.hero .value.balance-positive{color:var(--green)}
+.hero .value.balance-negative{color:var(--red)}
+.hero .value.balance-zero{color:var(--text)}
+
+.merchant-icon.paypal{
+  background:rgba(37,92,170,.24);color:#a9c8ff;font-weight:900
+}
+.merchant-icon.rewe{
+  background:rgba(214,20,44,.20);color:#ff8794;font-size:.58rem;font-weight:900
+}
+.merchant-icon.amazon{
+  background:rgba(255,153,0,.16);color:#ffb84d;font-weight:900
+}
+.merchant-icon.spotify{
+  background:rgba(30,215,96,.15);color:#55df83;font-weight:900
+}
+.merchant-icon.netflix{
+  background:rgba(229,9,20,.17);color:#ff6670;font-weight:900
+}
+.merchant-icon.fuel{
+  background:rgba(255,145,38,.16);color:#ffa34f
+}
+.merchant-icon.income{
+  background:rgba(56,211,122,.14);color:var(--green)
+}
+.merchant-icon.default{
+  background:rgba(123,97,255,.13);color:#cbc2ff
 }

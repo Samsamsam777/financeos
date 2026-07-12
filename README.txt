@@ -1,38 +1,30 @@
-FinanceOS 3.2 – Mockup Alignment
+FinanceOS 4.0 – Design System
 
-Sprintumfang:
-1. Sticky Header
-   - am Seitenanfang vollständig transparent
-   - Logo höher und kompakter
-   - beim Scrollen dunkles Navbar-Material mit Blur
-   - beim Zurückscrollen wieder transparent
+FinanceOS 4.0 restructures the UI architecture rather than adding features.
 
-2. Kreditinteraktion
-   - kein Long-Press- oder Touchstart-Öffnen mehr
-   - Öffnen erst nach bewusstem vollständigem Tippen
-   - identisches Grundverhalten wie Buchungszeilen
+Architecture:
+- src/design/tokens.css
+- src/design/base.css
+- src/components/components.css
+- src/components/components.js
+- src/screens/screens.css
+- FINANCEOS_DESIGN_GUIDE.md
 
-3. Dashboard unterhalb der Finanzübersicht
-   - optisch am freigegebenen Mockup ausgerichtet
-   - „Zu prüfen“ als ruhige horizontale Informationsleiste
-   - Kredite in einer gemeinsamen grauen Materialkarte
-   - letzte Buchungen als kompakte gruppierte Liste
-   - „Anpassen“ als reduzierte kleine Karte
+Implemented:
+- centralized color, spacing, radius, typography, material and motion tokens
+- reusable SectionHeader, GroupedCard and MaterialCard helpers
+- one shared grouped-row language for credits, budgets and transactions
+- credits made substantially flatter:
+  no percentage, rate or interest on the dashboard
+- budgets made substantially flatter
+- transaction spacing normalized
+- add-booking screen aligned to the same material and typography system
+- sheets, navbar, FAB and forms aligned to the same token system
+- existing local data and storage key remain compatible
 
-4. Material und Farben
-   - edlerer, sichtbarer Ambient-Hintergrund
-   - kühlere graublaue Kartenflächen
-   - violette Line-Icons
-   - feinere Trennlinien und weniger starke Flächenkontraste
-
-5. Typografie
-   - kleinere, ruhigere Abschnittsüberschriften
-   - kompaktere Kartentitel und Metadaten
-   - Finanzwerte bleiben klar priorisiert
-
-Zusätzlich:
-- Budgets im gleichen gruppierten Progress-Stil wie Kredite
-- JavaScript vollständig syntaktisch geprüft
+Testing:
+- all JavaScript modules are syntax-checked
+- the UI should be tested on the iPhone before the frozen-state decision
 
 Commit:
-FinanceOS 3.2 Mockup Alignment
+FinanceOS 4.0 Design System

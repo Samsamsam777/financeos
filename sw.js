@@ -1,4 +1,4 @@
-const CACHE = "financeos-v3-2-mockup-alignment";
+const CACHE = "financeos-v4-design-system";
 const ASSETS = [
   "./",
   "./index.html",
@@ -9,7 +9,11 @@ const ASSETS = [
   "./src/logic.js",
   "./src/motion.js",
   "./src/storage.js",
-  "./src/styles.css",
+  "./src/design/tokens.css",
+  "./src/design/base.css",
+  "./src/components/components.css",
+  "./src/screens/screens.css",
+  "./src/components/components.js",
   "./src/ui.js",
   "./src/views.js",
   "./TOKENS.md",

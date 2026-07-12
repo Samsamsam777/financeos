@@ -1,0 +1,84 @@
+*{box-sizing:border-box}
+html{min-height:100%;background:var(--color-bg)}
+body{
+  margin:0;
+  min-height:100dvh;
+  overflow-x:hidden;
+  color:var(--color-text-1);
+  background:transparent;
+  font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","SF Pro Display",Inter,system-ui,sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+button,input,select,textarea{font:inherit}
+button{cursor:pointer}
+svg{
+  display:block;
+  width:1em;
+  height:1em;
+  fill:none;
+  stroke:currentColor;
+  stroke-width:1.75;
+  stroke-linecap:round;
+  stroke-linejoin:round;
+}
+.ambient-layer{
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  overflow:hidden;
+  background:
+    linear-gradient(135deg,rgba(45,38,133,.58) 0%,transparent 32%),
+    radial-gradient(ellipse 70% 55% at 82% 8%,rgba(104,54,164,.48),transparent 64%),
+    radial-gradient(ellipse 82% 60% at 6% 94%,rgba(117,36,132,.40),transparent 66%),
+    radial-gradient(ellipse 85% 55% at 96% 72%,rgba(12,104,134,.26),transparent 70%),
+    linear-gradient(180deg,#070b18 0%,#050914 58%,#040711 100%);
+}
+.ambient-layer::before{
+  content:"";
+  position:absolute;
+  inset:-25%;
+  background:
+    conic-gradient(
+      from 205deg at 53% 45%,
+      transparent 0 17%,
+      rgba(123,84,255,.18) 24%,
+      transparent 34% 58%,
+      rgba(19,137,159,.14) 68%,
+      transparent 80%
+    );
+  filter:blur(54px);
+  animation:ambient-shift 38s ease-in-out infinite alternate;
+}
+@keyframes ambient-shift{
+  from{transform:translate3d(-2%,-1%,0) scale(1)}
+  to{transform:translate3d(4%,3%,0) scale(1.08)}
+}
+.app{
+  position:relative;
+  z-index:1;
+  width:min(100%,920px);
+  margin:0 auto;
+  padding:
+    max(2px,env(safe-area-inset-top))
+    var(--space-page)
+    calc(78px + env(safe-area-inset-bottom));
+}
+.page-enter{animation:page-enter var(--motion-normal) var(--ease-standard) both}
+@keyframes page-enter{
+  from{opacity:0;transform:translate3d(8px,0,0)}
+  to{opacity:1;transform:none}
+}
+.empty{
+  padding:var(--space-7) var(--space-2);
+  color:var(--color-text-2);
+  text-align:center;
+  font-size:var(--font-body);
+}
+@media(prefers-reduced-motion:reduce){
+  *,*::before,*::after{
+    animation-duration:.01ms!important;
+    animation-iteration-count:1!important;
+    transition-duration:.01ms!important;
+  }
+}

@@ -5,6 +5,7 @@ import {
   monthKey, monthSummary, sortNewest, today, totalBalance
 } from "./logic.js";
 import { esc, field } from "./ui.js";
+import { groupedCard, sectionHeader } from "./components/components.js";
 
 export function createViews(context) {
   const { getData, navigate, openTransaction, openLoan, saveDashboard } = context;
@@ -129,41 +130,33 @@ export function createViews(context) {
 
     if (!loans.length) return "";
 
+    const rows = loans.map(loan => {
+      const { percent } = loanProgress(loan);
+      return `
+        <button class="grouped-row loan-row" data-loan="${loan.id}">
+          <span class="grouped-icon loan-symbol">${loanIcon(loan.type)}</span>
+          <span class="grouped-main">
+            <span class="grouped-title">${esc(loan.name)}</span>
+            <span class="slim-progress" aria-hidden="true">
+              <span class="slim-progress-fill" style="--row-progress:${percent}%"></span>
+            </span>
+          </span>
+          <span class="grouped-values">
+            <strong>${euro(loan.remaining)}</strong>
+          </span>
+          <span class="row-chevron">${icons.chevron}</span>
+        </button>
+      `;
+    }).join("");
+
+    const more = hiddenCount
+      ? `<button class="grouped-more" data-nav="loans">+${hiddenCount} weitere Kredite <span class="row-chevron">${icons.chevron}</span></button>`
+      : "";
+
     return `
       <section class="dashboard-module">
-        <div class="section-title">
-          <h2 class="section-heading">Kredite</h2>
-          <button class="section-link" data-nav="loans">Alle anzeigen ${icons.chevron}</button>
-        </div>
-        <div class="card grouped-card loan-group">
-          ${loans.map(loan => {
-            const { percent } = loanProgress(loan);
-            return `
-              <button class="grouped-row loan-row" data-loan="${loan.id}">
-                <span class="grouped-icon loan-symbol">${loanIcon(loan.type)}</span>
-                <span class="grouped-main">
-                  <span class="grouped-title">${esc(loan.name)}</span>
-                  <span class="grouped-meta">Rate ${euro(loan.rate)} · ${loan.interest} % Zins</span>
-                  <span class="slim-progress" aria-hidden="true">
-                    <span class="slim-progress-fill" style="--row-progress:${percent}%"></span>
-                  </span>
-                </span>
-                <span class="grouped-values">
-                  <strong>${euro(loan.remaining)}</strong>
-                  <span>von ${euro(loan.principal)}</span>
-                  <span class="grouped-percent">${Math.round(percent)} %</span>
-                </span>
-                <span class="row-chevron">${icons.chevron}</span>
-              </button>
-            `;
-          }).join("")}
-          ${hiddenCount ? `
-            <button class="grouped-more" data-nav="loans">
-              +${hiddenCount} weitere Kredite
-              <span class="row-chevron">${icons.chevron}</span>
-            </button>
-          ` : ""}
-        </div>
+        ${sectionHeader({ title: "Kredite", action: `Alle anzeigen ${icons.chevron}`, actionTarget: "loans" })}
+        ${groupedCard(rows + more, "loan-group")}
       </section>
     `;
   }
@@ -174,7 +167,7 @@ export function createViews(context) {
 
     return `
       <section class="dashboard-module">
-        <div class="section-title"><h2 class="section-heading">Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle anzeigen ${icons.chevron}</button></div>
+        ${sectionHeader({ title: "Letzte Buchungen", action: `Alle anzeigen ${icons.chevron}`, actionTarget: "transactions" })}
         <div class="card transaction-list">${transactions.map(item => transactionRow(item)).join("")}</div>
       </section>
     `;
@@ -201,8 +194,9 @@ export function createViews(context) {
 
   function addTransaction() {
     return `
+      <div class="entry-screen">
       <div class="section-title"><h2 class="page-heading">Neue Buchung</h2></div>
-      <div class="card page-card">
+      <div class="card page-card entry-card">
         <form id="transactionForm" class="form">
           ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
           ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
@@ -211,8 +205,9 @@ export function createViews(context) {
           ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
           ${field("Kategorie", `<select name="categoryId"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
           ${field("Person (optional)", `<select name="person">${data().settings.people.map(item => `<option>${esc(item)}</option>`).join("")}</select>`)}
-          <button class="btn primary">Buchung speichern</button>
+          <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
         </form>
+      </div>
       </div>
     `;
   }
@@ -249,36 +244,26 @@ export function createViews(context) {
       })
       .sort((a, b) => b.percent - a.percent);
 
+    const rows = items.map(item => `
+      <button class="grouped-row budget-row" data-budget="${item.id}">
+        <span class="grouped-icon budget-symbol">${categoryIcon(item.name)}</span>
+        <span class="grouped-main">
+          <span class="grouped-title">${esc(item.name)}</span>
+          <span class="grouped-meta">${euro(item.used)} von ${euro(item.budget)}</span>
+          <span class="slim-progress" aria-hidden="true">
+            <span class="slim-progress-fill" style="--row-progress:${Math.min(100, item.percent)}%"></span>
+          </span>
+        </span>
+        <span class="grouped-values">
+          <strong>${euro(Math.max(0, item.budget - item.used))}</strong>
+        </span>
+        <span class="row-chevron">${icons.chevron}</span>
+      </button>
+    `).join("");
+
     return `
-      <div class="section-title page-section-title">
-        <h2 class="page-heading">Budgets</h2>
-        <span class="section-context">${key}</span>
-      </div>
-      <div class="card grouped-card budget-group">
-        ${items.map(item => {
-          const displayPercent = Math.round(item.percent);
-          const stateClass = item.percent > 100
-            ? "is-danger"
-            : item.percent >= 80 ? "is-warning" : "";
-          return `
-            <button class="grouped-row budget-row ${stateClass}" data-budget="${item.id}">
-              <span class="grouped-icon budget-symbol">${categoryIcon(item.name)}</span>
-              <span class="grouped-main">
-                <span class="grouped-title">${esc(item.name)}</span>
-                <span class="grouped-meta">${euro(item.used)} von ${euro(item.budget)}</span>
-                <span class="slim-progress" aria-hidden="true">
-                  <span class="slim-progress-fill" style="--row-progress:${Math.min(100, item.percent)}%"></span>
-                </span>
-              </span>
-              <span class="grouped-values">
-                <strong>${displayPercent} %</strong>
-                <span>${euro(Math.max(0, item.budget - item.used))} frei</span>
-              </span>
-              <span class="row-chevron">${icons.chevron}</span>
-            </button>
-          `;
-        }).join("") || '<div class="empty">Keine Budgets eingerichtet</div>'}
-      </div>
+      ${sectionHeader({ title: "Budgets", context: key })}
+      ${items.length ? groupedCard(rows, "budget-group") : '<div class="card empty">Keine Budgets eingerichtet</div>'}
     `;
   }
 

@@ -96,6 +96,12 @@ function bindNavigation() {
 
 function bindView() {
   bindNavigation();
+  document.querySelectorAll("[data-transaction]").forEach(row => {
+    row.onclick = event => {
+      if (event.target.closest("[data-edit]")) return;
+      openTransaction(row.dataset.transaction);
+    };
+  });
 
   if (view === "dashboard") bindDashboard();
   if (["transactions","income","expenses"].includes(view)) bindTransactions();
@@ -219,18 +225,21 @@ function bindManage() {
 
 function bindDashboardSettings() {
   document.querySelector("#saveDashboard").onclick = () => {
-    Object.keys(data.settings.dashboard).forEach(key => {
+    ["pending", "loans", "transactions"].forEach(key => {
       data.settings.dashboard[key].enabled =
         document.querySelector(`[data-enable="${key}"]`).checked;
       data.settings.dashboard[key].order =
         Number(document.querySelector(`[data-order="${key}"]`).value);
       const count = document.querySelector(`[data-count="${key}"]`);
-      if (count) data.settings.dashboard[key].count =
-        Math.max(0, Math.min(20, Number(count.value) || 0));
+      if (count) {
+        const maximum = key === "loans" ? 3 : 20;
+        data.settings.dashboard[key].count =
+          Math.max(0, Math.min(maximum, Number(count.value) || 0));
+      }
     });
     saveData(data);
     haptic("success");
-    showToast("Buchung gespeichert", "success");
+    showToast("Dashboard aktualisiert", "success");
     navigate("dashboard");
   };
 }

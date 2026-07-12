@@ -19,7 +19,7 @@ export function createViews(context) {
       : transaction.type === "income" ? "positive" : "negative";
 
     return `
-      <div class="transaction-row">
+      <div class="transaction-row" data-transaction="${transaction.id}">
         <div class="transaction-left">
           <div class="merchant-icon ${visual.className}">${esc(visual.mark)}</div>
           <div class="transaction-copy">
@@ -79,7 +79,7 @@ export function createViews(context) {
           : "—";
         return `
         <section class="dashboard-module">
-          <div class="section-title"><h2>Zu prüfen</h2><span class="small">älteste ${oldestLabel}</span></div>
+          <div class="section-title"><h2>Zu prüfen</h2><span class="small">${oldestPending ? `seit ${oldestLabel}` : "nichts offen"}</span></div>
           <button class="card pending-card pending-action" data-nav="pending">
             <div class="pending-row">
               <div class="pending-left">
@@ -115,19 +115,29 @@ export function createViews(context) {
     return fixed + configurable + customize;
   }
 
-  function loanPreview(count = 2) {
-    const loans = [...data().loans].sort((a,b)=>Number(b.remaining)-Number(a.remaining)).slice(0, Math.max(0, Number(count)));
+  function loanPreview(count = 3) {
+    const allLoans = [...data().loans]
+      .sort((a, b) => Number(b.remaining) - Number(a.remaining));
+    const requested = Math.max(0, Number(count) || 0);
+    const visibleCount = Math.min(3, requested || 3);
+    const loans = allLoans.slice(0, visibleCount);
+    const hiddenCount = Math.max(0, allLoans.length - loans.length);
+
     if (!loans.length) return "";
 
     return `
       <section class="dashboard-module">
-        <div class="section-title"><h2>Kredite</h2><button class="section-link" data-nav="loans">Alle Kredite →</button></div>
+        <div class="section-title">
+          <h2>Kredite</h2>
+          <button class="section-link" data-nav="loans">Alle Kredite →</button>
+        </div>
         <div class="loan-list">
           ${loans.map(loan => {
             const { percent } = loanProgress(loan);
+            const visualEnd = Math.min(100, percent + 4);
             return `
-              <div class="card loan-strip" data-loan="${loan.id}">
-                <div class="loan-fill" style="width:${Math.min(100, percent + 5)}%;--loan-progress:${percent}%"></div>
+              <div class="card loan-strip" data-loan="${loan.id}" style="--loan-progress:${percent}%;--loan-visual-end:${visualEnd}%">
+                <div class="loan-fill"></div>
                 <div class="loan-content">
                   <div class="loan-icon">${loanIcon(loan.type)}</div>
                   <div class="loan-name">${esc(loan.name)}</div>
@@ -136,6 +146,7 @@ export function createViews(context) {
               </div>
             `;
           }).join("")}
+          ${hiddenCount ? `<button class="loan-more" data-nav="loans">+${hiddenCount} weitere →</button>` : ""}
         </div>
       </section>
     `;
@@ -281,24 +292,33 @@ export function createViews(context) {
   function dashboardSettings() {
     const config = data().settings.dashboard;
     const labels = {
-      balance: "Gesamtkontostand",
-      summary: "Einnahmen & Ausgaben",
-      pending: "Offene Zuordnungen",
+      pending: "Zu prüfen",
       loans: "Kredite",
       transactions: "Letzte Buchungen"
     };
+    const keys = Object.keys(labels);
 
     return `
       <div class="section-title"><h2>Dashboard anpassen</h2></div>
       <div class="card page-card form">
-        <div class="notice">Das Dashboard bleibt scrollbar. Reihenfolge und Anzahl bestimmen den ersten sichtbaren Bereich.</div>
-        ${Object.keys(labels).map(key => `
+        <div class="notice">
+          Gesamtkontostand sowie Einnahmen und Ausgaben bleiben immer oben.
+          Die Module darunter können ausgeblendet und neu geordnet werden.
+        </div>
+        ${keys.map(key => `
           <div class="dashboard-config-row">
-            <div><strong>${labels[key]}</strong>${["loans","transactions"].includes(key) ? '<div class="meta">Anzahl sichtbarer Einträge</div>' : ""}</div>
+            <div>
+              <strong>${labels[key]}</strong>
+              ${["loans","transactions"].includes(key) ? '<div class="meta">Anzahl sichtbarer Einträge</div>' : ""}
+            </div>
             <div class="config-controls">
               <input class="toggle" type="checkbox" data-enable="${key}" ${config[key].enabled !== false ? "checked" : ""}>
-              ${["loans","transactions"].includes(key) ? `<input type="number" min="0" max="20" value="${config[key].count ?? 0}" data-count="${key}">` : ""}
-              <select data-order="${key}">${[1,2,3,4,5].map(number => `<option value="${number}" ${Number(config[key].order) === number ? "selected" : ""}>${number}</option>`).join("")}</select>
+              ${["loans","transactions"].includes(key)
+                ? `<input type="number" min="0" max="${key === "loans" ? 3 : 20}" value="${config[key].count ?? 0}" data-count="${key}">`
+                : ""}
+              <select data-order="${key}">
+                ${[1,2,3].map(number => `<option value="${number}" ${Number(config[key].order) === number ? "selected" : ""}>${number}</option>`).join("")}
+              </select>
             </div>
           </div>
         `).join("")}

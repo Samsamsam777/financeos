@@ -62,12 +62,12 @@ export function enterPage(container) {
 }
 
 export function animateLoanFills() {
-  document.querySelectorAll(".loan-fill").forEach(fill => {
-    const targetWidth = fill.style.width;
-    fill.style.width = "0%";
+  document.querySelectorAll(".loan-strip").forEach(strip => {
+    const target = strip.style.getPropertyValue("--loan-visual-end") || "0%";
+    strip.style.setProperty("--loan-animated-end", "0%");
     requestAnimationFrame(() => {
-      fill.style.width = targetWidth;
-      setTimeout(() => fill.dataset.animated = "true", 560);
+      strip.style.setProperty("--loan-animated-end", target);
+      setTimeout(() => strip.dataset.animated = "true", 560);
     });
   });
 }

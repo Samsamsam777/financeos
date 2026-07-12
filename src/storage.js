@@ -44,7 +44,7 @@ const seed = {
     {
       id: "l3",
       name: "Konsumkredit",
-      type: "card",
+      type: "consumer",
       principal: 8000,
       remaining: 6120,
       rate: 210,
@@ -84,6 +84,9 @@ function migrate(data) {
     data.settings.dashboard.summary = data.settings.dashboard.today;
     delete data.settings.dashboard.today;
   }
+  if (Number(data.settings.dashboard.loans?.count) === 2) {
+    data.settings.dashboard.loans.count = 3;
+  }
 
   data.accounts ??= [];
   data.categories ??= clone(DEFAULT_CATEGORIES);
@@ -96,8 +99,10 @@ function migrate(data) {
     createdAt: transaction.createdAt ?? Date.parse(transaction.date) ?? index
   }));
   data.loans = (data.loans ?? []).map(loan => ({
-    type: loan.type ?? inferLoanType(loan.name),
-    ...loan
+    ...loan,
+    type: loan.name === "Konsumkredit"
+      ? "consumer"
+      : (loan.type ?? inferLoanType(loan.name))
   }));
 
   if (data.loans.length === 1 && data.loans[0]?.id === "l1") {
@@ -114,7 +119,7 @@ function migrate(data) {
       {
         id: "l3",
         name: "Konsumkredit",
-        type: "card",
+        type: "consumer",
         principal: 8000,
         remaining: 6120,
         rate: 210,
@@ -133,6 +138,7 @@ function inferLoanType(name = "") {
   if (value.includes("stud")) return "education";
   if (value.includes("motorrad")) return "motorcycle";
   if (value.includes("boot")) return "boat";
+  if (value.includes("konsum") || value.includes("privat")) return "consumer";
   if (value.includes("karte")) return "card";
   return "generic";
 }

@@ -1,11 +1,11 @@
-export const APP_VERSION = "2.2.0";
+export const APP_VERSION = "2.2.1";
 export const STORAGE_KEY = "financeos_v01";
 
 export const DEFAULT_DASHBOARD = {
   balance: { enabled: true, order: 1 },
   summary: { enabled: true, order: 2 },
   pending: { enabled: true, order: 3 },
-  loans: { enabled: true, order: 4, count: 2 },
+  loans: { enabled: true, order: 4, count: 3 },
   transactions: { enabled: true, order: 5, count: 6 }
 };
 

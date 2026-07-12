@@ -1,28 +1,18 @@
-FinanceOS 2.2 – Interactive Dashboard Patch
+FinanceOS 2.2.1 – Completion Patch
 
-Neu:
-- Gesamtkontostand ist antippbar und öffnet die Kontenübersicht
-- Einnahmen öffnen eine gefilterte Einnahmenliste
-- Ausgaben öffnen eine gefilterte Ausgabenliste
-- „Offene Zuordnungen“ heißt jetzt „Zu prüfen“
-- neben „Zu prüfen“ steht das Datum der ältesten offenen Buchung
-- drei Beispielkredite: Auto, Haus und Konsum
-- Kredite mit passenden Line-Icons
-- Kreditverlauf dunkler links und heller rechts
-- Verlauf bleibt farbig und läuft nicht mehr ins Schwarze aus
-- Hintergrund bleibt beim Scrollen fix
-- FinanceOS-Header bleibt oben fixiert
-- ganz unten auf dem Dashboard: kleine Kachel „Anpassen“
-- Kontostand und Einnahmen/Ausgaben bleiben immer fest oben
-- nur Module darunter können verschoben oder ausgeblendet werden
+Vollständig korrigiert:
+- Dashboard-Buchungen sind antippbar und öffnen Details
+- Auto-, Haus- und Konsumkredit haben eigene Line-Icons
+- Konsumkredit verwendet ein Einkaufstaschen-Symbol
+- Kredite werden nach höchster Restschuld sortiert
+- maximal drei Kredite erscheinen auf dem Dashboard
+- weitere Kredite werden als „+N weitere →“ angezeigt
+- der Kreditverlauf liegt über die gesamte Kartenbreite
+- Grün erscheint dadurch erst bei echter, sehr hoher Tilgung
+- Dashboard-Anpassung verwaltet ausschließlich Module unterhalb der fixen Finanzübersicht
+- Gesamtkontostand sowie Einnahmen/Ausgaben bleiben unveränderbar
+- „Zu prüfen“ zeigt „seit DD.MM.“ für die älteste offene Buchung
+- falscher Toast „Buchung gespeichert“ bei Dashboard-Anpassung korrigiert
 
-Installation:
-1. Backup erstellen.
-2. ZIP entpacken.
-3. Gesamten Inhalt in das lokale GitHub-Repository kopieren.
-4. Vorhandene Dateien ersetzen.
-5. Commit: FinanceOS 2.2 Interactive Dashboard
-6. Push origin.
-7. Nach Deployment App vollständig schließen und neu öffnen.
-
-Bestehende Daten bleiben kompatibel.
+Commit:
+FinanceOS 2.2.1 Completion Patch

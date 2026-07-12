@@ -17,6 +17,7 @@ export const icons = {
   motorcycle: svg('<circle cx="6" cy="17" r="3"/><circle cx="18" cy="17" r="3"/><path d="M8 17h5l-2-5h4l3 5M10 12 8 9h4"/>'),
   boat: svg('<path d="M4 13h16l-3 5H7Zm4 0V7h7l3 6M10 7V4h3"/>'),
   card: svg('<rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 10h18"/>'),
+  consumer: svg('<path d="M6 8h12l1 12H5L6 8Z"/><path d="M9 9V6a3 3 0 0 1 6 0v3"/>'),
   document: svg('<path d="M6 3h8l4 4v14H6zM14 3v5h5"/>'),
   chevron: svg('<path d="m9 6 6 6-6 6"/>'),
   search: svg('<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>'),

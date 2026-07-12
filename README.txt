@@ -35,3 +35,9 @@ FinanceOS 4.0 Design System
 - entry form uses the same material, typography, spacing and motion tokens
 - type and amount are grouped compactly
 - page headings normalized across credits, settings and dashboard configuration
+
+
+FinanceOS 4.0.2:
+- vollständige Produkt- und Designphilosophie in FINANCEOS_DESIGN_GUIDE.md
+- Entwicklungsphasen und Roadmap dokumentiert
+- Freeze-, Sprint- und Feedback-Regeln verbindlich festgehalten

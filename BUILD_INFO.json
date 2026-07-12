@@ -1,0 +1,9 @@
+{
+  "version": "4.0.2",
+  "source": "src(1).zip",
+  "added_files": [
+    "FINANCEOS_DESIGN_GUIDE.md",
+    "FINANCEOS_ROADMAP.md"
+  ],
+  "javascript_syntax_checked": 10
+}

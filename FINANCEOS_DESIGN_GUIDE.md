@@ -1,71 +1,678 @@
-# FinanceOS Design Guide 4.0
+# FinanceOS Design Guide
 
-## Identity
+## 1. Zweck dieses Dokuments
 
-FinanceOS is calm, private, direct and trustworthy.
+Dieses Dokument ist die verbindliche Referenz für alle zukünftigen Design-,
+UX- und Interaktionsentscheidungen in FinanceOS.
 
-- Status first, detail second.
-- Color communicates meaning.
-- Motion confirms actions and preserves orientation.
-- The dashboard is an entry point, not a report.
-- New screens are composed from existing components.
+Es richtet sich nicht nur an Entwickler. Es beschreibt, wie FinanceOS wirkt,
+warum es so wirkt und welche Entscheidungen auch langfristig unverändert
+bleiben sollen.
 
-## Material levels
+FinanceOS darf mit neuen Funktionen wachsen, aber nicht seine Identität
+verlieren.
 
-1. Background
-2. Surface
-3. Raised Surface
-4. Overlay
-5. Sheet
+---
 
-Cards do not receive decorative shadows or borders beyond the material token.
+# 2. Produktidentität
 
-## Typography roles
+FinanceOS ist:
 
-- Display: primary financial value
-- Title: page title and FinanceOS title
-- Section: dashboard section headings
-- Headline: card and row titles
-- Body: ordinary values
-- Caption: metadata
-- Micro: navigation labels
+- ruhig
+- privat
+- direkt
+- hochwertig
+- verlässlich
+- verständlich
+- offline-orientiert
+- kontrollierbar
 
-No new arbitrary font sizes may be introduced.
+FinanceOS drängt sich nicht auf.
 
-## Components
+FinanceOS zeigt nie mehr Informationen als nötig.
 
-- AppHeader
+FinanceOS fühlt sich wie iOS an, kopiert iOS jedoch nicht.
+
+FinanceOS ist ein Werkzeug, kein Spielzeug.
+
+FinanceOS nutzt Farbe, Animation und Typografie ausschließlich dann, wenn sie
+Orientierung, Bedeutung oder Feedback vermitteln.
+
+---
+
+# 3. Entwicklungsphasen
+
+## Phase 1 — Vision
+
+Status: abgeschlossen
+
+Ziele:
+
+- Designrichtung finden
+- Navigation definieren
+- Dashboard definieren
+- Farbwelt definieren
+- Grundidentität entwickeln
+
+Ergebnis:
+
+FinanceOS besitzt eine klar erkennbare visuelle und funktionale Richtung.
+
+---
+
+## Phase 2 — Design System
+
+Status: aktiv
+
+Ziel:
+
+Eine UI-Architektur schaffen, die über Jahre erweiterbar bleibt.
+
+### Sprint 1 — Design Tokens
+
+- Farben
+- Abstände
+- Radien
+- Typografie
+- Schatten
+- Blur
+- Materialebenen
+- Motion-Zeiten
+
+### Sprint 2 — Component Library
+
 - HeroCard
 - SummaryCard
-- SectionHeader
 - GroupedCard
+- ProgressRow
 - LoanRow
 - BudgetRow
 - TransactionRow
-- PendingBar
+- SectionHeader
 - MaterialCard
-- ModalSheet
+- BottomSheet
 - NavigationBar
 - FloatingActionButton
 
-## Motion
+### Sprint 3 — Motion System
 
-- Press: 100 ms
-- Fast state: 160 ms
-- Page: 220 ms
-- Sheet: 280 ms
-- Progress: 520 ms
+- Press
+- Fade
+- Push
+- Pull
+- Sheet
+- Progress
+- Toast
+- Navigation
+- Scroll-Material
 
-Navigation never begins on touch-down. It begins after a completed tap.
+### Sprint 4 — Dashboard Migration
 
-## Frozen after validation
+Alle Dashboard-Bereiche werden ausschließlich aus standardisierten Komponenten
+zusammengesetzt.
 
-After user testing and a score of at least 9.5/10, the following are frozen:
+### Sprint 5 — Pages Migration
 
-- Dashboard structure
-- Navigation structure
-- Typography scale
-- Material scale
-- Core component geometry
+Buchungen, Budgets, Kredite, Konten, Einstellungen und Erfassung verwenden
+dieselben Komponenten und Tokens.
 
-A frozen component changes only for measurable UX or functional benefit.
+Nach Abschluss dieser Phase existiert kein alter, isolierter UI-Code mehr.
+
+---
+
+## Phase 3 — Feature Development
+
+Erst nach Abschluss und Test des Design Systems kommen größere Funktionen:
+
+- OCR
+- automatische Händlererkennung
+- automatische Kategorisierung
+- Prognosen
+- Sparziele
+- Erinnerungen
+- Widgets
+- Apple Shortcuts
+- Apple Watch
+- Live Activities
+- intelligente Finanzhinweise
+- optionale KI-Funktionen
+
+Neue Funktionen müssen sich dem Design System unterordnen.
+
+---
+
+# 4. Designprinzipien
+
+## 4.1 Weniger Elemente statt mehr
+
+Jedes Element benötigt einen klaren Zweck.
+
+Wenn zwei Elemente dieselbe Information vermitteln, bleibt nur das klarere.
+
+## 4.2 Status zuerst, Details danach
+
+Das Dashboard zeigt Status.
+
+Detailinformationen erscheinen erst nach einer bewussten Aktion.
+
+Beispiele:
+
+- Kredit auf dem Dashboard: Name, Restschuld, Fortschritt
+- Kreditdetails: Rate, Zins, Laufzeit, Historie
+- Budget auf der Übersicht: Name, Verbrauch, Restbetrag
+- Budgetdetails: Buchungen, Verlauf, Prognose
+
+## 4.3 Eine primäre Aufgabe pro Bildschirm
+
+Jeder Bildschirm benötigt eine klar erkennbare Hauptaufgabe.
+
+Zusätzliche Aktionen dürfen diese Aufgabe nicht visuell überholen.
+
+## 4.4 Wiederverwendung schlägt Individualität
+
+Eine neue Oberfläche prüft zuerst, ob sie mit bestehenden Komponenten gebaut
+werden kann.
+
+Neue Komponenten entstehen nur, wenn keine vorhandene Komponente die Aufgabe
+sinnvoll lösen kann.
+
+## 4.5 Farbe transportiert Bedeutung
+
+- Grün: positiv, Einnahme, Fortschritt oder Erfolg
+- Rot: Ausgabe, Fehler oder negativer Zustand
+- Gelb: prüfen, Warnung oder ungeklärter Zustand
+- Violett: Navigation, Primäraktion und Identität
+- Neutralgrau/Navy: Material und Struktur
+
+Farbe wird nicht als Dekoration eingesetzt.
+
+## 4.6 Animationen unterstützen
+
+Nichts bewegt sich ohne Grund.
+
+Animationen:
+
+- erklären Übergänge
+- bestätigen Eingaben
+- zeigen Zustandsänderungen
+- erhalten räumliche Orientierung
+
+Animationen dürfen niemals Aufmerksamkeit erzwingen.
+
+## 4.7 Jede Information hat einen nächsten Schritt
+
+Wenn eine Information antippbar ist, muss das Ziel eindeutig sein.
+
+Beispiele:
+
+- Gesamtkontostand → Kontenübersicht
+- Einnahmen → Einnahmenliste
+- Ausgaben → Ausgabenliste
+- Kredit → Kreditdetails
+- Buchung → Buchungsdetails
+- Zu prüfen → offene Buchungen
+- Budget → Budgetdetails
+
+## 4.8 Offline und Privatsphäre sind Standard
+
+Lokale Datenhaltung ist der Ausgangspunkt.
+
+Cloud, Sync oder externe Dienste sind Erweiterungen und niemals Voraussetzung.
+
+---
+
+# 5. Materialsystem
+
+FinanceOS nutzt definierte Ebenen.
+
+## Level 0 — Background
+
+Der Ambient-Hintergrund ist fest, ruhig und atmosphärisch.
+
+Er bewegt sich unabhängig vom Scroll-Inhalt.
+
+## Level 1 — Surface
+
+Normale Karten und Listen.
+
+Keine starken Schatten.
+
+Keine sichtbaren dekorativen Rahmen.
+
+## Level 2 — Raised Surface
+
+Primäre oder interaktive Karten.
+
+Minimal heller als Surface.
+
+## Level 3 — Overlay
+
+Sticky Header, Navigation und temporäre Flächen.
+
+Blur und Transparenz dienen der räumlichen Trennung.
+
+## Level 4 — Sheet
+
+Bottom Sheets und modale Detailansichten.
+
+Deutlichste Materialebene, aber weiterhin ruhig.
+
+## Regeln
+
+- Karten werden über Helligkeit getrennt, nicht über starke Ränder.
+- Schatten sind Floating-Elementen vorbehalten.
+- Blur wird nur auf Overlay, Navigation und Sheets eingesetzt.
+- Jede Ebene verwendet Design Tokens.
+
+---
+
+# 6. Farbregeln
+
+## Hintergrund
+
+Sehr dunkles Navy statt reines Schwarz.
+
+Der Ambient-Hintergrund darf sichtbar sein, aber niemals dominant wirken.
+
+## Karten
+
+Kühlere graublaue Materialien.
+
+Karten müssen sich vom Hintergrund abheben, ohne hell zu wirken.
+
+## Akzentfarbe
+
+Violett ist die FinanceOS-Identitätsfarbe.
+
+Sie wird verwendet für:
+
+- aktive Navigation
+- Primäraktionen
+- wichtige Line-Icons
+- Fokuszustände
+- ausgewählte Elemente
+
+## Semantische Farben
+
+Semantische Farben dürfen nie ihre Bedeutung wechseln.
+
+---
+
+# 7. Typografiesystem
+
+Es dürfen nur definierte Rollen verwendet werden.
+
+## Display
+
+Primäre Finanzwerte.
+
+Beispiel: Gesamtkontostand.
+
+## Title
+
+Seitentitel und FinanceOS-Header.
+
+## Section
+
+Abschnittsüberschriften.
+
+Beispiele: Kredite, Letzte Buchungen, Budgets.
+
+## Headline
+
+Titel in Karten und Listen.
+
+## Body
+
+Normale Werte und Inhalte.
+
+## Caption
+
+Metadaten, Konten, Kategorien, Zeitangaben.
+
+## Micro
+
+Navigationsbeschriftungen und sehr kleine Statusinformationen.
+
+## Regeln
+
+- Keine willkürlichen Schriftgrößen.
+- Finanzwerte dürfen größer als ihre Umgebung sein.
+- Abschnittsüberschriften dürfen Kartentitel nicht übermäßig dominieren.
+- Metadaten sind kleiner und farblich zurückgenommen.
+- Schriftgewicht erzeugt Hierarchie vor zusätzlicher Farbe.
+
+---
+
+# 8. Spacing-System
+
+Alle Abstände basieren auf einem festen Raster.
+
+Erlaubte Grundwerte:
+
+- 4
+- 8
+- 12
+- 16
+- 20
+- 24
+- 32
+- 40
+- 48
+
+Keine willkürlichen Abstände ohne dokumentierte Begründung.
+
+## Vertikaler Rhythmus
+
+- kleine interne Abstände: 4–8
+- Karteninhalt: 12–16
+- zwischen Karten: 8–12
+- zwischen Abschnitten: 20–24
+- Seitenränder: responsive, tokenbasiert
+
+---
+
+# 9. Radius-System
+
+## Small
+
+Kleine Controls und Iconflächen.
+
+## Medium
+
+Inputs, Buttons und kleine Karten.
+
+## Large
+
+Standardkarten und Gruppierungen.
+
+## Hero
+
+Hero-Karten und Bottom Sheets.
+
+## Pill
+
+Badges, Fortschritt und Toasts.
+
+Keine neuen Radien außerhalb des Systems.
+
+---
+
+# 10. Icon-System
+
+FinanceOS verwendet einheitliche Line-Icons.
+
+## Regeln
+
+- keine Emojis als UI-Symbole
+- einheitliche Strichstärke
+- einheitliche optische Größe
+- gleiche Rundungen
+- semantische Zuordnung
+- violette Tönung für neutrale Funktionsicons
+- Weiß für Icons auf farbigen Flächen
+- Grün, Rot und Gelb nur für semantische Zustände
+
+Beispiele:
+
+- Auto → Auto-Line-Icon
+- Hauskredit → Haus-Line-Icon
+- Konsumkredit → Einkaufstaschen-Line-Icon
+- offene Prüfung → Fragezeichen-Line-Icon
+- Anpassen → Listen-/Anordnungs-Line-Icon
+
+---
+
+# 11. Komponentenregeln
+
+## HeroCard
+
+Zeigt ausschließlich die wichtigste Finanzinformation.
+
+Enthält keine überflüssigen Details.
+
+## SummaryCard
+
+Teilt zwei verwandte Werte in einer gemeinsamen Karte.
+
+## SectionHeader
+
+Besteht aus:
+
+- Abschnittstitel
+- optionaler Aktion
+- optionalem Kontext
+
+## GroupedCard
+
+Fasst verwandte Zeilen in einer Materialfläche zusammen.
+
+## ProgressRow
+
+Zeigt Status über einen schmalen Fortschrittsbalken.
+
+Der Balken ersetzt keine notwendige Zahl, aber vermeidet redundante Angaben.
+
+## LoanRow
+
+Dashboard:
+
+- Name
+- Restschuld
+- Fortschritt
+
+Nicht im Dashboard:
+
+- Zinssatz
+- Rate
+- Laufzeit
+- Prozentwert, sofern Fortschritt und Restschuld ausreichend sind
+
+## BudgetRow
+
+- Kategorie
+- verwendet / Gesamtbudget
+- Restbetrag
+- Fortschritt
+
+## TransactionRow
+
+- Händlersymbol
+- Titel
+- Kategorie und Konto
+- Betrag
+- optionaler Chevron
+
+## PendingBar
+
+Ruhige Informationszeile.
+
+Sie darf nicht stärker wirken als Kredite oder Buchungen.
+
+## BottomSheet
+
+Verwendet dieselbe Typografie, Materialebene und Feldstruktur wie die App.
+
+Das Plus-Menü darf niemals wie eine separate Anwendung wirken.
+
+---
+
+# 12. Motion-System
+
+## Press
+
+100 ms
+
+- leichte Skalierung
+- leichte Abdunklung
+- Navigation erst nach vollständigem Tippen
+
+## Fast State
+
+160 ms
+
+Für kleine Zustandsänderungen.
+
+## Page Transition
+
+220 ms
+
+Für Navigation zwischen Seiten.
+
+## Sheet
+
+280 ms
+
+Für Bottom Sheets.
+
+## Progress
+
+520 ms
+
+Für Kredit- und Budgetfortschritt.
+
+## Regeln
+
+- Touch-down löst niemals Navigation aus.
+- Long Press ist nur Zusatzfunktion und nie Voraussetzung.
+- `prefers-reduced-motion` wird respektiert.
+- Transform und Opacity werden bevorzugt.
+- Keine dekorativen Daueranimationen außer sehr langsamer Ambient-Bewegung.
+
+---
+
+# 13. UX-Regeln
+
+1. Jede Hauptinformation führt zu einer passenden Detailansicht.
+2. Destruktive Aktionen benötigen Bestätigung.
+3. Speichern erzeugt unmittelbares Feedback.
+4. Dashboard zeigt Status, nicht vollständige Auswertungen.
+5. Detailansichten dürfen umfangreicher sein.
+6. Eine Primäraktion pro Bildschirm.
+7. Touchflächen sind mindestens 44 px groß.
+8. Safe Areas werden immer berücksichtigt.
+9. Neue Geräte erfordern Tests, kein Redesign.
+10. Leere Zustände erklären den nächsten möglichen Schritt.
+
+---
+
+# 14. Dashboard-Regeln
+
+Fest oben:
+
+- Gesamtkontostand
+- Einnahmen
+- Ausgaben
+
+Konfigurierbar darunter:
+
+- Zu prüfen
+- Kredite
+- Letzte Buchungen
+
+Das Dashboard bleibt scrollbar.
+
+Die Nutzer können Reihenfolge und Sichtbarkeit der unteren Module ändern.
+
+Das Dashboard enthält keine komplexen Diagramme, sofern sie nicht für eine
+tägliche Entscheidung notwendig sind.
+
+---
+
+# 15. Freeze-Regel
+
+Ein UI-Bereich wird eingefroren, sobald er im Test mindestens 9,5/10 erreicht.
+
+Danach wird er nur geändert, wenn ein objektiver Vorteil vorliegt:
+
+- klarerer Ablauf
+- weniger Fehler
+- bessere Zugänglichkeit
+- messbare Zeitersparnis
+- neue zwingende Funktion
+- technische Kompatibilität
+
+Reines Pixel-Pushing ist nach dem Freeze nicht erlaubt.
+
+---
+
+# 16. Sprint-Regel
+
+Ein Sprint enthält maximal fünf Kernpunkte.
+
+Neue Ideen während eines Sprints kommen in den Backlog.
+
+Jeder Sprint endet mit:
+
+- iPhone-Test
+- Feedback nach Vorlage
+- Bewertung
+- Freeze-Entscheidung
+- nächster Sprint
+
+---
+
+# 17. Feedback-Vorlage
+
+## FinanceOS vX.X Feedback
+
+### Erster Eindruck
+
+Bewertung: /10
+
+Kommentar:
+
+### Was ist deutlich besser geworden?
+
+- 
+
+### Was stört noch?
+
+#### Muss
+
+- 
+
+#### Sollte
+
+- 
+
+#### Nice to have
+
+- 
+
+### Bugs
+
+- 
+
+### Neue Ideen
+
+- 
+
+### Nicht mehr ändern
+
+- 
+
+### Bewertung
+
+- Design:
+- UX:
+- Codequalität:
+- Apple-Faktor:
+- Release-Reife:
+
+### Nächster Sprint
+
+Maximal fünf Punkte.
+
+---
+
+# 18. Langfristige Regel
+
+FinanceOS wächst über Fähigkeiten, nicht über visuelle Unruhe.
+
+Neue Funktionen müssen sich so anfühlen, als wären sie von Anfang an Teil der
+App gewesen.
+
+Das Design System ist keine Empfehlung.
+
+Es ist die verbindliche Grundlage von FinanceOS.

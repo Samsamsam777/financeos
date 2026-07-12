@@ -16,28 +16,94 @@ function shell(content){
  bindNav()
 }
 function bindNav(){document.querySelectorAll("[data-nav]").forEach(b=>b.onclick=()=>{view=b.dataset.nav;render()})}
+function merchantMark(t){
+ const d=(t.description||"").toUpperCase();
+ if(d.includes("PAYPAL"))return "P";
+ if(d.includes("REWE"))return "R";
+ if(d.includes("AMAZON"))return "a";
+ if(d.includes("SHELL")||d.includes("TANK"))return "⛽";
+ if(t.type==="income")return "↗";
+ return (t.description||"?").trim().charAt(0).toUpperCase()
+}
 function txRow(t,withAction=false){
  const pending=t.status==="pending",cls=pending?"pending":t.type==="income"?"positive":"negative";
- return `<div class="row"><div><strong>${pending?"◌ ":""}${esc(t.description)}</strong><div class="meta">${cat(t.categoryId)?.name||"—"} · ${acc(t.accountId)?.name||"—"} · ${t.person||"Gemeinsam"}</div></div>
- <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:6px;padding:7px 9px">Bearbeiten</button>`:""}</div></div>`
+ return `<div class="row transaction-row">
+   <div class="transaction-left">
+     <div class="merchant-icon">${esc(merchantMark(t))}</div>
+     <div class="transaction-copy"><strong>${esc(t.description)}</strong><div class="meta">${cat(t.categoryId)?.name||"—"} · ${acc(t.accountId)?.name||"—"}</div></div>
+   </div>
+   <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:5px;padding:6px 8px">Bearbeiten</button>`:""}</div>
+ </div>`
 }
 function renderToday(){
- const s=monthSummary(data);const cfg=data.settings.dashboard;const pending=data.transactions.filter(t=>t.status==="pending");
+ const s=monthSummary(data);
+ const cfg=data.settings.dashboard;
+ const pending=data.transactions.filter(t=>t.status==="pending");
  const totalBalance=data.accounts.reduce((sum,a)=>sum+accountBalance(data,a.id),0);
- const spentToday=data.transactions.filter(t=>t.type==="expense"&&t.date===today()).reduce((sum,t)=>sum+Number(t.amount),0);
+
  const modules=[
-  {key:"balance",html:()=>`<section class="dashboard-module"><div class="card hero"><div class="label">Gesamtkontostand</div><div class="value">${euro(totalBalance)}</div><div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div></div></section>`},
-  {key:"today",html:()=>`<section class="dashboard-module"><div class="grid two">${kpi("Heute ausgegeben",euro(spentToday))}${kpi("Monatsausgaben",euro(s.expense))}${kpi("Einnahmen",euro(s.income))}${kpi("Sparquote",Math.round(s.rate*100)+" %")}</div></section>`},
-  {key:"pending",html:()=>`<section class="dashboard-module"><div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div><div class="card"><div class="row"><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div><button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button></div></div></section>`},
+  {key:"balance",html:()=>`<section class="dashboard-module">
+    <div class="card hero">
+      <div class="hero-row">
+        <div class="hero-icon">▣</div>
+        <div class="hero-copy">
+          <div class="label">Gesamtkontostand</div>
+          <div class="value">${euro(totalBalance)}</div>
+          <div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div>
+        </div>
+      </div>
+    </div>
+  </section>`},
+  {key:"today",html:()=>`<section class="dashboard-module">
+    <div class="grid two">
+      <div class="card metric-card income">
+        <div class="metric-head"><div class="metric-icon income">↗</div><div class="metric-label">Einnahmen</div></div>
+        <div class="metric-value">${euro(s.income)}</div>
+      </div>
+      <div class="card metric-card expense">
+        <div class="metric-head"><div class="metric-icon expense">↘</div><div class="metric-label">Ausgaben</div></div>
+        <div class="metric-value">${euro(s.expense)}</div>
+      </div>
+    </div>
+  </section>`},
+  {key:"pending",html:()=>`<section class="dashboard-module">
+    <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
+    <div class="card pending-card"><div class="row">
+      <div class="pending-left"><div class="pending-icon">□</div><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div></div>
+      <button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button>
+    </div></div>
+  </section>`},
   {key:"loans",html:()=>renderLoanPreview(cfg.loans.count||2)},
-  {key:"transactions",html:()=>renderTransactionPreview(cfg.transactions.count||6)}];
- const html=modules.filter(m=>cfg[m.key]?.enabled!==false).sort((a,b)=>(cfg[a.key]?.order||99)-(cfg[b.key]?.order||99)).map(m=>m.html()).join("");
- shell(html);bindLoanInteractions()
+  {key:"transactions",html:()=>renderTransactionPreview(cfg.transactions.count||6)}
+ ];
+
+ const html=modules
+   .filter(m=>cfg[m.key]?.enabled!==false)
+   .sort((a,b)=>(cfg[a.key]?.order||99)-(cfg[b.key]?.order||99))
+   .map(m=>m.html()).join("");
+
+ shell(html);
+ bindLoanInteractions()
 }
 
 function renderLoanPreview(count){
- const loans=data.loans.slice(0,Math.max(0,Number(count)||0));if(!loans.length)return "";
- return `<section class="dashboard-module"><div class="section-title"><h2>Kredite</h2><button class="section-link" data-nav="loans">Alle Kredite →</button></div><div class="list" style="gap:8px">${loans.map(l=>{const paid=Math.max(0,l.principal-l.remaining);const pct=l.principal?Math.max(0,Math.min(100,paid/l.principal*100)):0;return `<div class="card loan-strip" data-loan="${l.id}"><div class="loan-strip-fill" style="width:${pct}%"></div><div class="loan-strip-content"><strong>${esc(l.name)}</strong><span class="pct">${Math.round(pct)} %</span></div></div>`}).join("")}</div></section>`
+ const loans=data.loans.slice(0,Math.max(0,Number(count)||0));
+ if(!loans.length)return "";
+ return `<section class="dashboard-module">
+   <div class="section-title"><h2>Kredite</h2><button class="section-link" data-nav="loans">Alle Kredite →</button></div>
+   <div class="list" style="gap:7px">${loans.map(l=>{
+      const paid=Math.max(0,l.principal-l.remaining);
+      const pct=l.principal?Math.max(0,Math.min(100,paid/l.principal*100)):0;
+      return `<div class="card loan-strip" data-loan="${l.id}">
+        <div class="loan-strip-fill" style="width:${pct}%"></div>
+        <div class="loan-strip-content">
+          <div class="loan-icon">▱</div>
+          <strong>${esc(l.name)}</strong>
+          <span class="pct">${Math.round(pct)} %</span>
+        </div>
+      </div>`
+   }).join("")}</div>
+ </section>`
 }
 function renderTransactionPreview(count){const recent=sortNewest(data.transactions).slice(0,Math.max(0,Number(count)||0));if(!recent.length)return "";return `<section class="dashboard-module"><div class="section-title"><h2>Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle Buchungen →</button></div><div class="card list">${recent.map(t=>txRow(t)).join("")}</div></section>`}
 function bindLoanInteractions(){document.querySelectorAll("[data-loan]").forEach(el=>{let timer=null,longPressed=false;const id=el.dataset.loan;const start=()=>{longPressed=false;timer=setTimeout(()=>{longPressed=true;showLoanQuickView(id)},550)};const cancel=()=>{if(timer)clearTimeout(timer)};el.addEventListener("touchstart",start,{passive:true});el.addEventListener("touchend",()=>{cancel();if(!longPressed){view="loans";render()}});el.addEventListener("touchmove",cancel,{passive:true});el.addEventListener("mousedown",start);el.addEventListener("mouseup",()=>{cancel();if(!longPressed){view="loans";render()}});el.addEventListener("mouseleave",cancel)})}
@@ -98,7 +164,7 @@ function renderManage(){
 }
 
 function renderDashboardSettings(){
- const cfg=data.settings.dashboard;const labels={balance:"Gesamtkontostand",today:"Tages- und Monatswerte",pending:"Offene Zuordnungen",loans:"Kredite",transactions:"Letzte Buchungen"};const keys=["balance","today","pending","loans","transactions"];
+ const cfg=data.settings.dashboard;const labels={balance:"Gesamtkontostand",today:"Einnahmen & Ausgaben",pending:"Offene Zuordnungen",loans:"Kredite",transactions:"Letzte Buchungen"};const keys=["balance","today","pending","loans","transactions"];
  shell(`<div class="section-title"><h2>Dashboard anpassen</h2></div><div class="card form"><div class="notice">Das Dashboard bleibt scrollbar. Über Reihenfolge und Anzahl legst du fest, was zuerst sichtbar ist.</div>${keys.map(k=>`<div class="dashboard-config-row"><div><strong>${labels[k]}</strong>${k==="loans"||k==="transactions"?`<div class="meta">Anzahl sichtbarer Einträge</div>`:""}</div><div class="config-controls"><input class="toggle" type="checkbox" data-enable="${k}" ${cfg[k].enabled!==false?"checked":""}>${k==="loans"||k==="transactions"?`<input type="number" min="0" max="20" value="${cfg[k].count||0}" data-count="${k}">`:""}<select data-order="${k}">${[1,2,3,4,5].map(n=>`<option value="${n}" ${Number(cfg[k].order)===n?"selected":""}>${n}</option>`).join("")}</select></div></div>`).join("")}<button class="btn primary" id="saveDashboard">Speichern</button></div>`);
  saveDashboard.onclick=()=>{keys.forEach(k=>{cfg[k].enabled=document.querySelector(`[data-enable="${k}"]`).checked;cfg[k].order=Number(document.querySelector(`[data-order="${k}"]`).value);const count=document.querySelector(`[data-count="${k}"]`);if(count)cfg[k].count=Math.max(0,Math.min(20,Number(count.value)||0))});save(data);view="today";render()}
 }

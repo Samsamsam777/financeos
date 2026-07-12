@@ -1,22 +1,23 @@
-FinanceOS v0.5 – Dashboard-Test
+FinanceOS v0.6 – Apple Dashboard Direction
 
-Neu:
-- Dashboard frei konfigurierbar
-- Module ein-/ausblenden
-- Reihenfolge 1–5 festlegen
-- Anzahl sichtbarer Kredite festlegen
-- Anzahl sichtbarer Buchungen festlegen
-- Dashboard bleibt scrollbar
-- Kredite als sehr schmale Fortschrittskacheln
-- Alle Kredite rechts neben der Überschrift
-- Tippen öffnet Kreditbereich
-- Langer Druck öffnet Schnellansicht
-- Alle Buchungen rechts neben der Überschrift
+Designänderungen:
+- ruhigeres Apple-inspiriertes Dashboard
+- Gesamtkontostand kompakter
+- darunter nur Einnahmen und Ausgaben
+- dezente grüne/rote Symbolkreise
+- weniger Schatten und weniger Farbflächen
+- schlankere Kreditkacheln
+- Kreditkachel bleibt selbst der Fortschrittsbalken
+- neutrale Händler-/Kategorie-Icons in Buchungslisten
+- aktive Navigation in Violett
+- Plus-Button ragt exakt etwa zu einem Drittel über die Navbar
 
-Update mit GitHub Desktop:
+Dashboard-Konfiguration aus v0.5 bleibt erhalten.
+
+Installation:
 1. ZIP entpacken.
 2. Gesamten Inhalt in dein lokales FinanceOS-Repository kopieren.
 3. Vorhandene Dateien ersetzen.
-4. Commit: FinanceOS v0.5 Dashboard Test
+4. Commit: FinanceOS v0.6 Apple Dashboard
 5. Push origin.
-6. Nach Deployment die Homescreen-App vollständig schließen und neu öffnen.
+6. Nach Deployment App vollständig schließen und neu öffnen.

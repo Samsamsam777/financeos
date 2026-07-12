@@ -11,7 +11,7 @@ const acc=id=>data.accounts.find(x=>x.id===id);
 
 function navBtn(id,label,icon){return `<button data-nav="${id}" class="${view===id?"active":""}"><div class="nav-icon">${icon}</div>${label}</button>`}
 function shell(content){
- app.innerHTML=`<main class="app"><div class="topbar"><div class="brand"><h1>FinanceOS</h1><p>Privat. Offline. Dein Haushalt.</p></div><button class="icon-btn" data-nav="settings">⚙</button></div>${content}</main>
+ app.innerHTML=`<main class="app"><div class="topbar"><div class="brand"><h1>FinanceOS</h1><p>Mein Finanzbuch</p></div></div>${content}</main>
  <nav class="nav"><div class="nav-inner">${navBtn("today","Heute","⌂")}${navBtn("transactions","Buchungen","≡")}<button class="plus" data-nav="add">＋</button>${navBtn("budgets","Budgets","◔")}${navBtn("more","Mehr","•••")}</div></nav>`;
  bindNav()
 }
@@ -22,15 +22,53 @@ function txRow(t,withAction=false){
  <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:6px;padding:7px 9px">Bearbeiten</button>`:""}</div></div>`
 }
 function renderToday(){
- const s=monthSummary(data),pending=data.transactions.filter(t=>t.status==="pending"),recent=sortNewest(data.transactions).slice(0,10),loan=data.loans[0];
- shell(`<div class="grid two">${kpi("Verfügbar",euro(s.available))}${kpi("Ausgaben",euro(s.expense))}${kpi("Einnahmen",euro(s.income))}${kpi("Sparquote",Math.round(s.rate*100)+" %")}</div>
+ const s=monthSummary(data);
+ const pending=data.transactions.filter(t=>t.status==="pending");
+ const recent=sortNewest(data.transactions).slice(0,10);
+ const loan=data.loans[0];
+ const totalBalance=data.accounts.reduce((sum,a)=>sum+accountBalance(data,a.id),0);
+ const spentToday=data.transactions
+   .filter(t=>t.type==="expense"&&t.date===today())
+   .reduce((sum,t)=>sum+Number(t.amount),0);
+ const loanPaid=loan?loan.principal-loan.remaining:0;
+ const loanPct=loan&&loan.principal?Math.max(0,Math.min(100,loanPaid/loan.principal*100)):0;
+
+ shell(`
+ <div class="card hero">
+   <div class="label">Gesamtkontostand</div>
+   <div class="value">${euro(totalBalance)}</div>
+   <div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div>
+ </div>
+
+ <div class="grid two" style="margin-top:12px">
+   ${kpi("Heute ausgegeben",euro(spentToday))}
+   ${kpi("Monatsausgaben",euro(s.expense))}
+   ${kpi("Einnahmen",euro(s.income))}
+   ${kpi("Sparquote",Math.round(s.rate*100)+" %")}
+ </div>
+
  <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
  <div class="card">
-  <div class="row"><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div><button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button></div>
-  ${loan?`<div class="row"><div style="flex:1"><strong>${loan.name}</strong><div class="meta">${euro(loan.principal-loan.remaining)} von ${euro(loan.principal)} abbezahlt</div><div class="progress" style="margin-top:8px"><span style="width:${Math.min(100,(loan.principal-loan.remaining)/loan.principal*100)}%"></span></div></div><div>${Math.round((loan.principal-loan.remaining)/loan.principal*100)} %</div></div>`:""}
+   <div class="row">
+     <div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div>
+     <button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button>
+   </div>
  </div>
- <div class="section-title"><h2>Konten</h2></div><div class="card list">${data.accounts.map(a=>`<div class="row"><div><strong>${esc(a.name)}</strong><div class="meta">${esc(a.type)}</div></div><strong>${euro(accountBalance(data,a.id))}</strong></div>`).join("")}</div>
- <div class="section-title"><h2>Letzte Buchungen</h2><span class="small">max. 10</span></div><div class="card list">${recent.map(t=>txRow(t)).join("")||'<div class="empty">Keine Buchungen</div>'}</div>
+
+ ${loan?`<div class="section-title"><h2>Kredit</h2></div>
+ <div class="card loan-card" data-nav="loans">
+   <div class="loan-fill" style="width:${loanPct}%"></div>
+   <div class="loan-content">
+     <div><strong>${esc(loan.name)}</strong><div class="meta">${euro(loanPaid)} abbezahlt</div></div>
+     <div><div class="loan-rest">${euro(loan.remaining)}</div><div class="loan-pct">${Math.round(loanPct)} % getilgt</div></div>
+   </div>
+ </div>`:""}
+
+ <div class="section-title"><h2>Konten</h2></div>
+ <div class="card list">${data.accounts.map(a=>`<div class="row"><div><strong>${esc(a.name)}</strong><div class="meta">${esc(a.type)}</div></div><strong>${euro(accountBalance(data,a.id))}</strong></div>`).join("")}</div>
+
+ <div class="section-title"><h2>Letzte Buchungen</h2></div>
+ <div class="card list">${recent.map(t=>txRow(t)).join("")||'<div class="empty">Keine Buchungen</div>'}</div>
  <button class="btn ghost all-link" data-nav="transactions">Alle Buchungen anzeigen →</button>`)
 }
 function renderTransactions(){
@@ -74,7 +112,7 @@ function renderBudgets(){
  const key=today().slice(0,7),tx=data.transactions.filter(t=>monthKey(t.date)===key&&t.type==="expense");
  shell(`<div class="section-title"><h2>Budgets</h2><span class="small">${key}</span></div><div class="card list">${data.categories.filter(c=>c.budget>0).map(c=>{const used=tx.filter(t=>t.categoryId===c.id).reduce((s,t)=>s+Number(t.amount),0),rest=c.budget-used,pct=Math.min(100,c.budget?used/c.budget*100:0);return `<div class="row"><div style="flex:1"><strong>${esc(c.name)}</strong><div class="meta">${euro(used)} verbraucht · ${euro(rest)} übrig</div><div class="progress" style="margin-top:8px"><span style="width:${pct}%"></span></div></div><div>${Math.round(pct)} %</div></div>`}).join("")}</div>`)
 }
-function renderMore(){shell(`<div class="section-title"><h2>Mehr</h2></div><div class="grid"><button class="card btn" data-nav="pending">Später zuordnen</button><button class="card btn" data-nav="loans">Kredite</button><button class="card btn" data-nav="manage">Konten, Kategorien & Regeln</button><button class="card btn" data-nav="settings">Backup & Daten</button></div>`)}
+function renderMore(){shell(`<div class="section-title"><h2>Mehr</h2></div><div class="grid"><button class="card btn" data-nav="pending">Später zuordnen</button><button class="card btn" data-nav="loans">Kredite</button><button class="card btn" data-nav="manage">Konten, Kategorien & Regeln</button><button class="card btn" data-nav="settings">Einstellungen & Backup</button></div>`)}
 function renderLoans(){shell(`<div class="section-title"><h2>Kredite</h2></div><div class="card list">${data.loans.map(l=>{const paid=l.principal-l.remaining,pct=paid/l.principal*100;return `<div><div class="row"><div><strong>${esc(l.name)}</strong><div class="meta">Rate ${euro(l.rate)} · ${l.interest}% Zins</div></div><strong>${euro(l.remaining)}</strong></div><div class="progress"><span style="width:${pct}%"></span></div><div class="small" style="margin-top:8px">${euro(paid)} abbezahlt · ${Math.round(pct)} %</div></div>`}).join("")}</div>`)}
 function renderManage(){
  shell(`<div class="section-title"><h2>Verwalten</h2></div>

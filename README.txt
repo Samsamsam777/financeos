@@ -1,31 +1,30 @@
-FinanceOS 2.0 – Foundation & Feel
+FinanceOS 2.1 – Polish Sprint
 
-Neu:
-- zentrales Motion-System
-- Press-Feedback für Buttons und Karten
-- weiche Seitenübergänge
-- animierte Bottom Sheets
-- Toast-Rückmeldungen für Speichern, Löschen und Zuordnen
-- animierte Kontostands-, Einnahmen- und Ausgabenzahlen
-- animierter Kreditfortschritt
-- vorbereitete Haptik-Schnittstelle
-- automatische Unterstützung für „Bewegung reduzieren“
-- DESIGN.md als verbindliches Produkt- und Designregelwerk
-- Motion-Tokens in constants.js und CSS
-- sauberere Trennung zwischen UI, Motion, Daten und Logik
+Schwerpunkt:
+- vollständiger Design-Token-Ausbau
+- responsive Größen mit clamp()
+- Safe-Area-Unterstützung für neue iPhones
+- Mindest-Touchflächen von 44 px
+- konsistentere Typografie, Abstände, Radien und Komponentenmaße
+- bessere Darstellung auf sehr schmalen und größeren Displays
+- Unterstützung für erhöhten Kontrast und reduzierte Bewegung
+- bereinigte Motion-Logik
+- TOKENS.md als technische Referenz
+- DESIGN.md um Responsive-Regeln ergänzt
 
-Wichtige iPhone-Grenze:
-Browser-PWAs können auf iOS keine nativen Haptics auslösen.
-FinanceOS nutzt echte Vibration auf unterstützten Geräten und visuelle
-Mikrointeraktionen als Fallback auf dem iPhone.
+Wichtig:
+Ein neues iPhone bedeutet ab jetzt nicht „bei null anfangen“.
+Die UI passt sich über Safe-Areas, flexible Breiten und Design-Tokens an.
+Auf einem neuen Gerät muss getestet und eventuell feinjustiert werden,
+aber nicht neu gestaltet.
 
 Installation:
-1. In FinanceOS ein Backup erstellen.
+1. FinanceOS-Backup erstellen.
 2. ZIP entpacken.
 3. Gesamten Inhalt in das lokale GitHub-Repository kopieren.
 4. Vorhandene Dateien ersetzen.
-5. Commit: FinanceOS 2.0 Foundation
+5. Commit: FinanceOS 2.1 Polish Sprint
 6. Push origin.
-7. Nach dem Deployment die App vollständig schließen und neu öffnen.
+7. Nach Deployment App vollständig schließen und neu öffnen.
 
 Bestehende Daten bleiben kompatibel.

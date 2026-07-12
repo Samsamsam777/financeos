@@ -16,7 +16,8 @@ export function haptic(type = "selection") {
 }
 
 export function animateNumber(element, endValue, formatter, duration = MOTION.number) {
-  if (!element) return;
+  if (!element || element.dataset.animating === "true") return;
+  element.dataset.animating = "true";
   if (reducedMotion()) {
     element.textContent = formatter(endValue);
     return;
@@ -31,7 +32,10 @@ export function animateNumber(element, endValue, formatter, duration = MOTION.nu
     const value = from + delta * eased;
     element.textContent = formatter(value);
     if (progress < 1) requestAnimationFrame(frame);
-    else element.dataset.value = String(endValue);
+    else {
+      element.dataset.value = String(endValue);
+      element.dataset.animating = "false";
+    }
   };
   requestAnimationFrame(frame);
 }
@@ -63,6 +67,7 @@ export function animateLoanFills() {
     fill.style.width = "0%";
     requestAnimationFrame(() => {
       fill.style.width = targetWidth;
+      setTimeout(() => fill.dataset.animated = "true", 560);
     });
   });
 }

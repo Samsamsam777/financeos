@@ -67,3 +67,16 @@ Motion uses transform and opacity where possible.
 FinanceOS is a PWA. Native iOS haptics are not exposed to browser apps.
 A haptic abstraction is included and uses `navigator.vibrate` where supported.
 On iPhone, visual press states and motion provide the interaction feedback.
+
+
+## Responsive principles
+
+1. No screen is designed for one specific iPhone model.
+2. Safe areas are mandatory at top and bottom.
+3. Component sizes use tokens and `clamp()` where appropriate.
+4. Touch targets remain at least 44 px.
+5. Layouts must support narrow screens down to 320 px.
+6. Layouts must not become excessively wide on tablets or desktop.
+7. Dynamic viewport units are preferred when supported.
+8. High contrast and reduced motion preferences are respected.
+9. A new device must require testing, not a redesign.

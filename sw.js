@@ -1,4 +1,4 @@
-const CACHE = "financeos-v2-foundation";
+const CACHE = "financeos-v2-1-polish";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,7 +11,9 @@ const ASSETS = [
   "./src/storage.js",
   "./src/styles.css",
   "./src/ui.js",
-  "./src/views.js"
+  "./src/views.js",
+  "./TOKENS.md",
+  "./DESIGN.md"
 ];
 
 self.addEventListener("install", event => {

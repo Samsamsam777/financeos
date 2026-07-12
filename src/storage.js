@@ -1,7 +1,7 @@
 
 const KEY="financeos_v01";
 export const seed={
- settings:{people:["Gemeinsam","Sam","Partnerin","Unklar"],currency:"EUR"},
+ settings:{people:["Gemeinsam","Sam","Partnerin","Unklar"],currency:"EUR",dashboard:{balance:{enabled:true,order:1},today:{enabled:true,order:2},pending:{enabled:true,order:3},loans:{enabled:true,order:4,count:2},transactions:{enabled:true,order:5,count:6}}},
  accounts:[
   {id:"a1",name:"Gemeinschaftskonto",type:"Girokonto",start:2500},
   {id:"a2",name:"Kreditkarte",type:"Kreditkarte",start:0},
@@ -39,7 +39,7 @@ export function load(){
   const raw=localStorage.getItem(KEY);
   if(raw){
    const d=JSON.parse(raw);
-   d.settings ||= clone(seed.settings); d.accounts ||= []; d.categories ||= [];
+   d.settings ||= clone(seed.settings); d.settings.dashboard ||= clone(seed.settings.dashboard); d.accounts ||= []; d.categories ||= [];
    d.rules=(d.rules||[]).map(r=>({...r,id:r.id||uid()}));
    d.transactions=(d.transactions||[]).map((t,i)=>({...t,createdAt:t.createdAt||Date.parse(t.date)||i}));
    d.loans ||= [];

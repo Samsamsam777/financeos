@@ -1,34 +1,22 @@
-FinanceOS v0.3
+FinanceOS v0.5 – Dashboard-Test
 
-Upload nach GitHub:
-1. Repository öffnen.
-2. Alte index.html löschen.
-3. Add file -> Upload files.
-4. Den gesamten Inhalt dieses Ordners hochladen:
-   - index.html
-   - manifest.webmanifest
-   - sw.js
-   - Ordner src mit allen Dateien
-5. Commit changes.
-6. 1-2 Minuten warten.
-7. GitHub-Pages-Link in Safari neu öffnen.
+Neu:
+- Dashboard frei konfigurierbar
+- Module ein-/ausblenden
+- Reihenfolge 1–5 festlegen
+- Anzahl sichtbarer Kredite festlegen
+- Anzahl sichtbarer Buchungen festlegen
+- Dashboard bleibt scrollbar
+- Kredite als sehr schmale Fortschrittskacheln
+- Alle Kredite rechts neben der Überschrift
+- Tippen öffnet Kreditbereich
+- Langer Druck öffnet Schnellansicht
+- Alle Buchungen rechts neben der Überschrift
 
-Wichtig:
-- Die Adresse des Repositorys bleibt gleich.
-- FinanceOS verwendet weiterhin den bisherigen lokalen Speicher-Schlüssel.
-- Vorhandene Buchungen bleiben daher normalerweise erhalten.
-- Vor Updates trotzdem ein Backup erstellen.
-
-Enthalten:
-- Kompakte Navigation mit leicht größeren Symbolen und Schrift
-- Plus-Button wieder in alter Größe
-- Dashboard: neueste Buchung oben, maximal 10
-- Alle Buchungen mit Suche, Filtern und Sortierung
-- Buchungen bearbeiten und löschen
-- Händlerregeln erstellen, bearbeiten und löschen
-- Konten und Kategorien verwalten
-- Später zuordnen mit Lernfunktion
-- Budgets mit Restbetrag
-- Kreditfortschritt
-- Backup/Restore
-- Offline-Cache
+Update mit GitHub Desktop:
+1. ZIP entpacken.
+2. Gesamten Inhalt in dein lokales FinanceOS-Repository kopieren.
+3. Vorhandene Dateien ersetzen.
+4. Commit: FinanceOS v0.5 Dashboard Test
+5. Push origin.
+6. Nach Deployment die Homescreen-App vollständig schließen und neu öffnen.

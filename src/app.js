@@ -22,55 +22,27 @@ function txRow(t,withAction=false){
  <div style="text-align:right"><div class="amount ${cls}">${t.type==="income"?"+":"-"}${euro(t.amount)}</div>${withAction?`<button class="btn ghost" data-edit="${t.id}" style="margin-top:6px;padding:7px 9px">Bearbeiten</button>`:""}</div></div>`
 }
 function renderToday(){
- const s=monthSummary(data);
- const pending=data.transactions.filter(t=>t.status==="pending");
- const recent=sortNewest(data.transactions).slice(0,10);
- const loan=data.loans[0];
+ const s=monthSummary(data);const cfg=data.settings.dashboard;const pending=data.transactions.filter(t=>t.status==="pending");
  const totalBalance=data.accounts.reduce((sum,a)=>sum+accountBalance(data,a.id),0);
- const spentToday=data.transactions
-   .filter(t=>t.type==="expense"&&t.date===today())
-   .reduce((sum,t)=>sum+Number(t.amount),0);
- const loanPaid=loan?loan.principal-loan.remaining:0;
- const loanPct=loan&&loan.principal?Math.max(0,Math.min(100,loanPaid/loan.principal*100)):0;
-
- shell(`
- <div class="card hero">
-   <div class="label">Gesamtkontostand</div>
-   <div class="value">${euro(totalBalance)}</div>
-   <div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div>
- </div>
-
- <div class="grid two" style="margin-top:12px">
-   ${kpi("Heute ausgegeben",euro(spentToday))}
-   ${kpi("Monatsausgaben",euro(s.expense))}
-   ${kpi("Einnahmen",euro(s.income))}
-   ${kpi("Sparquote",Math.round(s.rate*100)+" %")}
- </div>
-
- <div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div>
- <div class="card">
-   <div class="row">
-     <div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div>
-     <button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button>
-   </div>
- </div>
-
- ${loan?`<div class="section-title"><h2>Kredit</h2></div>
- <div class="card loan-card" data-nav="loans">
-   <div class="loan-fill" style="width:${loanPct}%"></div>
-   <div class="loan-content">
-     <div><strong>${esc(loan.name)}</strong><div class="meta">${euro(loanPaid)} abbezahlt</div></div>
-     <div><div class="loan-rest">${euro(loan.remaining)}</div><div class="loan-pct">${Math.round(loanPct)} % getilgt</div></div>
-   </div>
- </div>`:""}
-
- <div class="section-title"><h2>Konten</h2></div>
- <div class="card list">${data.accounts.map(a=>`<div class="row"><div><strong>${esc(a.name)}</strong><div class="meta">${esc(a.type)}</div></div><strong>${euro(accountBalance(data,a.id))}</strong></div>`).join("")}</div>
-
- <div class="section-title"><h2>Letzte Buchungen</h2></div>
- <div class="card list">${recent.map(t=>txRow(t)).join("")||'<div class="empty">Keine Buchungen</div>'}</div>
- <button class="btn ghost all-link" data-nav="transactions">Alle Buchungen anzeigen →</button>`)
+ const spentToday=data.transactions.filter(t=>t.type==="expense"&&t.date===today()).reduce((sum,t)=>sum+Number(t.amount),0);
+ const modules=[
+  {key:"balance",html:()=>`<section class="dashboard-module"><div class="card hero"><div class="label">Gesamtkontostand</div><div class="value">${euro(totalBalance)}</div><div class="sub"><span>Verfügbar diesen Monat</span><strong>${euro(s.available)}</strong></div></div></section>`},
+  {key:"today",html:()=>`<section class="dashboard-module"><div class="grid two">${kpi("Heute ausgegeben",euro(spentToday))}${kpi("Monatsausgaben",euro(s.expense))}${kpi("Einnahmen",euro(s.income))}${kpi("Sparquote",Math.round(s.rate*100)+" %")}</div></section>`},
+  {key:"pending",html:()=>`<section class="dashboard-module"><div class="section-title"><h2>Heute</h2><span class="small">${new Date().toLocaleDateString("de-DE",{weekday:"long",day:"2-digit",month:"long"})}</span></div><div class="card"><div class="row"><div><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div><button class="btn ${pending.length?"primary":"ghost"}" data-nav="pending">${pending.length}</button></div></div></section>`},
+  {key:"loans",html:()=>renderLoanPreview(cfg.loans.count||2)},
+  {key:"transactions",html:()=>renderTransactionPreview(cfg.transactions.count||6)}];
+ const html=modules.filter(m=>cfg[m.key]?.enabled!==false).sort((a,b)=>(cfg[a.key]?.order||99)-(cfg[b.key]?.order||99)).map(m=>m.html()).join("");
+ shell(html);bindLoanInteractions()
 }
+
+function renderLoanPreview(count){
+ const loans=data.loans.slice(0,Math.max(0,Number(count)||0));if(!loans.length)return "";
+ return `<section class="dashboard-module"><div class="section-title"><h2>Kredite</h2><button class="section-link" data-nav="loans">Alle Kredite →</button></div><div class="list" style="gap:8px">${loans.map(l=>{const paid=Math.max(0,l.principal-l.remaining);const pct=l.principal?Math.max(0,Math.min(100,paid/l.principal*100)):0;return `<div class="card loan-strip" data-loan="${l.id}"><div class="loan-strip-fill" style="width:${pct}%"></div><div class="loan-strip-content"><strong>${esc(l.name)}</strong><span class="pct">${Math.round(pct)} %</span></div></div>`}).join("")}</div></section>`
+}
+function renderTransactionPreview(count){const recent=sortNewest(data.transactions).slice(0,Math.max(0,Number(count)||0));if(!recent.length)return "";return `<section class="dashboard-module"><div class="section-title"><h2>Letzte Buchungen</h2><button class="section-link" data-nav="transactions">Alle Buchungen →</button></div><div class="card list">${recent.map(t=>txRow(t)).join("")}</div></section>`}
+function bindLoanInteractions(){document.querySelectorAll("[data-loan]").forEach(el=>{let timer=null,longPressed=false;const id=el.dataset.loan;const start=()=>{longPressed=false;timer=setTimeout(()=>{longPressed=true;showLoanQuickView(id)},550)};const cancel=()=>{if(timer)clearTimeout(timer)};el.addEventListener("touchstart",start,{passive:true});el.addEventListener("touchend",()=>{cancel();if(!longPressed){view="loans";render()}});el.addEventListener("touchmove",cancel,{passive:true});el.addEventListener("mousedown",start);el.addEventListener("mouseup",()=>{cancel();if(!longPressed){view="loans";render()}});el.addEventListener("mouseleave",cancel)})}
+function showLoanQuickView(id){const l=data.loans.find(x=>x.id===id);if(!l)return;const paid=Math.max(0,l.principal-l.remaining);const pct=l.principal?paid/l.principal*100:0;modal(`<h2>${esc(l.name)}</h2><div class="card list"><div class="row"><span class="meta">Ursprünglicher Betrag</span><strong>${euro(l.principal)}</strong></div><div class="row"><span class="meta">Restschuld</span><strong>${euro(l.remaining)}</strong></div><div class="row"><span class="meta">Abbezahlt</span><strong>${euro(paid)}</strong></div><div class="row"><span class="meta">Getilgt</span><strong>${Math.round(pct)} %</strong></div><div class="row"><span class="meta">Monatliche Rate</span><strong>${euro(l.rate)}</strong></div><div class="row"><span class="meta">Zinssatz</span><strong>${l.interest} %</strong></div></div>`)}
+
 function renderTransactions(){
  const tx=filterTransactions(data,filters);
  shell(`<div class="section-title"><h2>Buchungen</h2><button class="btn primary" data-nav="add">＋ Neu</button></div>
@@ -112,7 +84,7 @@ function renderBudgets(){
  const key=today().slice(0,7),tx=data.transactions.filter(t=>monthKey(t.date)===key&&t.type==="expense");
  shell(`<div class="section-title"><h2>Budgets</h2><span class="small">${key}</span></div><div class="card list">${data.categories.filter(c=>c.budget>0).map(c=>{const used=tx.filter(t=>t.categoryId===c.id).reduce((s,t)=>s+Number(t.amount),0),rest=c.budget-used,pct=Math.min(100,c.budget?used/c.budget*100:0);return `<div class="row"><div style="flex:1"><strong>${esc(c.name)}</strong><div class="meta">${euro(used)} verbraucht · ${euro(rest)} übrig</div><div class="progress" style="margin-top:8px"><span style="width:${pct}%"></span></div></div><div>${Math.round(pct)} %</div></div>`}).join("")}</div>`)
 }
-function renderMore(){shell(`<div class="section-title"><h2>Mehr</h2></div><div class="grid"><button class="card btn" data-nav="pending">Später zuordnen</button><button class="card btn" data-nav="loans">Kredite</button><button class="card btn" data-nav="manage">Konten, Kategorien & Regeln</button><button class="card btn" data-nav="settings">Einstellungen & Backup</button></div>`)}
+function renderMore(){shell(`<div class="section-title"><h2>Mehr</h2></div><div class="grid"><button class="card btn" data-nav="dashboard-settings">Dashboard anpassen</button><button class="card btn" data-nav="pending">Später zuordnen</button><button class="card btn" data-nav="loans">Kredite</button><button class="card btn" data-nav="manage">Konten, Kategorien & Regeln</button><button class="card btn" data-nav="settings">Einstellungen & Backup</button></div>`)}
 function renderLoans(){shell(`<div class="section-title"><h2>Kredite</h2></div><div class="card list">${data.loans.map(l=>{const paid=l.principal-l.remaining,pct=paid/l.principal*100;return `<div><div class="row"><div><strong>${esc(l.name)}</strong><div class="meta">Rate ${euro(l.rate)} · ${l.interest}% Zins</div></div><strong>${euro(l.remaining)}</strong></div><div class="progress"><span style="width:${pct}%"></span></div><div class="small" style="margin-top:8px">${euro(paid)} abbezahlt · ${Math.round(pct)} %</div></div>`}).join("")}</div>`)}
 function renderManage(){
  shell(`<div class="section-title"><h2>Verwalten</h2></div>
@@ -124,6 +96,13 @@ function renderManage(){
  document.querySelectorAll("[data-category]").forEach(b=>b.onclick=()=>editCategory(b.dataset.category));
  document.querySelectorAll("[data-rule]").forEach(b=>b.onclick=()=>editRule(b.dataset.rule))
 }
+
+function renderDashboardSettings(){
+ const cfg=data.settings.dashboard;const labels={balance:"Gesamtkontostand",today:"Tages- und Monatswerte",pending:"Offene Zuordnungen",loans:"Kredite",transactions:"Letzte Buchungen"};const keys=["balance","today","pending","loans","transactions"];
+ shell(`<div class="section-title"><h2>Dashboard anpassen</h2></div><div class="card form"><div class="notice">Das Dashboard bleibt scrollbar. Über Reihenfolge und Anzahl legst du fest, was zuerst sichtbar ist.</div>${keys.map(k=>`<div class="dashboard-config-row"><div><strong>${labels[k]}</strong>${k==="loans"||k==="transactions"?`<div class="meta">Anzahl sichtbarer Einträge</div>`:""}</div><div class="config-controls"><input class="toggle" type="checkbox" data-enable="${k}" ${cfg[k].enabled!==false?"checked":""}>${k==="loans"||k==="transactions"?`<input type="number" min="0" max="20" value="${cfg[k].count||0}" data-count="${k}">`:""}<select data-order="${k}">${[1,2,3,4,5].map(n=>`<option value="${n}" ${Number(cfg[k].order)===n?"selected":""}>${n}</option>`).join("")}</select></div></div>`).join("")}<button class="btn primary" id="saveDashboard">Speichern</button></div>`);
+ saveDashboard.onclick=()=>{keys.forEach(k=>{cfg[k].enabled=document.querySelector(`[data-enable="${k}"]`).checked;cfg[k].order=Number(document.querySelector(`[data-order="${k}"]`).value);const count=document.querySelector(`[data-count="${k}"]`);if(count)cfg[k].count=Math.max(0,Math.min(20,Number(count.value)||0))});save(data);view="today";render()}
+}
+
 function renderSettings(){
  shell(`<div class="section-title"><h2>Backup & Daten</h2></div><div class="card form">
  <button class="btn primary" id="backupBtn">Backup erstellen</button>
@@ -166,6 +145,6 @@ function editRule(id){const r=id?data.rules.find(x=>x.id===id):{id:makeId(),need
  ruleForm.onsubmit=e=>{e.preventDefault();const f=new FormData(e.target);Object.assign(r,{needle:f.get("needle"),categoryId:f.get("categoryId")});if(!id)data.rules.push(r);save(data);modal.remove();renderManage()};
  if(id)deleteItem.onclick=()=>{data.rules=data.rules.filter(x=>x.id!==id);save(data);modal.remove();renderManage()}
 }
-function render(){if(view==="today")renderToday();else if(view==="transactions")renderTransactions();else if(view==="add")renderAdd();else if(view==="pending")renderPending();else if(view==="budgets")renderBudgets();else if(view==="loans")renderLoans();else if(view==="manage")renderManage();else if(view==="settings")renderSettings();else renderMore();bindNav()}
+function render(){if(view==="today")renderToday();else if(view==="transactions")renderTransactions();else if(view==="add")renderAdd();else if(view==="pending")renderPending();else if(view==="budgets")renderBudgets();else if(view==="loans")renderLoans();else if(view==="manage")renderManage();else if(view==="dashboard-settings")renderDashboardSettings();else if(view==="settings")renderSettings();else renderMore();bindNav()}
 render();
 if("serviceWorker" in navigator)navigator.serviceWorker.register("./sw.js").catch(()=>{});

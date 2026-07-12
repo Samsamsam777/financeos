@@ -9,7 +9,7 @@ export const field = (label, control) =>
 export function showSheet(content) {
   document.body.insertAdjacentHTML("beforeend", `
     <div class="modal" id="modal">
-      <div class="sheet">
+      <div class="sheet sheet-enter">
         <div class="sheet-toolbar">
           <button class="icon-btn" id="closeModal" aria-label="Schließen">×</button>
         </div>
@@ -21,5 +21,10 @@ export function showSheet(content) {
 }
 
 export function closeSheet() {
-  document.querySelector("#modal")?.remove();
+  const modal = document.querySelector("#modal");
+  const sheet = modal?.querySelector(".sheet");
+  if (!modal || !sheet) return;
+  sheet.classList.add("sheet-exit");
+  modal.classList.add("modal-exit");
+  setTimeout(() => modal.remove(), 220);
 }

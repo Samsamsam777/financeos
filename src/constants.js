@@ -1,4 +1,4 @@
-export const APP_VERSION = "1.0.0";
+export const APP_VERSION = "2.0.0";
 export const STORAGE_KEY = "financeos_v01";
 
 export const DEFAULT_DASHBOARD = {
@@ -29,3 +29,12 @@ export const DEFAULT_RULES = [
   ["SPOTIFY", "c6"], ["NETFLIX", "c6"], ["DB VERTRIEB", "c4"],
   ["SHELL", "c4"], ["AMAZON", "c5"], ["GEHALT", "c9"]
 ].map(([needle, categoryId], index) => ({ id: `r${index + 1}`, needle, categoryId }));
+
+
+export const MOTION = {
+  press: 90,
+  page: 220,
+  sheet: 280,
+  toast: 220,
+  number: 420
+};

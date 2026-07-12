@@ -50,7 +50,7 @@ export function createViews(context) {
               <div class="hero-icon">${icons.wallet}</div>
               <div class="hero-copy">
                 <div class="hero-label">Gesamtkontostand</div>
-                <div class="hero-value ${balance > 0 ? "positive" : balance < 0 ? "negative" : ""}">${euro(balance)}</div>
+                <div class="hero-value ${balance > 0 ? "positive" : balance < 0 ? "negative" : ""}" data-animate-number="${balance}">${euro(balance)}</div>
                 <div class="hero-sub"><span>Verfügbar diesen Monat</span><strong>${euro(summary.available)}</strong></div>
               </div>
             </div>
@@ -58,15 +58,16 @@ export function createViews(context) {
         </section>
       `,
       summary: () => `
-        <section class="dashboard-module">
-          <div class="grid two">
-            <div class="card metric-card">
+        <section class="dashboard-module summary-module">
+          <div class="card summary-card">
+            <div class="summary-item">
               <div class="metric-head"><div class="metric-icon income">${icons.income}</div><div class="metric-label">Einnahmen</div></div>
-              <div class="metric-value">${euro(summary.income)}</div>
+              <div class="metric-value" data-animate-number="${summary.income}">${euro(summary.income)}</div>
             </div>
-            <div class="card metric-card">
+            <div class="summary-divider" aria-hidden="true"></div>
+            <div class="summary-item">
               <div class="metric-head"><div class="metric-icon expense">${icons.expense}</div><div class="metric-label">Ausgaben</div></div>
-              <div class="metric-value">${euro(summary.expense)}</div>
+              <div class="metric-value" data-animate-number="${summary.expense}">${euro(summary.expense)}</div>
             </div>
           </div>
         </section>
@@ -108,7 +109,7 @@ export function createViews(context) {
             const { percent } = loanProgress(loan);
             return `
               <div class="card loan-strip" data-loan="${loan.id}">
-                <div class="loan-fill" style="width:${percent}%"></div>
+                <div class="loan-fill" style="width:${Math.min(100, percent + 7)}%;--loan-solid:${Math.max(0, percent - 1)}%"></div>
                 <div class="loan-content">
                   <div class="loan-icon">${loanIcon(loan.type)}</div>
                   <div class="loan-name">${esc(loan.name)}</div>

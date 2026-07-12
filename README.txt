@@ -1,46 +1,31 @@
-FinanceOS 1.0 – Design System
+FinanceOS 2.0 – Foundation & Feel
 
-Diese Version bereinigt den Quellcode und vereinheitlicht die gesamte App.
+Neu:
+- zentrales Motion-System
+- Press-Feedback für Buttons und Karten
+- weiche Seitenübergänge
+- animierte Bottom Sheets
+- Toast-Rückmeldungen für Speichern, Löschen und Zuordnen
+- animierte Kontostands-, Einnahmen- und Ausgabenzahlen
+- animierter Kreditfortschritt
+- vorbereitete Haptik-Schnittstelle
+- automatische Unterstützung für „Bewegung reduzieren“
+- DESIGN.md als verbindliches Produkt- und Designregelwerk
+- Motion-Tokens in constants.js und CSS
+- sauberere Trennung zwischen UI, Motion, Daten und Logik
 
-Neu strukturiert:
-- app.js: Navigation, Events und Bearbeitungsabläufe
-- views.js: alle Ansichten
-- storage.js: Daten, Migration, Backup und Restore
-- logic.js: Finanzberechnungen und Filter
-- icons.js: einheitliche SVG-Line-Icons
-- ui.js: gemeinsame UI-Hilfen
-- constants.js: Version und Standardwerte
-- styles.css: zentrales Designsystem
-
-Designsystem:
-- ruhiger Apple-inspirierter Dark Mode
-- weniger sichtbare Rahmen
-- klarerer Kontrast zwischen Hintergrund und Karten
-- reduzierte Kartenhöhen
-- einheitliche Radien und Abstände
-- eigene Line-Icons statt Emojis
-- gleiche Designsprache auf Dashboard, Buchungen, Budgets, Krediten,
-  Verwaltung, Einstellungen und Eingabemasken
-- größere, klar freigestellte Plus-Schaltfläche
-- Kreditkachel bleibt der Fortschrittsbalken
-
-Daten:
-- bestehender localStorage-Schlüssel bleibt erhalten
-- bestehende Buchungen, Konten, Kategorien, Regeln und Dashboard-Einstellungen
-  werden weiterverwendet
-- ältere Dashboard-Einstellung „today“ wird automatisch zu „summary“ migriert
+Wichtige iPhone-Grenze:
+Browser-PWAs können auf iOS keine nativen Haptics auslösen.
+FinanceOS nutzt echte Vibration auf unterstützten Geräten und visuelle
+Mikrointeraktionen als Fallback auf dem iPhone.
 
 Installation:
-1. Vor dem Update in FinanceOS ein Backup erstellen.
+1. In FinanceOS ein Backup erstellen.
 2. ZIP entpacken.
-3. Den gesamten Inhalt in dein lokales GitHub-Repository kopieren.
+3. Gesamten Inhalt in das lokale GitHub-Repository kopieren.
 4. Vorhandene Dateien ersetzen.
-5. GitHub Desktop öffnen.
-6. Commit: FinanceOS 1.0 Design System
-7. Push origin.
-8. Nach dem Deployment die Homescreen-App vollständig schließen und neu öffnen.
+5. Commit: FinanceOS 2.0 Foundation
+6. Push origin.
+7. Nach dem Deployment die App vollständig schließen und neu öffnen.
 
-Falls noch die alte Version angezeigt wird:
-- App vollständig aus dem App-Switcher entfernen
-- erneut öffnen
-- nur wenn nötig die Websitedaten für samsamsam777.github.io löschen
+Bestehende Daten bleiben kompatibel.

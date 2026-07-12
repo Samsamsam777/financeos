@@ -1,4 +1,5 @@
 import { APP_VERSION } from "./constants.js";
+import { animateLoanFills, animateNumber, bindPressFeedback, enterPage, haptic, showToast } from "./motion.js";
 import { icons, loanIcon } from "./icons.js";
 import { detectCategory, euro, loanProgress, today } from "./logic.js";
 import {
@@ -34,9 +35,9 @@ function navButton(id, label, icon) {
 
 function shell(content) {
   app.innerHTML = `
-    <main class="app">
+    <main class="app" id="pageRoot">
       <div class="topbar">
-        <div class="brand"><h1>FinanceOS</h1><p>Mein Finanzbuch</p></div>
+        <div class="brand"><h1>FinanceOS</h1></div>
       </div>
       ${content}
     </main>
@@ -51,9 +52,17 @@ function shell(content) {
     </nav>
   `;
   bindNavigation();
+  enterPage(document.querySelector("#pageRoot"));
+  bindPressFeedback();
+  document.querySelectorAll("[data-animate-number]").forEach(element => {
+    animateNumber(element, Number(element.dataset.animateNumber), value => euro(value));
+  });
+  animateLoanFills();
 }
 
 function navigate(target) {
+  if (view === target) return;
+  haptic("selection");
   view = target;
   render();
 }
@@ -168,6 +177,8 @@ function bindAddTransaction() {
       status: category(categoryId)?.name === "Später zuordnen" ? "pending" : "done"
     });
     saveData(data);
+    haptic("success");
+    showToast("Buchung gespeichert", "success");
     navigate("dashboard");
   };
 }
@@ -212,6 +223,8 @@ function bindDashboardSettings() {
         Math.max(0, Math.min(20, Number(count.value) || 0));
     });
     saveData(data);
+    haptic("success");
+    showToast("Buchung gespeichert", "success");
     navigate("dashboard");
   };
 }
@@ -261,6 +274,8 @@ function openTransaction(id) {
       status: category(form.get("categoryId"))?.name === "Später zuordnen" ? "pending" : "done"
     });
     saveData(data);
+    haptic("success");
+    showToast("Änderungen gespeichert", "success");
     closeSheet();
     render();
   };
@@ -269,6 +284,8 @@ function openTransaction(id) {
     if (!confirm("Buchung löschen?")) return;
     data.transactions = data.transactions.filter(item => item.id !== id);
     saveData(data);
+    haptic("warning");
+    showToast("Buchung gelöscht", "warning");
     closeSheet();
     render();
   };
@@ -303,6 +320,8 @@ function resolvePending(id) {
       });
     }
     saveData(data);
+    haptic("success");
+    showToast("Zuordnung gespeichert", "success");
     closeSheet();
     render();
   };

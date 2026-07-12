@@ -1,4 +1,4 @@
-const CACHE = "financeos-v1";
+const CACHE = "financeos-v2-foundation";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,7 @@ const ASSETS = [
   "./src/constants.js",
   "./src/icons.js",
   "./src/logic.js",
+  "./src/motion.js",
   "./src/storage.js",
   "./src/styles.css",
   "./src/ui.js",

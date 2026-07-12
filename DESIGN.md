@@ -80,3 +80,13 @@ On iPhone, visual press states and motion provide the interaction feedback.
 7. Dynamic viewport units are preferred when supported.
 8. High contrast and reduced motion preferences are respected.
 9. A new device must require testing, not a redesign.
+
+
+## UI patch 2.1.1 decisions
+
+- The title may sit close to the upper safe area because the hardware island already creates visual whitespace.
+- Secondary notification counts are plain colored text, not filled badges.
+- The right side of split summary cards receives additional center spacing for optical balance.
+- Loan gradients reserve green/turquoise for late-stage repayment.
+- Navigation distributes optical whitespace evenly above and below the label.
+- Ambient background color must remain visibly present while surfaces stay calm.

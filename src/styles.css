@@ -87,17 +87,17 @@ html,body{
 body::before{
   content:"";
   position:fixed;
-  inset:-18%;
+  inset:-22%;
   z-index:-1;
   pointer-events:none;
   background:
-    radial-gradient(circle at 22% 18%,rgba(58,88,160,.20),transparent 31%),
-    radial-gradient(circle at 82% 34%,rgba(96,71,190,.15),transparent 28%),
-    radial-gradient(circle at 48% 86%,rgba(25,113,135,.10),transparent 34%);
-  filter:blur(18px);
-  opacity:.72;
-  transform:translate3d(-2%,0,0) scale(1.02);
-  animation:financeAmbient 30s ease-in-out infinite alternate;
+    radial-gradient(circle at 17% 14%,rgba(62,98,190,.34),transparent 32%),
+    radial-gradient(circle at 88% 28%,rgba(110,76,215,.27),transparent 31%),
+    radial-gradient(circle at 44% 82%,rgba(22,135,157,.20),transparent 37%);
+  filter:blur(15px);
+  opacity:.94;
+  transform:translate3d(-2%,0,0) scale(1.04);
+  animation:financeAmbient 28s ease-in-out infinite alternate;
 }
 @keyframes financeAmbient{
   0%{transform:translate3d(-2%,-1%,0) scale(1.02)}
@@ -117,17 +117,18 @@ svg{
   width:min(100%,920px);
   margin:0 auto;
   padding:
-    calc(var(--space-2) + env(safe-area-inset-top))
+    max(2px, env(safe-area-inset-top))
     var(--space-page-inline)
-    calc(82px + env(safe-area-inset-bottom));
+    calc(76px + env(safe-area-inset-bottom));
 }
 .topbar{
-  min-height:clamp(44px,11vw,50px);
+  min-height:clamp(35px,8vw,40px);
   display:flex;
   justify-content:center;
-  align-items:center;
+  align-items:flex-start;
   text-align:center;
-  margin-bottom:var(--space-4);
+  margin-bottom:var(--space-3);
+  padding-top:0;
 }
 .brand h1{
   margin:0;font-size:var(--font-lg);font-weight:800;letter-spacing:-.038em
@@ -226,11 +227,7 @@ svg{
 .pending-copy{margin-left:9px}
 .pending-copy strong{display:block;font-size:.92rem}
 .meta,.small{color:var(--muted);font-size:.74rem}
-.count-badge{
-  min-width:31px;height:31px;border-radius:11px;
-  display:grid;place-items:center;background:var(--accent);font-weight:760;
-  border:0;outline:0;box-shadow:none;color:#fff
-}
+
 .loan-list{display:grid;gap:7px}
 .loan-strip{
   position:relative;overflow:hidden;min-height:35px;
@@ -426,9 +423,7 @@ button.is-pressed,
 .loan-fill{
   transition:width 520ms var(--ease-spring);
 }
-.count-badge{
-  transition:transform 180ms var(--ease-spring), opacity 180ms ease;
-}
+
 .toast{
   position:fixed;
   left:50%;
@@ -582,4 +577,83 @@ textarea{
 
 @media (prefers-color-scheme:light){
   /* Reserved for a future light theme. Dark remains the only supported theme in 2.1. */
+}
+
+
+.summary-item:last-child{
+  padding-left:clamp(16px,4vw,24px);
+  padding-right:var(--space-1);
+}
+.summary-item:first-child{
+  padding-left:var(--space-1);
+  padding-right:clamp(10px,2.5vw,16px);
+}
+
+/* Pending count is intentionally secondary. */
+.pending-count{
+  min-width:auto;
+  min-height:var(--tap-min);
+  padding:0 var(--space-1);
+  border:0;
+  background:transparent;
+  color:var(--color-warning);
+  font-size:var(--font-sm);
+  font-weight:720;
+  line-height:1;
+}
+
+/* Keep the car/loan line icon visible above every progress state. */
+.loan-icon{
+  position:relative;
+  z-index:2;
+  background:rgba(5,10,20,.28);
+  color:#fff;
+}
+.loan-icon svg{
+  width:1.05em;
+  height:1.05em;
+}
+
+/*
+  Loan gradient:
+  - violet dominates early progress
+  - blue follows through the middle
+  - turquoise/green only appears near the end of the loan
+  The visual tail still extends slightly beyond the exact percentage.
+*/
+.loan-fill{
+  background:
+    linear-gradient(
+      90deg,
+      rgba(112,80,255,.98) 0%,
+      rgba(86,91,243,.97) 48%,
+      rgba(49,121,224,.94) 76%,
+      rgba(30,170,190,.82) 91%,
+      rgba(35,205,166,.74) 100%
+    );
+  mask-image:linear-gradient(90deg,#000 0%,#000 78%,rgba(0,0,0,.82) 88%,transparent 100%);
+  -webkit-mask-image:linear-gradient(90deg,#000 0%,#000 78%,rgba(0,0,0,.82) 88%,transparent 100%);
+}
+
+/* Navbar uses equal optical space above and below icon labels. */
+.nav{
+  padding:
+    0
+    var(--space-2)
+    env(safe-area-inset-bottom);
+}
+.nav-inner{
+  height:clamp(38px,9vw,41px);
+  align-items:center;
+}
+.nav button{
+  min-height:38px;
+  padding:2px 2px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+}
+.nav-icon{
+  margin-bottom:1px;
 }

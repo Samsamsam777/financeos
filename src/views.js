@@ -81,7 +81,7 @@ export function createViews(context) {
                 <div class="pending-icon">${icons.pending}</div>
                 <div class="pending-copy"><strong>Offene Zuordnungen</strong><div class="meta">Unklare Händler später prüfen</div></div>
               </div>
-              <button class="count-badge" data-nav="pending">${pending.length}</button>
+              <button class="pending-count" data-nav="pending" aria-label="${pending.length} offene Zuordnungen">${pending.length}</button>
             </div>
           </div>
         </section>
@@ -109,7 +109,7 @@ export function createViews(context) {
             const { percent } = loanProgress(loan);
             return `
               <div class="card loan-strip" data-loan="${loan.id}">
-                <div class="loan-fill" style="width:${Math.min(100, percent + 7)}%;--loan-solid:${Math.max(0, percent - 1)}%"></div>
+                <div class="loan-fill" style="width:${Math.min(100, percent + 5)}%;--loan-progress:${percent}%"></div>
                 <div class="loan-content">
                   <div class="loan-icon">${loanIcon(loan.type)}</div>
                   <div class="loan-name">${esc(loan.name)}</div>

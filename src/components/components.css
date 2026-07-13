@@ -1417,3 +1417,15 @@ button.is-pressed,
     border-color:rgba(255,255,255,.14);
   }
 }
+
+
+/* FinanceOS 4.5 — merchant intelligence */
+.recognition-status{min-height:38px;padding:9px 11px;display:flex;align-items:center;gap:9px;border-radius:var(--radius-md);color:var(--color-text-2);background:rgba(17,23,37,.60);border:1px solid rgba(255,255,255,.05);font-size:var(--font-caption);line-height:1.35}
+.recognition-status strong{color:var(--color-text-1);font-weight:var(--weight-semibold)}
+.recognition-dot{width:8px;height:8px;flex:0 0 auto;border-radius:50%;background:var(--color-text-3);box-shadow:0 0 0 4px rgba(116,123,139,.10)}
+.recognition-success .recognition-dot{background:var(--color-positive);box-shadow:0 0 0 4px rgba(57,211,126,.12)}
+.recognition-pending .recognition-dot{background:var(--color-warning);box-shadow:0 0 0 4px rgba(245,197,66,.12)}
+.learn-rule-row{min-height:54px;padding:10px 12px;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:start;gap:10px;border-radius:var(--radius-md);background:rgba(17,23,37,.54);border:1px solid rgba(255,255,255,.05)}
+.learn-rule-row input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--color-accent)}
+.learn-rule-row span{display:flex;flex-direction:column;gap:3px}.learn-rule-row strong{color:var(--color-text-1);font-size:var(--font-headline);font-weight:var(--weight-semibold)}
+.learn-rule-row small{color:var(--color-text-2);font-size:var(--font-caption);line-height:1.4}

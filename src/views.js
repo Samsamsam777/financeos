@@ -2,7 +2,8 @@ import { APP_VERSION } from "./constants.js";
 import { categoryIcon, icons, loanIcon, merchantVisual } from "./icons.js";
 import {
   accountBalance, euro, filterTransactions, loanProgress,
-  monthKey, monthSummary, sortNewest, today, totalBalance
+  matchCategoryRule, monthKey, monthSummary, normalizeMerchant,
+  sortNewest, today, totalBalance
 } from "./logic.js";
 import { esc, field } from "./ui.js";
 import { emptyState, groupedCard, privacyNote, sectionHeader } from "./components/components.js";
@@ -214,9 +215,11 @@ export function createViews(context) {
           ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
           ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" enterkeyhint="next" step="0.01" placeholder="0,00" required autofocus>`)}
         </div>
-        ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. REWE Markt" required>`)}
+        ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. PAYPAL *REWE Markt" required>`)}
+        <div class="recognition-status recognition-idle" id="recognitionStatus"><span class="recognition-dot" aria-hidden="true"></span><span>Händler und Kategorie werden automatisch erkannt.</span></div>
         ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}" ${item.id === selectedAccount ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
-        ${field("Kategorie", `<select name="categoryId"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+        ${field("Kategorie", `<select name="categoryId" id="transactionCategory"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+        <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>FinanceOS verwendet diese Kategorie künftig für denselben Händler.</small></span></label>
         ${field("Person", `<select name="person">${data().settings.people.map(item => `<option ${item === selectedPerson ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
         <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
       </form>

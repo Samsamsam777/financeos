@@ -142,3 +142,11 @@ FinanceOS 4.4.8 Final System Polish:
 - standardisierte Leer- und Offline-Zustände
 - einheitliche Press-, Fokus- und Kontrastregeln
 - ruhige Privatsphärenkommunikation in Einstellungen
+
+
+FinanceOS 4.5 Merchant Intelligence:
+- technische Zahlungspräfixe und Referenzen werden aus Händlernamen entfernt
+- robustere Händlerregel-Erkennung
+- Live-Kategorievorschlag im Buchungsformular
+- Zuordnungen können automatisch gelernt und aktualisiert werden
+- ruhiger Erkennungsstatus direkt im Formular

@@ -2,6 +2,7 @@ import {
   STORAGE_KEY, DEFAULT_DASHBOARD, DEFAULT_PEOPLE,
   DEFAULT_CATEGORIES, DEFAULT_RULES
 } from "./constants.js";
+import { normalizeMerchant } from "./logic.js";
 
 export const makeId = () =>
   crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -96,7 +97,8 @@ function migrate(data) {
   data.categories ??= clone(DEFAULT_CATEGORIES);
   data.rules = (data.rules ?? []).map(rule => ({
     ...rule,
-    id: rule.id ?? makeId()
+    id: rule.id ?? makeId(),
+    needle: normalizeMerchant(rule.needle).canonical || rule.needle
   }));
   data.transactions = (data.transactions ?? []).map((transaction, index) => ({
     ...transaction,

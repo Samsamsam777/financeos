@@ -1,16 +1,14 @@
 {
-  "version": "4.4.8",
-  "source": "FinanceOS_4_4_7_Material_Background_Tuning.zip",
-  "javascript_files_checked": 11,
+  "version": "4.5.0",
+  "source": "FinanceOS_4_4_8_Final_System_Polish.zip",
   "checks": {
-    "version_4_4_8": true,
-    "entry_preferences": true,
-    "undo_create": true,
-    "undo_delete": true,
-    "empty_state_component": true,
-    "offline_state": true,
-    "privacy_identity": true,
-    "contrast_support": true
+    "version": true,
+    "normalizer": true,
+    "matcher": true,
+    "learner": true,
+    "status": true,
+    "checkbox": true
   },
+  "javascript_files_checked": 11,
   "browser_device_tested": false
 }

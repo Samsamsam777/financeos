@@ -37,6 +37,7 @@ export function closeSheet(returnFocus = null) {
   const modal = document.querySelector("#modal");
   const sheet = modal?.querySelector(".sheet");
   if (!modal || !sheet) return;
+  modal.dispatchEvent(new CustomEvent("financeos:sheet-close", { bubbles: true }));
   sheet.classList.add("sheet-exit");
   modal.classList.add("modal-exit");
   setTimeout(() => {

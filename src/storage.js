@@ -12,7 +12,8 @@ const seed = {
   settings: {
     currency: "EUR",
     people: DEFAULT_PEOPLE,
-    dashboard: DEFAULT_DASHBOARD
+    dashboard: DEFAULT_DASHBOARD,
+    transactionsFilterOpen: false
   },
   accounts: [
     { id: "a1", name: "Gemeinschaftskonto", type: "Girokonto", start: 2500 },
@@ -22,6 +23,8 @@ const seed = {
   categories: DEFAULT_CATEGORIES,
   rules: DEFAULT_RULES,
   transactions: [],
+  importDrafts: [],
+  recurringTransactions: [],
   loans: [
     {
       id: "l1",
@@ -151,6 +154,7 @@ function migrate(data) {
     accountId: data.accounts?.[0]?.id ?? "",
     person: data.settings.people?.[0] ?? ""
   };
+  data.settings.transactionsFilterOpen ??= false;
 
   if (data.settings.dashboard.today && !data.settings.dashboard.summary) {
     data.settings.dashboard.summary = data.settings.dashboard.today;
@@ -162,9 +166,23 @@ function migrate(data) {
 
   data.accounts ??= [];
   data.categories ??= clone(DEFAULT_CATEGORIES);
+  if (!data.categories.some(item => item.id === "c11")) data.categories.push({ id: "c11", name: "Umbuchungen", budget: 0 });
   data.rules = (data.rules ?? []).map(rule => ({
     ...rule,
     id: rule.id ?? makeId()
+  }));
+  data.importDrafts = (data.importDrafts ?? []).map((draft, index) => ({
+    ...draft,
+    createdAt: draft.createdAt ?? Date.parse(draft.date) ?? index,
+    reviewState: draft.reviewState ?? "ready",
+    source: draft.source ?? "import"
+  }));
+  data.recurringTransactions = (data.recurringTransactions ?? []).map(item => ({
+    ...item,
+    frequency: item.frequency ?? "monthly",
+    startDate: item.startDate ?? `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,"0")}-${String(item.day ?? 1).padStart(2,"0")}`,
+    nextDueDate: item.nextDueDate ?? item.startDate ?? `${new Date().getFullYear()}-${String(new Date().getMonth()+1).padStart(2,"0")}-${String(item.day ?? 1).padStart(2,"0")}`,
+    active: item.active !== false
   }));
   data.transactions = (data.transactions ?? []).map((transaction, index) => ({
     ...transaction,

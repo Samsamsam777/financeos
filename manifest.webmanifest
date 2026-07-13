@@ -76,7 +76,10 @@
           "name": "statement",
           "accept": [
             "application/pdf",
-            ".pdf"
+            ".pdf",
+            "image/png",
+            "image/jpeg",
+            "image/webp"
           ]
         }
       ]

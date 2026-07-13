@@ -34,7 +34,7 @@ export function totalBalance(data) {
 }
 
 export function monthSummary(data, key = monthKey(today())) {
-  const transactions = data.transactions.filter(item => monthKey(item.date) === key);
+  const transactions = data.transactions.filter(item => monthKey(item.date) === key && !item.excludeFromAnalytics);
   const income = transactions
     .filter(item => item.type === "income")
     .reduce((sum, item) => sum + Number(item.amount), 0);
@@ -95,22 +95,58 @@ const MERCHANT_ALIASES = [
   ["REWE", ["REWE"]], ["EDEKA", ["EDEKA"]], ["Lidl", ["LIDL"]],
   ["ALDI", ["ALDI"]], ["Spotify", ["SPOTIFY"]], ["Netflix", ["NETFLIX"]],
   ["Amazon", ["AMAZON", "AMZN"]], ["Apple", ["APPLE.COM/BILL", "APPLE SERVICES", "ITUNES", "APPLE"]],
-  ["Shell", ["SHELL"]], ["Aral", ["ARAL"]], ["Deutsche Bahn", ["DB VERTRIEB", "DEUTSCHE BAHN", "BAHN.DE"]]
+  ["Shell", ["SHELL"]], ["Aral", ["ARAL"]], ["Deutsche Bahn", ["DB VERTRIEB", "DEUTSCHE BAHN", "BAHN.DE"]],
+  ["O2", ["O2-VERTRAG", "O2 VERTRAG", "TELEFONICA", "O2"]],
+  ["Disney+", ["DISNEYPLUS", "DISNEY PLUS", "DISNEY+"]],
+  ["Signal Iduna", ["SIGNAL IDUNA"]],
+  ["Europa Versicherung", ["EUROPA VERBUND", "EUROPA VERSICHERUNG"]],
+  ["LBS", ["LBS NORDWEST", "LBS"]],
+  ["Hausgeld", ["WEG ", "HAUSGELD", "IMMOBILIENVERWALTUNG"]],
+  ["Vinted", ["VINTED"]],
+  ["Hautnah", ["HAUTNAH"]]
 ];
 
 export function normalizeMerchant(description = "") {
   const raw = String(description || "").replace(/\s+/g, " ").trim();
+
   let value = raw
+    .replace(/^WERT:\s*\d{2}[.\/-]\d{2}[.\/-]\d{4}\s*/i, "")
+    .replace(/^ÜBERWEIS\.?\s*/i, "")
+    .replace(/^ÜBERWEISUNG\s*/i, "")
+    .replace(/^LASTSCHRIFT(?:\s+BASIS)?\s*/i, "")
+    .replace(/^KARTENZAHLUNG\s*/i, "")
+    .replace(/^DAUERAUFTRAG\s*/i, "")
+    .replace(/^GUTSCHRIFT\s*/i, "")
     .replace(/^(PAYPAL|PP|SUMUP|STRIPE)\s*[\*\-]?\s*/i, "")
-    .replace(/^(EC[- ]?KARTE|KARTENZAHLUNG|APPLE PAY|GOOGLE PAY)\s*/i, "")
+    .replace(/^(EC[- ]?KARTE|APPLE PAY|GOOGLE PAY)\s*/i, "")
+    .replace(/\bDEBITK\.[A-Z0-9.-]*\b/gi, " ")
+    .replace(/\bKARTE\s+\d+\b/gi, " ")
+    .replace(/\bTERMINAL\s*\d+\b/gi, " ")
+    .replace(/\bDATUM\s*\d{2}[.\/-]\d{2}[.\/-]\d{4}(?:,\s*\d{2}[:.]\d{2})?\b/gi, " ")
+    .replace(/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\b/gi, " ")
+    .replace(/\bBIC\b.*$/i, " ")
+    .replace(/\bIBAN\b.*$/i, " ")
+    .replace(/\bSWIFT\b.*$/i, " ")
+    .replace(/\bBLZ\b.*$/i, " ")
+    .replace(/\bHRA\b.*$/i, " ")
+    .replace(/\bUST[-\s]?IDNR\.?.*$/i, " ")
+    .replace(/\bTELEFON\s+\d[\d\s-]*/gi, " ")
+    .replace(/\bFAX\s+\d[\d\s-]*/gi, " ")
+    .replace(/\bWWW\.[^\s]+/gi, " ")
+    .replace(/\bINFO@[^\s]+/gi, " ")
     .replace(/\b\d{5,}\b/g, " ")
-    .replace(/\b[A-Z0-9]{8,}\b/gi, " ")
+    .replace(/\b[A-Z0-9]{10,}\b/gi, " ")
     .replace(/[|_/]+/g, " ")
-    .replace(/\s+/g, " ").trim();
+    .replace(/\s+/g, " ")
+    .trim();
+
   const upper = value.toUpperCase();
-  const alias = MERCHANT_ALIASES.find(([, patterns]) => patterns.some(pattern => upper.includes(pattern)));
+  const alias = MERCHANT_ALIASES.find(([, patterns]) =>
+    patterns.some(pattern => upper.includes(pattern))
+  );
   const canonical = alias?.[0] || value || raw;
   const key = canonical.toUpperCase().replace(/[^A-ZÄÖÜ0-9]+/g, " ").trim();
+
   return { raw, canonical, key };
 }
 

@@ -329,3 +329,377 @@
 .pdf-diagnostic-card + .import-summary-grid{
   margin-top:var(--space-3);
 }
+
+
+#screenshotImportWorkspace{
+  margin-top:var(--space-3);
+}
+
+/* FinanceOS 4.9.2 — create hub, compact entry and import inbox */
+.create-hub-sheet{
+  display:flex;
+  flex-direction:column;
+  gap:14px;
+}
+.create-hub-heading{
+  margin-bottom:0;
+}
+.create-hub-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+}
+.create-hub-tile{
+  min-height:124px;
+  border-radius:18px;
+  border:1px solid rgba(255,255,255,.08);
+  background:linear-gradient(160deg,rgba(42,48,65,.96),rgba(25,31,45,.98));
+  color:var(--color-text);
+  padding:14px;
+  display:flex;
+  flex-direction:column;
+  align-items:flex-start;
+  justify-content:space-between;
+  text-align:left;
+}
+.create-hub-tile strong{font-size:var(--font-headline)}
+.create-hub-tile small{color:var(--color-text-2);line-height:1.35}
+.create-hub-tile-icon{
+  width:40px;
+  height:40px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  background:rgba(123,92,255,.16);
+  color:var(--color-accent);
+}
+.create-hub-tile-icon svg{width:20px;height:20px}
+
+.entry-form-compact{
+  gap:12px;
+}
+.entry-top-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+.entry-details-toggle{
+  border:1px solid rgba(255,255,255,.07);
+  border-radius:16px;
+  background:rgba(9,14,26,.28);
+  overflow:hidden;
+}
+.entry-details-toggle summary{
+  list-style:none;
+  cursor:pointer;
+  padding:13px 14px;
+  font-weight:600;
+}
+.entry-details-toggle summary::-webkit-details-marker{display:none}
+.entry-details-grid{
+  display:grid;
+  gap:12px;
+  padding:0 14px 14px;
+}
+.entry-actions.compact{
+  position:static;
+  padding:0;
+  background:none;
+}
+.compact-entry-card{padding:14px}
+.compact-sheet-heading p{max-width:32ch}
+.learn-rule-row.compact{
+  margin:0;
+  padding:10px 12px;
+  border:1px solid rgba(255,255,255,.06);
+  border-radius:14px;
+  background:rgba(255,255,255,.02);
+}
+
+.filters-collapsible{padding:10px 12px}
+.filters-toggle{
+  width:100%;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  background:none;
+  border:none;
+  color:inherit;
+  padding:0;
+}
+.filters-toggle-copy{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  text-align:left;
+}
+.filters-toggle-copy small{display:block;color:var(--color-text-2);margin-top:2px}
+.filters-toggle-icon{
+  width:38px;
+  height:38px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
+  color:var(--color-accent);
+  background:rgba(123,92,255,.14);
+}
+.filters-toggle-icon svg,.filters-toggle-chevron svg{width:18px;height:18px}
+.filters-panel{margin-top:14px}
+.filters-collapsible.is-open .filters-toggle-chevron{transform:rotate(90deg)}
+
+.import-inbox-card{
+  width:100%;
+  margin-bottom:var(--space-3);
+  padding:14px;
+  text-align:left;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.import-inbox-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+}
+.import-inbox-head small{display:block;color:var(--color-text-2);margin-top:4px}
+.import-inbox-stats{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+.import-inbox-stats span{
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(255,255,255,.05);
+  color:var(--color-text-2);
+}
+.import-inbox-stats strong{color:var(--color-text)}
+
+.import-review-toolbar{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin:8px 0 14px;
+}
+.import-review-chip{
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.04);
+  border:1px solid rgba(255,255,255,.06);
+  text-align:center;
+}
+.import-review-chip strong{display:block;font-size:1rem}
+.import-review-chip span{color:var(--color-text-2);font-size:var(--font-caption)}
+.import-review-card{display:flex;flex-direction:column;gap:14px}
+.import-review-bulk{display:grid;gap:10px}
+.import-review-list{display:flex;flex-direction:column;gap:10px;max-height:52vh;overflow:auto}
+.import-review-row{
+  display:grid;
+  grid-template-columns:auto 1fr auto;
+  gap:12px;
+  align-items:flex-start;
+  padding:12px;
+  border-radius:16px;
+  background:rgba(255,255,255,.03);
+  border:1px solid rgba(255,255,255,.06);
+}
+.import-review-row.needs-attention{border-color:rgba(255,196,76,.3);background:rgba(255,196,76,.05)}
+.import-review-check{
+  display:flex;
+  align-items:center;
+  padding-top:4px;
+}
+.import-review-copy small{display:block;color:var(--color-text-2);margin-top:4px;line-height:1.35}
+.import-review-end{display:flex;flex-direction:column;align-items:flex-end;gap:8px}
+.import-review-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+.btn.small{min-height:36px;padding:8px 10px;font-size:.82rem}
+
+@media (max-width:420px){
+  .create-hub-grid,
+  .entry-top-grid{grid-template-columns:1fr}
+  .import-review-row{grid-template-columns:1fr;}
+  .import-review-check{order:-1}
+  .import-review-end{align-items:flex-start}
+}
+
+/* FinanceOS 4.9.3 — non-scrolling create hub, live QR and review page */
+.sheet.sheet-static{
+  overflow:hidden;
+  max-height:calc(100dvh - max(18px,env(safe-area-inset-top)) - 18px);
+}
+.create-hub-modal-sheet .sheet-toolbar{
+  margin-bottom:4px;
+}
+.create-hub-modal-sheet .create-hub-heading{
+  margin-bottom:8px;
+}
+.create-hub-modal-sheet .create-hub-heading p{
+  max-width:34ch;
+}
+.create-hub-modal-sheet .create-hub-grid{
+  gap:10px;
+}
+.create-hub-modal-sheet .create-hub-tile{
+  min-height:88px;
+  padding:11px 12px;
+}
+.create-hub-modal-sheet .create-hub-tile-icon{
+  width:34px;
+  height:34px;
+  border-radius:12px;
+}
+.create-hub-modal-sheet .create-hub-tile-icon svg{
+  width:17px;
+  height:17px;
+}
+.create-hub-modal-sheet .create-hub-tile small{
+  font-size:.75rem;
+}
+
+.qr-live-card{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.qr-camera-stage{
+  position:relative;
+  aspect-ratio:1/1;
+  overflow:hidden;
+  border-radius:18px;
+  background:#080d18;
+  border:1px solid rgba(255,255,255,.08);
+}
+.qr-camera-stage video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+}
+.qr-viewfinder{
+  position:absolute;
+  inset:18%;
+  border:2px solid rgba(150,112,255,.92);
+  border-radius:22px;
+  box-shadow:0 0 0 999px rgba(3,7,15,.25);
+  pointer-events:none;
+}
+.qr-camera-placeholder{
+  position:absolute;
+  inset:0;
+  display:grid;
+  place-items:center;
+  color:var(--color-text-2);
+  padding:24px;
+  text-align:center;
+}
+.qr-camera-placeholder[hidden]{display:none}
+.qr-actions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.qr-actions .import-file-button{
+  grid-column:1/-1;
+}
+.qr-result .notice{margin-top:0}
+
+.import-review-page-summary{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:10px;
+  margin-bottom:var(--space-3);
+}
+.import-review-page-summary .card{
+  padding:13px;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.import-review-page-summary span{
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.import-review-page-summary strong{
+  font-size:1.12rem;
+}
+.import-review-page-toolbar{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr;
+  gap:10px;
+  padding:12px;
+  margin-bottom:var(--space-3);
+}
+.import-review-page-list{
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+}
+.import-review-page-row{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  gap:12px;
+  align-items:center;
+  padding:13px 14px;
+}
+.import-review-page-row.needs-attention{
+  border-color:rgba(255,196,76,.32);
+  background:linear-gradient(160deg,rgba(55,47,38,.92),rgba(26,30,42,.98));
+}
+.import-review-page-check{
+  display:grid;
+  place-items:center;
+}
+.import-review-page-check input{
+  width:20px;
+  height:20px;
+  accent-color:var(--color-accent);
+}
+.import-review-page-copy{
+  min-width:0;
+}
+.import-review-page-copy strong,
+.import-review-page-copy small{
+  display:block;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.import-review-page-copy strong{white-space:nowrap}
+.import-review-page-copy small{
+  margin-top:4px;
+  color:var(--color-text-2);
+  line-height:1.35;
+}
+.import-review-page-end{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  gap:8px;
+}
+.import-review-page-actions{
+  display:flex;
+  gap:7px;
+}
+
+@media(max-width:520px){
+  .import-review-page-toolbar{
+    grid-template-columns:1fr;
+  }
+  .import-review-page-row{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+  .import-review-page-end{
+    grid-column:2;
+    align-items:flex-start;
+  }
+  .qr-actions{
+    grid-template-columns:1fr;
+  }
+  .qr-actions .import-file-button{grid-column:auto}
+}
+
+@media(max-height:700px){
+  .create-hub-modal-sheet .create-hub-heading p{display:none}
+  .create-hub-modal-sheet .create-hub-tile{min-height:76px}
+  .create-hub-modal-sheet .create-hub-grid{gap:8px}
+}

@@ -208,3 +208,29 @@ FinanceOS 4.8.5 Strict Sparkasse Parser:
 - Kontostände, Überschriften, Zins-, Kreditlinien- und Rechtstexte ausgeschlossen
 - abgelehnte Tabellenzeilen werden als Ignoriert ausgewiesen
 - Vorschau enthält nur Buchungen mit hoher Parser-Sicherheit
+
+
+FinanceOS 4.8.6 Merchant Cleanup:
+- Wertstellungsdaten und Überweisungspräfixe aus Händlernamen entfernt
+- Debitkarten-, Terminal-, IBAN-, BIC-, Telefon- und Referenztexte bereinigt
+- zusätzliche Erkennung für O2, Disney+, Signal Iduna, Europa Versicherung, LBS, Hausgeld und Vinted
+- bekannte Händler werden kompakt und nutzerverständlich dargestellt
+
+
+FinanceOS 4.9 Screenshot Import:
+- Banking-Screenshots aus Fotos oder Dateien auswählen
+- lokale OCR mit deutschem und englischem Sprachmodell
+- Händler, Datum und Betrag aus sichtbaren Buchungskarten erkennen
+- Händlernormalisierung, Kategorieerkennung und Duplikatprüfung wiederverwenden
+- Vorschau und Einzelauswahl vor dem Import
+- OCR-Worker, Bildbitmap, Canvas und Rohtext nach der Analyse freigeben
+- keine Screenshots oder OCR-Rohdaten dauerhaft speichern
+
+FinanceOS 4.9.3:
+- eigener Import-Prüfbereich als vollständige Seite
+- Screenshot-, PDF-, CSV-, QR- und wiederkehrende Buchungen bleiben Entwürfe bis zur Bestätigung
+- Live-QR-Scanner mit Kamera; jsQR-Fallback für Browser ohne BarcodeDetector
+- QR-Bildimport bleibt als Fallback erhalten
+- wiederkehrende Vorlagen unterstützen wöchentlich, monatlich, quartalsweise und jährlich
+- fällige wiederkehrende Buchungen werden beim Öffnen von FinanceOS erzeugt und niemals direkt verbucht
+- zentrale Plus-Übersicht bleibt nicht scrollbar

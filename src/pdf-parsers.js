@@ -235,15 +235,46 @@ function extractRightColumnAmount(row, amountMin) {
 }
 
 function cleanSparkasseDescription(parts) {
-  return parts
+  let value = parts
     .join(" ")
     .replace(/\b(ÜBERWEISUNG ONLINE|ÜBERWEISUNG ÜBERTRAG|ÜBERWEISUNG|LASTSCHRIFT BASIS|LASTSCHRIFT|DAUERAUFTRAG|GUTSCHRIFT|KARTENZAHLUNG)\b/gi, " ")
     .replace(/\b(BIC|IBAN|DATUM|UHR)\b[:\s]*/gi, " ")
     .replace(/\b[A-Z]{2}\d{2}(?:\s?\d{4}){3,7}\b/gi, " ")
     .replace(/\b[A-Z0-9-]{14,}\b/g, " ")
     .replace(/\b\d{10,}\b/g, " ")
+    .replace(/^WERT:\s*\d{2}[.\/-]\d{2}[.\/-]\d{4}\s*/i, "")
+    .replace(/^ÜBERWEIS\.?\s*/i, "")
+    .replace(/\bDEBITK\.[A-Z0-9.-]*\b/gi, " ")
+    .replace(/\b\d{4}-\d{2}-\d{2}T\d{2}:\d{2}\b/gi, " ")
+    .replace(/\b\d{4}-\d{2}-\d{2}\b/gi, " ")
+    .replace(/\bTELEFON\s+\d[\d\s-]*/gi, " ")
+    .replace(/\bFAX\s+\d[\d\s-]*/gi, " ")
+    .replace(/\bWWW\.[^\s]+/gi, " ")
+    .replace(/\bINFO@[^\s]+/gi, " ")
+    .replace(/\b(?:GMBH|S\.A\.R\.L\.|S\.C\.A\.)\b(?:\s+ET\s+CIE)?/gi, " ")
     .replace(/\s+/g, " ")
     .trim();
+
+  const compactRules = [
+    [/.*\bO2[-\s]?VERTRAG\b.*/i, "O2"],
+    [/.*\bDISNEY(?:PLUS|\+)\b.*/i, "Disney+"],
+    [/.*\bSIGNAL IDUNA\b.*/i, "Signal Iduna"],
+    [/.*\bEUROPA VERBUND\b.*/i, "Europa Versicherung"],
+    [/.*\bLBS\b.*/i, "LBS"],
+    [/.*\bREWE\b.*/i, "REWE"],
+    [/.*\bAMAZON\b.*/i, "Amazon"],
+    [/.*\bAPPLE\b.*/i, "Apple"],
+    [/.*\bNETFLIX\b.*/i, "Netflix"],
+    [/.*\bVINTED\b.*/i, "Vinted"],
+    [/.*\bHAUTNAH\b.*/i, "Hautnah"],
+    [/.*\bWEG\b.*\bHAUSGELD\b.*/i, "Hausgeld"]
+  ];
+
+  for (const [pattern, canonical] of compactRules) {
+    if (pattern.test(value)) return canonical;
+  }
+
+  return value;
 }
 
 function parseSparkasse({ pages, accountId, data, makeId }) {

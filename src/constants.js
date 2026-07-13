@@ -1,4 +1,4 @@
-export const APP_VERSION = "4.8.5";
+export const APP_VERSION = "4.9.3";
 export const STORAGE_KEY = "financeos_v01";
 
 export const DEFAULT_DASHBOARD = {
@@ -21,7 +21,8 @@ export const DEFAULT_CATEGORIES = [
   { id: "c7", name: "Gesundheit", budget: 100 },
   { id: "c8", name: "Freizeit", budget: 180 },
   { id: "c9", name: "Gehalt", budget: 0 },
-  { id: "c10", name: "Später zuordnen", budget: 0 }
+  { id: "c10", name: "Später zuordnen", budget: 0 },
+  { id: "c11", name: "Umbuchungen", budget: 0 }
 ];
 
 export const DEFAULT_RULES = [

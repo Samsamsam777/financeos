@@ -1,17 +1,38 @@
 {
-  "version": "4.8.5",
-  "source": "FinanceOS_4_8_4_iOS_PDF_Reload_Fix.zip",
-  "fix": "Reject non-transaction Sparkasse statement rows",
-  "reference": "User screenshots of Datum / Erl\u00e4uterung / Betrag EUR layout",
-  "checks": {
-    "version_4_8_5": true,
-    "strict_same_row": true,
-    "coordinate_columns": true,
-    "middle_only": true,
-    "noise_filters": true,
-    "confidence": true,
-    "ignored_count": true,
-    "cache_bumped": true
+  "version": "4.9.3",
+  "source": "FinanceOS_4_9_1_Create_Hub_Compact_Entry.zip",
+  "feature": "Live QR scanner, dedicated import review page, recurring draft generation",
+  "ocr": {
+    "engine": "Tesseract.js 6.0.1",
+    "languages": [
+      "deu",
+      "eng"
+    ],
+    "persistent_image_storage": false,
+    "language_cache": false
   },
-  "browser_device_tested": false
+  "checks": {
+    "version_4_9": true,
+    "ocr_module": true,
+    "local_tesseract": true,
+    "local_worker": true,
+    "local_deu": true,
+    "local_eng": true,
+    "screenshot_route": true,
+    "preview": true,
+    "duplicate_check": true,
+    "memory_cleanup": true,
+    "cache_bumped": true,
+    "dedicated_import_review_page": true,
+    "live_qr_camera": true,
+    "jsqr_fallback": true,
+    "recurring_to_review_only": true,
+    "non_scrolling_create_hub": true
+  },
+  "browser_device_tested": false,
+  "limitations": [
+    "Recurring schedules are evaluated when FinanceOS is opened; a static PWA cannot run background jobs while closed.",
+    "Camera access requires HTTPS and user permission.",
+    "Device/browser testing has not been performed in this environment."
+  ]
 }

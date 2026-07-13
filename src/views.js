@@ -12,6 +12,7 @@ export function createViews(context) {
   const data = () => getData();
   const category = id => data().categories.find(item => item.id === id);
   const account = id => data().accounts.find(item => item.id === id);
+  const activeFilterCount = current => [current.query, current.account, current.category, current.person].filter(Boolean).length + (current.sort && current.sort !== "newest" ? 1 : 0);
 
   function transactionRow(transaction, editable = false) {
     const visual = merchantVisual(transaction.description, transaction.type);
@@ -176,24 +177,61 @@ export function createViews(context) {
 
   function transactions(filters) {
     const items = filterTransactions(data(), filters);
+    const importDrafts = data().importDrafts ?? [];
+    const readyDrafts = importDrafts.filter(item => item.reviewState !== "needs_attention");
+    const attentionDrafts = importDrafts.filter(item => item.reviewState === "needs_attention");
+    const filterOpen = Boolean(data().settings.transactionsFilterOpen);
+    const filterCount = activeFilterCount(filters);
+
     return `
       <div class="section-title transactions-heading">
         <h2 class="page-heading">Buchungen</h2>
         <button class="btn primary compact-new" data-open-add>${icons.plus}<span>Neu</span></button>
       </div>
-      <div class="card page-card filters">
-        <div class="filters-title"><span>${icons.search}</span><strong>Filtern</strong></div>
-        <div class="form">
-          ${field("Suche", `<input id="filterQuery" value="${esc(filters.query)}" placeholder="Händler, Kategorie oder Betrag">`)}
-          <div class="grid two">
-            ${field("Konto", `<select id="filterAccount"><option value="">Alle</option>${data().accounts.map(item => `<option value="${item.id}" ${filters.account === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
-            ${field("Kategorie", `<select id="filterCategory"><option value="">Alle</option>${data().categories.map(item => `<option value="${item.id}" ${filters.category === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
-            <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>Für denselben Händler künftig automatisch verwenden.</small></span></label>
-        ${field("Person", `<select id="filterPerson"><option value="">Alle</option>${data().settings.people.map(item => `<option ${filters.person === item ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
-            ${field("Sortierung", `<select id="filterSort"><option value="newest">Neueste zuerst</option><option value="amount-desc" ${filters.sort === "amount-desc" ? "selected" : ""}>Betrag absteigend</option><option value="amount-asc" ${filters.sort === "amount-asc" ? "selected" : ""}>Betrag aufsteigend</option></select>`)}
+
+      ${importDrafts.length ? `
+        <button class="card import-inbox-card" data-open-import-review>
+          <div class="import-inbox-head">
+            <div>
+              <strong>Importierte Buchungen prüfen</strong>
+              <small>${importDrafts.length} Entwürfe warten auf deine Bestätigung</small>
+            </div>
+            <span class="row-chevron">${icons.chevron}</span>
           </div>
-        </div>
+          <div class="import-inbox-stats">
+            <span><strong>${readyDrafts.length}</strong> sicher</span>
+            <span><strong>${attentionDrafts.length}</strong> offen</span>
+          </div>
+        </button>
+      ` : ""}
+
+      <div class="card page-card filters filters-collapsible ${filterOpen ? "is-open" : "is-collapsed"}">
+        <button class="filters-toggle" type="button" data-toggle-filters>
+          <span class="filters-toggle-copy">
+            <span class="filters-toggle-icon">${icons.search}</span>
+            <span>
+              <strong>Suche & Filter</strong>
+              <small>${filterCount ? `${filterCount} Filter aktiv` : "Eingeklappt für mehr Platz"}</small>
+            </span>
+          </span>
+          <span class="filters-toggle-chevron">${icons.chevron}</span>
+        </button>
+
+        ${filterOpen ? `
+          <div class="filters-panel">
+            <div class="form">
+              ${field("Suche", `<input id="filterQuery" value="${esc(filters.query)}" placeholder="Händler, Kategorie oder Betrag">`)}
+              <div class="grid two">
+                ${field("Konto", `<select id="filterAccount"><option value="">Alle</option>${data().accounts.map(item => `<option value="${item.id}" ${filters.account === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
+                ${field("Kategorie", `<select id="filterCategory"><option value="">Alle</option>${data().categories.map(item => `<option value="${item.id}" ${filters.category === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
+                ${field("Person", `<select id="filterPerson"><option value="">Alle</option>${data().settings.people.map(item => `<option ${filters.person === item ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
+                ${field("Sortierung", `<select id="filterSort"><option value="newest">Neueste zuerst</option><option value="amount-desc" ${filters.sort === "amount-desc" ? "selected" : ""}>Betrag absteigend</option><option value="amount-asc" ${filters.sort === "amount-asc" ? "selected" : ""}>Betrag aufsteigend</option></select>`)}
+              </div>
+            </div>
+          </div>
+        ` : ""}
       </div>
+
       <div class="card transaction-list">${items.length ? items.map(item => transactionRow(item, true)).join("") : emptyState({
         title: "Keine Buchungen gefunden",
         text: "Passe die Filter an oder erfasse eine neue Buchung.",
@@ -209,19 +247,30 @@ export function createViews(context) {
     const selectedAccount = preferences.accountId ?? data().accounts[0]?.id ?? "";
     const selectedPerson = preferences.person ?? data().settings.people[0] ?? "";
     return `
-      <form id="transactionForm" class="form entry-form" autocomplete="off">
-        ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
-        <div class="form-grid-two">
-          ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
+      <form id="transactionForm" class="form entry-form entry-form-compact" autocomplete="off">
+        <div class="entry-top-grid">
+          ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
           ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" enterkeyhint="next" step="0.01" placeholder="0,00" required autofocus>`)}
         </div>
-        ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. PAYPAL *REWE Markt" required>`)}
+        <div class="entry-top-grid">
+          ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
+          ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. PAYPAL *REWE Markt" required>`)}
+        </div>
         <div class="recognition-status" id="recognitionStatus"><span class="recognition-dot"></span><span>Händler und Kategorie werden automatisch erkannt.</span></div>
-        ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}" ${item.id === selectedAccount ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
-        ${field("Kategorie", `<select name="categoryId" id="transactionCategory"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
-        <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>Für denselben Händler künftig automatisch verwenden.</small></span></label>
-        ${field("Person", `<select name="person">${data().settings.people.map(item => `<option ${item === selectedPerson ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
-        <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
+
+        <details class="entry-details-toggle">
+          <summary>Weitere Details</summary>
+          <div class="entry-details-grid">
+            ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}" ${item.id === selectedAccount ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
+            ${field("Kategorie", `<select name="categoryId" id="transactionCategory"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+            ${field("Person", `<select name="person">${data().settings.people.map(item => `<option ${item === selectedPerson ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
+            <label class="learn-rule-row compact"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>Für denselben Händler künftig automatisch verwenden.</small></span></label>
+          </div>
+        </details>
+
+        <div class="entry-actions compact">
+          <button class="btn primary">Buchung speichern</button>
+        </div>
       </form>
     `;
   }
@@ -241,11 +290,11 @@ export function createViews(context) {
 
   function addTransactionSheet() {
     return `
-      <div class="sheet-heading">
+      <div class="sheet-heading compact-sheet-heading">
         <span class="sheet-icon">${icons.plus}</span>
-        <div><h2>Neue Buchung</h2><p>Ausgabe oder Einnahme erfassen</p></div>
+        <div><h2>Neue Buchung</h2><p>Schnell erfassen ohne unnötiges Scrollen</p></div>
       </div>
-      <div class="sheet-form-card">${transactionFormMarkup()}</div>
+      <div class="sheet-form-card compact-entry-card">${transactionFormMarkup()}</div>
     `;
   }
 
@@ -272,10 +321,62 @@ export function createViews(context) {
     `;
   }
 
+
+  function importReview() {
+    const drafts = sortNewest(data().importDrafts ?? []);
+    const ready = drafts.filter(item => item.reviewState !== "needs_attention").length;
+    const attention = drafts.length - ready;
+
+    const rows = drafts.map(item => `
+      <article class="card import-review-page-row ${item.reviewState === "needs_attention" ? "needs-attention" : ""}">
+        <label class="import-review-page-check">
+          <input type="checkbox" data-import-review-select="${item.id}" checked>
+        </label>
+        <div class="import-review-page-copy">
+          <strong>${esc(item.description)}</strong>
+          <small>${esc(item.date)} · ${esc(category(item.categoryId)?.name ?? "Später zuordnen")} · ${esc(item.sourceLabel ?? item.source ?? "Import")}</small>
+        </div>
+        <div class="import-review-page-end">
+          <span class="transaction-amount ${item.type === "income" ? "positive" : "negative"}">${item.type === "income" ? "+" : "-"}${euro(item.amount)}</span>
+          <div class="import-review-page-actions">
+            <button class="btn ghost small" data-import-review-edit="${item.id}">Bearbeiten</button>
+            <button class="btn ghost small danger" data-import-review-discard="${item.id}">Verwerfen</button>
+          </div>
+        </div>
+      </article>
+    `).join("");
+
+    return `
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Importe prüfen</h2>
+      </div>
+
+      <div class="import-review-page-summary">
+        <div class="card"><span>Entwürfe</span><strong>${drafts.length}</strong></div>
+        <div class="card"><span>Sicher</span><strong>${ready}</strong></div>
+        <div class="card"><span>Offen</span><strong>${attention}</strong></div>
+      </div>
+
+      ${drafts.length ? `
+        <div class="card import-review-page-toolbar">
+          <button class="btn primary" id="confirmSelectedImports">Ausgewählte bestätigen</button>
+          <button class="btn ghost" id="confirmReadyImports">Nur sichere bestätigen</button>
+          <button class="btn ghost danger" id="discardAllImports">Alle verwerfen</button>
+        </div>
+        <div class="import-review-page-list">${rows}</div>
+      ` : emptyState({
+        title: "Keine Importe offen",
+        text: "Screenshot-, PDF-, QR- und wiederkehrende Buchungen landen zuerst hier.",
+        icon: icons.document
+      })}
+    `;
+  }
+
   function budgets() {
     const key = monthKey(today());
     const transactions = data().transactions.filter(item =>
-      monthKey(item.date) === key && item.type === "expense"
+      monthKey(item.date) === key && item.type === "expense" && !item.excludeFromAnalytics
     );
 
     const items = data().categories
@@ -400,6 +501,7 @@ export function createViews(context) {
     const install = getPWAState?.() ?? { standalone: false };
     const rows = [
       ["dashboard-settings", "Dashboard anpassen", icons.arrange],
+      ["screenshot-import", "Screenshot importieren", icons.image ?? icons.document],
       ["pdf-import", "Kontoauszug importieren", icons.document ?? icons.upload],
       ["pending", "Später zuordnen", icons.pending],
       ["loans", "Kredite", icons.wallet],
@@ -423,6 +525,47 @@ export function createViews(context) {
         </button>
       ` : ""}
       <div class="card grouped-card settings-group">${rows}</div>
+    `;
+  }
+
+  function importScreenshot() {
+    return `
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Screenshot importieren</h2>
+      </div>
+
+      <div class="card screenshot-import-card">
+        <div class="import-intro">
+          <span class="import-icon">${icons.image ?? icons.document}</span>
+          <div>
+            <strong>Banking-Screenshot</strong>
+            <p>FinanceOS erkennt die sichtbaren Händler, Daten und Beträge und zeigt vor dem Speichern eine Vorschau.</p>
+          </div>
+        </div>
+
+        <div class="form">
+          ${field("Zielkonto", `
+            <select id="screenshotImportAccount">
+              ${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}
+            </select>
+          `)}
+
+          <label class="btn primary import-file-button" for="screenshotImportInput">
+            Screenshot auswählen
+            <input id="screenshotImportInput" type="file" accept="image/png,image/jpeg,image/webp,image/heic,image/heif" hidden>
+          </label>
+        </div>
+
+        <div class="mobile-share-note">
+          <strong>Tipp</strong>
+          <span>Zeige im Screenshot nur die Buchungsliste. Je größer Händler, Datum und Betrag dargestellt sind, desto zuverlässiger ist die Erkennung.</span>
+        </div>
+
+        ${privacyNote("Screenshot und OCR-Zwischendaten werden nur im Arbeitsspeicher verarbeitet und anschließend verworfen.")}
+      </div>
+
+      <div id="screenshotImportWorkspace"></div>
     `;
   }
 
@@ -720,8 +863,8 @@ export function createViews(context) {
   }
 
   return {
-    dashboard, transactions, addTransaction, pending, budgets,
-    loans, more, importStatement, importTransactions, manage, dashboardSettings, settings,
+    dashboard, transactions, addTransaction, pending, importReview, budgets,
+    loans, more, importScreenshot, importStatement, importTransactions, manage, dashboardSettings, settings,
     accounts, accountDetail, income, expenses, addTransactionSheet, transactionRow
   };
 }

@@ -778,3 +778,14 @@ Bestandteil der Produktidentität und werden ruhig sichtbar gemacht.
 # FinanceOS 4.7 — Import
 
 Importe werden vollständig lokal verarbeitet. Vor dem Speichern zeigt FinanceOS neue Buchungen, ungeklärte Kategorien und mögliche Duplikate. Nichts wird ohne bewusste Bestätigung in den Datenbestand übernommen.
+
+
+# FinanceOS 4.9 — Screenshot-Import
+
+Der Screenshot-Import ist der primäre mobile Schnellimport. OCR läuft ausschließlich lokal. FinanceOS speichert nur bestätigte, strukturierte Buchungen; Screenshot, Bitmap, Canvas und OCR-Rohtext werden verworfen.
+
+# FinanceOS 4.9.3 — Kontrollierte Automatisierung
+
+Automatisierung erzeugt niemals ungeprüfte Finanzwirkung. Wiederkehrende Vorlagen und QR-Importe erzeugen zunächst Importentwürfe. Kontostände, Budgets und Auswertungen ändern sich erst nach expliziter Bestätigung im eigenständigen Prüfbereich.
+
+Der zentrale Plus-Hub ist eine kompakte, nicht scrollende Entscheidungsebene. Längere Abläufe öffnen eine eigene Seite oder ein zweites fokussiertes Sheet.

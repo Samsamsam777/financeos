@@ -93,3 +93,21 @@ body{
   overscroll-behavior-y:none;
 }
 button{-webkit-user-select:none;user-select:none}
+
+
+/* FinanceOS 4.3 — installed app behavior */
+html, body{
+  min-height:100%;
+  min-height:100dvh;
+}
+html.is-standalone body{
+  overscroll-behavior:none;
+  -webkit-touch-callout:none;
+}
+html.is-standalone .app{
+  min-height:100dvh;
+}
+@media(display-mode:standalone){
+  body{user-select:none}
+  input,textarea{user-select:text}
+}

@@ -1,14 +1,15 @@
 {
-  "version": "4.2.0",
-  "source": "src(3).zip",
-  "javascript_files_checked": 10,
-  "checks": {
-    "version_4_2": true,
-    "add_uses_sheet": true,
-    "known_merchants": true,
-    "focus_system": true,
-    "fab_release": true,
-    "stagger_motion": true,
-    "soft_progress": true
-  }
+  "version": "4.3.0",
+  "source": "FinanceOS_4_2_Final_Polish.zip",
+  "pwa_checks": {
+    "version": true,
+    "manifest_icons": true,
+    "maskable_icons": true,
+    "apple_touch_icon": true,
+    "service_worker_registration": true,
+    "offline_navigation": true,
+    "install_ui": true,
+    "shortcut": true
+  },
+  "javascript_files_checked": 11
 }

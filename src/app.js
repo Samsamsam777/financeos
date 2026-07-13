@@ -8,11 +8,13 @@ import {
 } from "./storage.js";
 import { closeSheet, esc, field, showSheet } from "./ui.js";
 import { createViews } from "./views.js";
+import { initPWA, installState, requestInstall } from "./pwa.js";
 
 let data = loadData();
 let view = "dashboard";
 const viewHistory = [];
 let filters = { query: "", account: "", category: "", person: "", sort: "newest" };
+let pwaState = installState();
 
 const app = document.querySelector("#app");
 const getData = () => data;
@@ -23,7 +25,8 @@ const views = createViews({
   navigate,
   openTransaction,
   openLoan,
-  saveDashboard: () => saveData(data)
+  saveDashboard: () => saveData(data),
+  getPWAState: () => pwaState
 });
 
 function navButton(id, label, icon) {
@@ -148,6 +151,16 @@ function bindView() {
   if (view === "manage") bindManage();
   if (view === "dashboard-settings") bindDashboardSettings();
   if (view === "settings") bindSettings();
+
+  document.querySelectorAll("[data-install-app]").forEach(button => {
+    button.onclick = async () => {
+      const result = await requestInstall({
+        showIOSHelp: () => showInstallInstructions()
+      });
+      if (result.status === "accepted") showToast("FinanceOS wird installiert", "success");
+      if (result.status === "unavailable") showInstallInstructions();
+    };
+  });
 }
 
 function bindDashboard() {
@@ -510,6 +523,31 @@ function editRule(id) {
 }
 
 
+
+function showInstallInstructions() {
+  const ios = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  const content = ios
+    ? `
+      <div class="install-guide">
+        <div class="install-app-icon"><img src="./assets/icons/icon-192.png" alt=""></div>
+        <h2>FinanceOS installieren</h2>
+        <p>Tippe in Safari unten auf <strong>Teilen</strong> und wähle anschließend <strong>Zum Home-Bildschirm</strong>.</p>
+        <div class="install-steps">
+          <span>1</span><p>Safari-Menü „Teilen“ öffnen</p>
+          <span>2</span><p>„Zum Home-Bildschirm“ auswählen</p>
+          <span>3</span><p>Mit „Hinzufügen“ bestätigen</p>
+        </div>
+      </div>`
+    : `
+      <div class="install-guide">
+        <div class="install-app-icon"><img src="./assets/icons/icon-192.png" alt=""></div>
+        <h2>FinanceOS installieren</h2>
+        <p>Öffne das Browsermenü und wähle <strong>App installieren</strong> oder <strong>Zum Startbildschirm hinzufügen</strong>.</p>
+      </div>`;
+
+  showSheet(content);
+}
+
 function bindHeaderBehavior() {
   const header = document.querySelector(".app-header");
   if (!header) return;
@@ -522,7 +560,20 @@ function bindHeaderBehavior() {
   update();
 }
 
+pwaState = initPWA({
+  onStateChange: state => {
+    pwaState = state;
+    if (view === "more") render();
+  }
+});
+
 render();
+
+const launchAction = new URLSearchParams(location.search).get("action");
+if (launchAction === "add") {
+  history.replaceState({}, "", location.pathname);
+  setTimeout(() => openAddTransactionSheet(), 180);
+}
 
 if ("serviceWorker" in navigator) {
   navigator.serviceWorker.register("./sw.js").catch(error => {

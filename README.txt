@@ -66,3 +66,17 @@ FinanceOS 4.2 Final Polish:
 - Stagger-, Seiten-, Progress- und FAB-Mikrointeraktionen
 - Haptik-Abstraktion auf unterstützten Geräten
 - Plus öffnet immer das gemeinsame FinanceOS-Bottom-Sheet
+
+
+FinanceOS 4.3 Cross-Platform PWA:
+- eigenes FinanceOS-App-Icon für iPhone, iPad, Android und Desktop
+- Android Maskable Icons für adaptive Launcher-Formen
+- iOS Apple Touch Icons und Startbilder
+- installierbares Web-App-Manifest
+- Standalone-Modus ohne Browserleiste
+- Portrait-Ausrichtung und Safe-Area-Unterstützung
+- verbesserter Offline-Start und Cache-Update
+- Installationskarte im Mehr-Menü
+- iOS- und Android-spezifische Installationshilfe
+- Android-App-Shortcut „Neue Buchung“
+- bestehende lokale Daten bleiben kompatibel

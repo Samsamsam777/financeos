@@ -8,7 +8,7 @@ import { esc, field } from "./ui.js";
 import { groupedCard, sectionHeader } from "./components/components.js";
 
 export function createViews(context) {
-  const { getData, navigate, openTransaction, openLoan, saveDashboard } = context;
+  const { getData, navigate, openTransaction, openLoan, saveDashboard, getPWAState } = context;
   const data = () => getData();
   const category = id => data().categories.find(item => item.id === id);
   const account = id => data().accounts.find(item => item.id === id);
@@ -323,6 +323,7 @@ export function createViews(context) {
   }
 
   function more() {
+    const install = getPWAState?.() ?? { standalone: false };
     const rows = [
       ["dashboard-settings", "Dashboard anpassen", icons.arrange],
       ["pending", "Später zuordnen", icons.pending],
@@ -339,6 +340,13 @@ export function createViews(context) {
 
     return `
       <div class="section-title"><h2 class="page-heading">Mehr</h2></div>
+      ${!install.standalone ? `
+        <button class="card install-card" data-install-app>
+          <span class="install-card-icon"><img src="./assets/icons/icon-96.png" alt=""></span>
+          <span class="install-card-copy"><strong>FinanceOS installieren</strong><small>Wie eine echte App auf dem Startbildschirm</small></span>
+          <span class="row-chevron">${icons.chevron}</span>
+        </button>
+      ` : ""}
       <div class="card grouped-card settings-group">${rows}</div>
     `;
   }

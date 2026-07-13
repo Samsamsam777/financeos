@@ -1,4 +1,4 @@
-import { createWorker, PSM } from "../vendor/tesseract/tesseract.esm.min.js";
+import { createWorker } from "../vendor/tesseract/tesseract.esm.min.js";
 import { matchCategoryRule, normalizeMerchant } from "./logic.js";
 
 const AMOUNT_PATTERN = /([+\-−–]?)\s*(\d{1,3}(?:[.\s]\d{3})*,\d{2})\s*€/;
@@ -200,7 +200,7 @@ export async function recognizeBankingScreenshot(file, onProgress = () => {}) {
     });
 
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SPARSE_TEXT,
+      tessedit_pageseg_mode: "11",
       preserve_interword_spaces: "1"
     });
 

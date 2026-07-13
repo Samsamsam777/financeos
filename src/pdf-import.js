@@ -21,52 +21,83 @@ function groupTextItems(items) {
   return [...rows.entries()]
     .sort((a, b) => b[0] - a[0])
     .map(([y, rowItems]) => {
-      const sorted = rowItems.filter(item => item.text).sort((a, b) => a.x - b.x);
+      const sorted = rowItems
+        .filter(item => item.text)
+        .sort((a, b) => a.x - b.x);
+
       return {
         y,
         items: sorted,
-        text: sorted.map(item => item.text).join(" ").replace(/\s+/g, " ").trim()
+        text: sorted
+          .map(item => item.text)
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim()
       };
     })
     .filter(row => row.text);
 }
 
-async function loadDocument(bytes) {
-  const baseOptions = {
-    data: bytes,
+function freshBytes(sourceBuffer) {
+  return new Uint8Array(sourceBuffer.slice(0));
+}
+
+async function openWithWorker(sourceBuffer) {
+  const loadingTask = pdfjsLib.getDocument({
+    data: freshBytes(sourceBuffer),
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true
-  };
+  });
 
+  return {
+    loadingTask,
+    document: await loadingTask.promise
+  };
+}
+
+async function openWithoutWorker(sourceBuffer) {
+  const loadingTask = pdfjsLib.getDocument({
+    data: freshBytes(sourceBuffer),
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true,
+    disableWorker: true
+  });
+
+  return {
+    loadingTask,
+    document: await loadingTask.promise
+  };
+}
+
+async function loadDocument(sourceBuffer) {
   try {
-    const loadingTask = pdfjsLib.getDocument(baseOptions);
-    const document = await loadingTask.promise;
-    return { loadingTask, document };
+    return await openWithWorker(sourceBuffer);
   } catch (workerError) {
     console.warn("FinanceOS PDF worker fallback", workerError);
-    const fallbackTask = pdfjsLib.getDocument({
-      ...baseOptions,
-      disableWorker: true
-    });
-    const document = await fallbackTask.promise;
-    return { loadingTask: fallbackTask, document };
+    return openWithoutWorker(sourceBuffer);
   }
 }
 
 export async function extractPDFLines(file) {
-  const buffer = await file.arrayBuffer();
-  const bytes = new Uint8Array(buffer);
-  const { loadingTask, document } = await loadDocument(bytes);
+  const sourceBuffer = await file.arrayBuffer();
+  let loadingTask = null;
+  let document = null;
   const pages = [];
 
   try {
+    const opened = await loadDocument(sourceBuffer);
+    loadingTask = opened.loadingTask;
+    document = opened.document;
+
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
       const page = await document.getPage(pageNumber);
       const content = await page.getTextContent({
         includeMarkedContent: false,
         disableNormalization: false
       });
+
       const rows = groupTextItems(content.items);
 
       pages.push({
@@ -77,13 +108,18 @@ export async function extractPDFLines(file) {
 
       page.cleanup();
     }
-  } finally {
-    try { await document.destroy(); } catch {}
-    try { loadingTask.destroy?.(); } catch {}
-    bytes.fill(0);
-  }
 
-  return pages;
+    return pages;
+  } finally {
+    try { await document?.destroy(); } catch {}
+    try { loadingTask?.destroy?.(); } catch {}
+
+    // sourceBuffer is never handed directly to PDF.js and therefore remains
+    // owned by FinanceOS. It can be overwritten safely after extraction.
+    try {
+      new Uint8Array(sourceBuffer).fill(0);
+    } catch {}
+  }
 }
 
 export async function clearPDFResources(file) {

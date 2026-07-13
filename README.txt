@@ -185,3 +185,10 @@ FinanceOS 4.8.2 Sparkasse Table Fix:
 - separat extrahierte Beträge der rechten Spalte werden zugeordnet
 - PDF.js Worker-Fallback für iPhone/Safari
 - technische Fehlermeldung ist bei Bedarf einsehbar
+
+
+FinanceOS 4.8.3 iOS PDF Buffer Fix:
+- PDF.js erhält für Worker und Fallback jeweils eine eigene Byte-Kopie
+- abgetrennte ArrayBuffer werden nicht erneut verwendet
+- Safari/iPhone-Fallback kann das PDF jetzt erneut öffnen
+- Originalpuffer wird erst nach vollständiger Verarbeitung überschrieben

@@ -1,16 +1,14 @@
 {
-  "version": "4.8.2",
-  "source": "FinanceOS_4_8_1_Parser_System.zip",
-  "feature": "Coordinate-aware Sparkasse statement parser",
-  "reference_layout": "Datum | Erl\u00e4uterung | Betrag EUR",
+  "version": "4.8.3",
+  "source": "FinanceOS_4_8_2_Sparkasse_Table_Fix.zip",
+  "fix": "Prevent detached ArrayBuffer reuse in PDF.js worker fallback",
   "checks": {
-    "version_4_8_2": true,
-    "coordinate_rows": true,
-    "worker_fallback": true,
-    "sparkasse_table_headers": true,
-    "multi_line_grouping": true,
-    "amount_separate_row": true,
-    "error_details": true
+    "version_4_8_3": true,
+    "fresh_worker_copy": true,
+    "separate_fallback": true,
+    "original_not_transferred": true,
+    "cleanup_after_processing": true,
+    "cache_bumped": true
   },
   "browser_device_tested": false
 }

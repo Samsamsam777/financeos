@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-8-2-sparkasse-table-fix";
+const CACHE = "financeos-v4-8-3-ios-pdf-buffer-fix";
 const ASSETS = [
   "./",
   "./index.html",

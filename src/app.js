@@ -309,16 +309,17 @@ function renderPDFPreview(items, fileName, result) {
       </div>
     </div>
 
-    <div class="import-summary-grid">
+    <div class="import-summary-grid import-summary-grid-four">
       <div class="card"><span>Neue Buchungen</span><strong>${selected.length}</strong></div>
       <div class="card"><span>Zu prüfen</span><strong>${pending.length}</strong></div>
       <div class="card"><span>Duplikate</span><strong>${duplicates.length}</strong></div>
+      <div class="card"><span>Ignoriert</span><strong>${result.parserMeta?.rejectedRows ?? 0}</strong></div>
     </div>
 
     <div class="card import-preview-card">
       <div class="import-file-summary">
         <strong>${esc(fileName)}</strong>
-        <span>${items.length} Buchungen erkannt</span>
+        <span>${items.length} sichere Buchungen</span>
       </div>
 
       <div class="import-preview-list">

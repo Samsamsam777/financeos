@@ -200,3 +200,11 @@ FinanceOS 4.8.4 iOS PDF Reload Fix:
 - keinerlei Wiederverwendung von ArrayBuffer oder Uint8Array
 - PDF.js- und App-Module mit 4.8.4-Cache-Busting
 - JavaScript und PDF.js werden im Service Worker netzwerkbevorzugt geladen
+
+
+FinanceOS 4.8.5 Strict Sparkasse Parser:
+- Buchungen nur bei Datum links und Betrag rechts in derselben Tabellenzeile
+- Beschreibungen ausschließlich aus der mittleren Erläuterungsspalte
+- Kontostände, Überschriften, Zins-, Kreditlinien- und Rechtstexte ausgeschlossen
+- abgelehnte Tabellenzeilen werden als Ignoriert ausgewiesen
+- Vorschau enthält nur Buchungen mit hoher Parser-Sicherheit

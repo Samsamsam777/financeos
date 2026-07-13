@@ -155,95 +155,189 @@ function parseGeneric({ pages, accountId, data, makeId }) {
   return results;
 }
 
+
+const SPARKASSE_NON_TRANSACTION_PATTERNS = [
+  /KONTOSTAND\s+AM/i,
+  /AUSZUG\s+NR/i,
+  /KONTOAUSZUG/i,
+  /BETRAG\s+EUR/i,
+  /^DATUM$/i,
+  /^ERLÄUTERUNG$/i,
+  /ANLAGE\s+NR/i,
+  /KREDIT\s+EUR/i,
+  /KRED[-\s]?ZINS/i,
+  /EINGERÄUMTE[RN]?\s+KONTO/i,
+  /EURIBOR/i,
+  /ZINSSÄTZE?/i,
+  /VERFÜGUNGSRAHMEN/i,
+  /SEITE\s+\d+/i,
+  /UST[-\s]?IDNR/i,
+  /HANDELSREGISTER/i,
+  /BLZ\s*:/i,
+  /TELEFON\s+\d/i,
+  /FAX\s+\d/i,
+  /WWW\./i,
+  /INFO@/i
+];
+
+function isSparkasseNoise(text = "") {
+  const value = String(text).replace(/\s+/g, " ").trim();
+  if (!value) return true;
+  return SPARKASSE_NON_TRANSACTION_PATTERNS.some(pattern => pattern.test(value));
+}
+
+function findSparkasseColumns(rows) {
+  const header = rows.find(row => {
+    const upper = String(row.text ?? "").toUpperCase();
+    return upper.includes("DATUM") &&
+      (upper.includes("ERLÄUTERUNG") || upper.includes("ERLAEUTERUNG")) &&
+      upper.includes("BETRAG");
+  });
+
+  if (header?.items?.length) {
+    const dateItem = header.items.find(item => /DATUM/i.test(item.text));
+    const descriptionItem = header.items.find(item => /ERLÄUTERUNG|ERLAEUTERUNG/i.test(item.text));
+    const amountItem = header.items.find(item => /BETRAG/i.test(item.text));
+
+    if (dateItem && descriptionItem && amountItem) {
+      return {
+        dateMax: descriptionItem.x - 8,
+        descriptionMin: descriptionItem.x - 8,
+        amountMin: amountItem.x - 16
+      };
+    }
+  }
+
+  // Conservative fallback for typical Sparkasse landscape statement tables.
+  const allX = rows.flatMap(row => (row.items ?? []).map(item => Number(item.x || 0)));
+  const maxX = Math.max(600, ...allX);
+  return {
+    dateMax: maxX * 0.20,
+    descriptionMin: maxX * 0.18,
+    amountMin: maxX * 0.78
+  };
+}
+
+function rowColumnText(row, minX, maxX = Infinity) {
+  return (row.items ?? [])
+    .filter(item => Number(item.x) >= minX && Number(item.x) < maxX)
+    .map(item => String(item.text ?? "").trim())
+    .filter(Boolean)
+    .join(" ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function extractRightColumnAmount(row, amountMin) {
+  const rightText = rowColumnText(row, amountMin);
+  const matches = [...rightText.matchAll(AMOUNT_REGEX)];
+  return matches.length ? toAmount(matches.at(-1)[1]) : null;
+}
+
+function cleanSparkasseDescription(parts) {
+  return parts
+    .join(" ")
+    .replace(/\b(ÜBERWEISUNG ONLINE|ÜBERWEISUNG ÜBERTRAG|ÜBERWEISUNG|LASTSCHRIFT BASIS|LASTSCHRIFT|DAUERAUFTRAG|GUTSCHRIFT|KARTENZAHLUNG)\b/gi, " ")
+    .replace(/\b(BIC|IBAN|DATUM|UHR)\b[:\s]*/gi, " ")
+    .replace(/\b[A-Z]{2}\d{2}(?:\s?\d{4}){3,7}\b/gi, " ")
+    .replace(/\b[A-Z0-9-]{14,}\b/g, " ")
+    .replace(/\b\d{10,}\b/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
 function parseSparkasse({ pages, accountId, data, makeId }) {
   const results = [];
+  let rejectedRows = 0;
 
   for (const page of pages) {
-    const rows = page.rows ?? (page.lines ?? []).map((text, index) => ({
-      y: 10000 - index,
-      text,
-      items: [{ text, x: 0, y: 10000 - index }]
-    }));
+    const rows = page.rows ?? [];
+    if (!rows.length) continue;
 
+    const columns = findSparkasseColumns(rows);
     let current = null;
 
     const flush = () => {
       if (!current) return;
 
-      const description = current.descriptionParts
-        .join(" ")
-        .replace(/\b(ÜBERWEISUNG ONLINE|ÜBERWEISUNG ÜBERTRAG|LASTSCHRIFT BASIS|DAUERAUFTRAG|GUTSCHRIFT|KARTENZAHLUNG)\b/gi, " ")
-        .replace(/\b(BIC|IBAN|DATUM|UHR)\b[:\s]*/gi, " ")
-        .replace(/\b[A-Z]{2}\d{2}(?:\s?\d{4}){3,7}\b/gi, " ")
-        .replace(/\b\d{10,}\b/g, " ")
-        .replace(/\s+/g, " ")
-        .trim();
+      const description = cleanSparkasseDescription(current.descriptionParts);
+
+      const invalid =
+        !current.date ||
+        current.amount == null ||
+        current.amount === 0 ||
+        description.length < 2 ||
+        isSparkasseNoise(description);
+
+      if (invalid) {
+        rejectedRows += 1;
+        current = null;
+        return;
+      }
 
       const transaction = transactionFromParts({
         date: current.date,
         amount: current.amount,
-        rawDescription: description || current.raw,
+        rawDescription: description,
         accountId,
         data,
         makeId,
         pageNumber: page.pageNumber
       });
 
-      if (transaction) results.push(transaction);
+      if (transaction) {
+        transaction.parserConfidence = "high";
+        results.push(transaction);
+      } else {
+        rejectedRows += 1;
+      }
+
       current = null;
     };
 
     for (const row of rows) {
-      const rowText = String(row.text ?? "").trim();
-      if (!rowText) continue;
+      const fullText = String(row.text ?? "").replace(/\s+/g, " ").trim();
+      if (!fullText) continue;
 
-      const dateMatch = rowText.match(DATE_REGEX);
-      const amountMatches = [...rowText.matchAll(AMOUNT_REGEX)]
-        .map(match => ({ raw: match[1], value: toAmount(match[1]) }))
-        .filter(item => Number.isFinite(item.value));
+      const leftText = rowColumnText(row, -Infinity, columns.dateMax);
+      const middleText = rowColumnText(row, columns.descriptionMin, columns.amountMin);
+      const dateMatch = leftText.match(DATE_REGEX);
+      const rightAmount = extractRightColumnAmount(row, columns.amountMin);
 
-      if (dateMatch) {
+      // A real booking starts only when date and right-column amount are on
+      // the same visual table row. This excludes balances, legal text,
+      // interest notices and page furniture.
+      if (dateMatch && rightAmount != null) {
         flush();
 
-        const date = toISODate(dateMatch[0]);
-        const amount = amountMatches.length ? amountMatches.at(-1).value : null;
-
-        const middleItems = (row.items ?? [])
-          .filter(item => {
-            const text = String(item.text ?? "");
-            return !DATE_REGEX.test(text) && !new RegExp(AMOUNT_REGEX.source, "g").test(text);
-          })
-          .map(item => item.text)
-          .filter(Boolean);
-
         current = {
-          date,
-          amount,
-          raw: rowText,
-          descriptionParts: middleItems.length ? middleItems : [cleanLine(rowText)]
+          date: toISODate(dateMatch[0]),
+          amount: rightAmount,
+          descriptionParts: middleText && !isSparkasseNoise(middleText)
+            ? [middleText]
+            : []
         };
-
         continue;
       }
 
       if (!current) continue;
 
-      if (current.amount == null && amountMatches.length) {
-        current.amount = amountMatches.at(-1).value;
+      // Continuation rows contribute only text from the middle column.
+      // Never append left/right column content to the merchant description.
+      if (middleText && !isSparkasseNoise(middleText)) {
+        current.descriptionParts.push(middleText);
       }
-
-      const descriptionPart = rowText
-        .replace(new RegExp(AMOUNT_REGEX.source, "g"), " ")
-        .replace(/\s+/g, " ")
-        .trim();
-
-      if (descriptionPart) current.descriptionParts.push(descriptionPart);
     }
 
     flush();
   }
 
-  return deduplicateParsed(results);
+  const items = deduplicateParsed(results);
+  items.parserMeta = {
+    rejectedRows,
+    acceptedRows: items.length
+  };
+  return items;
 }
 
 function deduplicateParsed(items) {
@@ -295,6 +389,7 @@ export function parseWithRegistry({ pages, accountId, data, makeId }) {
   }
 
   const items = parser.parse({ pages, accountId, data, makeId });
+  const parserMeta = items.parserMeta ?? null;
 
   return {
     diagnostic,
@@ -303,6 +398,7 @@ export function parseWithRegistry({ pages, accountId, data, makeId }) {
       label: parser.label
     },
     items,
+    parserMeta,
     requiresOCR: false
   };
 }

@@ -1834,3 +1834,14 @@ button.is-pressed,
 .pdf-processing p{
   max-width:420px;
 }
+
+
+/* FinanceOS 4.8.5 — strict parser diagnostics */
+.import-summary-grid-four{
+  grid-template-columns:repeat(4,minmax(0,1fr));
+}
+@media(max-width:520px){
+  .import-summary-grid-four{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+  }
+}

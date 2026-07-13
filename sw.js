@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-8-4-ios-pdf-reload-fix";
+const CACHE = "financeos-v4-8-5-strict-sparkasse-parser";
 const ASSETS = [
   "./vendor/pdfjs/pdf.worker.mjs?v=4.8.4",
   "./vendor/pdfjs/pdf.mjs?v=4.8.4",

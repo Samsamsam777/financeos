@@ -1,14 +1,16 @@
 {
-  "version": "4.8.4",
-  "source": "FinanceOS_4_8_3_iOS_PDF_Buffer_Fix.zip",
-  "fix": "Read PDF file independently per attempt and bypass worker on iOS",
+  "version": "4.8.5",
+  "source": "FinanceOS_4_8_4_iOS_PDF_Reload_Fix.zip",
+  "fix": "Reject non-transaction Sparkasse statement rows",
+  "reference": "User screenshots of Datum / Erl\u00e4uterung / Betrag EUR layout",
   "checks": {
-    "version_4_8_4": true,
-    "ios_worker_skipped": true,
-    "fresh_file_read_each_attempt": true,
-    "no_buffer_reuse": true,
-    "module_cache_busting": true,
-    "network_first_modules": true,
+    "version_4_8_5": true,
+    "strict_same_row": true,
+    "coordinate_columns": true,
+    "middle_only": true,
+    "noise_filters": true,
+    "confidence": true,
+    "ignored_count": true,
     "cache_bumped": true
   },
   "browser_device_tested": false

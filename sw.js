@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-4-5-loan-cards";
+const CACHE = "financeos-v4-4-7-material-background-tuning";
 const ASSETS = [
   "./",
   "./index.html",

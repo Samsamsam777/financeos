@@ -111,3 +111,30 @@ html.is-standalone .app{
   body{user-select:none}
   input,textarea{user-select:text}
 }
+
+
+/* FinanceOS 4.4.6 — iOS form zoom prevention */
+@supports (-webkit-touch-callout:none){
+  input,
+  select,
+  textarea{
+    font-size:16px!important;
+  }
+}
+
+
+/* FinanceOS 4.4.7 — clearer ambient background */
+.ambient-layer{
+  background:
+    linear-gradient(135deg,rgba(53,42,154,.68) 0%,transparent 34%),
+    radial-gradient(ellipse 74% 58% at 84% 7%,rgba(116,58,184,.56),transparent 62%),
+    radial-gradient(ellipse 86% 64% at 4% 94%,rgba(124,41,140,.48),transparent 64%),
+    radial-gradient(ellipse 90% 58% at 98% 73%,rgba(14,116,147,.34),transparent 68%),
+    linear-gradient(180deg,#070b18 0%,#050914 58%,#040711 100%);
+}
+.ambient-layer::before{
+  inset:-16%;
+  filter:blur(24px);
+  opacity:.78;
+  animation-duration:44s;
+}

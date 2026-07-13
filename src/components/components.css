@@ -1198,3 +1198,67 @@ button.is-pressed,
     text-align:left;
   }
 }
+
+
+/* Stable bottom sheet during mobile keyboard focus */
+.modal{
+  align-items:flex-end;
+}
+.sheet{
+  max-height:min(92dvh,760px);
+  overflow:auto;
+  overscroll-behavior:contain;
+  -webkit-overflow-scrolling:touch;
+}
+.sheet:focus-within{
+  transform:none;
+}
+
+
+/* FinanceOS 4.4.7 — darker, lightly transparent material */
+.material-card,
+.card,
+.grouped-card,
+.transaction-list,
+.filters,
+.page-card,
+.loan-overview-card{
+  border-color:rgba(255,255,255,.07);
+  background:
+    linear-gradient(
+      158deg,
+      rgba(29,34,49,.94),
+      rgba(18,23,36,.96)
+    );
+  box-shadow:
+    inset 0 1px 0 rgba(255,255,255,.035),
+    inset 0 -1px 0 rgba(0,0,0,.18),
+    0 16px 36px rgba(0,0,0,.26);
+  backdrop-filter:blur(6px) saturate(112%);
+  -webkit-backdrop-filter:blur(6px) saturate(112%);
+}
+
+.hero,
+.summary-card,
+.pending-bar,
+.customize-card,
+.install-card{
+  background:
+    linear-gradient(
+      155deg,
+      rgba(31,36,52,.93),
+      rgba(18,23,36,.96)
+    );
+}
+
+/* Inputs remain darker than their parent card. */
+.field input,
+.field select,
+.field textarea{
+  background:rgba(10,15,27,.92);
+}
+.field input:focus,
+.field select:focus,
+.field textarea:focus{
+  background:rgba(12,18,31,.97);
+}

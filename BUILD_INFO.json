@@ -1,12 +1,13 @@
 {
-  "version": "4.4.5",
-  "source": "FinanceOS_4_4_4_Progress_Color_Tuning.zip",
-  "change": "Detailed standalone loan cards",
+  "version": "4.4.7",
+  "source": "FinanceOS_4_4_6_iOS_Form_Zoom_Fix.zip",
+  "change": "Clearer ambient background and darker translucent cards",
   "checks": {
-    "version_4_4_5": true,
-    "individual_cards": true,
-    "all_core_information": true,
-    "progress_bottom": true,
-    "no_grouped_loan_list": true
+    "version_4_4_7": true,
+    "ambient_blur_reduced": true,
+    "ambient_colors_stronger": true,
+    "cards_darker": true,
+    "cards_slightly_transparent": true,
+    "restrained_card_blur": true
   }
 }

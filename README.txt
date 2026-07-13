@@ -120,3 +120,16 @@ FinanceOS 4.4.5:
 - Restschuld, abbezahlt und Fortschritt direkt sichtbar
 - vorhandene Rate, Zinssatz, Laufzeit und ursprünglicher Betrag werden eingeblendet
 - kleiner Fortschrittsbalken am unteren Rand jeder Kreditkachel
+
+
+FinanceOS 4.4.6:
+- iPhone-Safari-Zoom beim Fokussieren von Formularfeldern verhindert
+- Inputs, Selects und Textareas rendern auf iOS mit mindestens 16 px
+- Bottom Sheet bleibt beim Öffnen der Bildschirmtastatur stabil und scrollbar
+
+
+FinanceOS 4.4.7:
+- Ambient-Hintergrund deutlich weniger weichgezeichnet
+- Violett-, Blau- und Türkistöne kommen stärker zur Geltung
+- Karten dunkler und nur minimal transparent
+- Card-Blur auf ein zurückhaltendes Niveau reduziert

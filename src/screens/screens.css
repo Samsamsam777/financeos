@@ -260,3 +260,25 @@
   backdrop-filter:blur(3px);
   -webkit-backdrop-filter:blur(3px);
 }
+
+
+/* Compact geometry with 16px input text on iOS */
+.entry-form .field input,
+.entry-form .field select,
+.entry-form .field textarea{
+  min-height:48px;
+  line-height:1.2;
+}
+.entry-sheet{
+  scroll-margin-bottom:env(safe-area-inset-bottom);
+}
+
+
+/* FinanceOS 4.4.7 — restrained card transparency */
+.grouped-card,
+.transaction-list,
+.filters,
+.page-card{
+  backdrop-filter:blur(6px) saturate(112%);
+  -webkit-backdrop-filter:blur(6px) saturate(112%);
+}

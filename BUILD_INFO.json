@@ -1,16 +1,19 @@
 {
-  "version": "4.6.0",
-  "source": "financeos_4_6_accounts_work",
-  "feature": "Account detail pages with filtered transactions",
-  "javascript_files_checked": 11,
+  "version": "4.7.0",
+  "source": "FinanceOS_4_6_Account_Details.zip",
+  "feature": "CSV import with preview and expanded demo transactions",
+  "javascript_files_checked": 12,
   "checks": {
-    "version_4_6": true,
-    "account_detail_view": true,
-    "account_navigation": true,
-    "account_route": true,
-    "account_filter": true,
-    "income_expense_summary": true,
-    "back_button": true
+    "version_4_7": true,
+    "csv_parser": true,
+    "column_detection": true,
+    "duplicate_detection": true,
+    "import_route": true,
+    "import_menu": true,
+    "demo_100": true,
+    "demo_50": true,
+    "demo_30": true,
+    "preserves_real_data": true
   },
   "browser_device_tested": false
 }

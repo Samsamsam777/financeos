@@ -309,3 +309,13 @@
 .account-transaction-list .transaction-row{
   min-height:60px;
 }
+
+
+/* FinanceOS 4.7 — import screen spacing */
+#importWorkspace{
+  margin-top:var(--space-3);
+}
+.import-preview-card .btn.primary{
+  width:100%;
+  min-height:48px;
+}

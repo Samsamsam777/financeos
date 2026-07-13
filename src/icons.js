@@ -23,6 +23,7 @@ export const icons = {
   search: svg('<circle cx="11" cy="11" r="7"/><path d="m16 16 5 5"/>'),
   edit: svg('<path d="m4 16-1 5 5-1L19 9l-4-4Z"/><path d="m13 7 4 4"/>'),
   trash: svg('<path d="M4 7h16M9 7V4h6v3M7 7l1 14h8l1-14"/>'),
+  upload: svg('<path d="M12 21V9M7 14l5-5 5 5M5 4h14"/>'),
   download: svg('<path d="M12 3v12M7 10l5 5 5-5M5 20h14"/>'),
   restore: svg('<path d="M12 21V9M7 14l5-5 5 5M5 4h14"/>'),
   reset: svg('<path d="M4 12a8 8 0 1 0 2.3-5.7L4 8.6M4 4v4.6h4.6"/>'),

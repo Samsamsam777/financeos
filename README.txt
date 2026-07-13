@@ -150,3 +150,12 @@ FinanceOS 4.6 Account Details:
 - aktueller Kontostand, Einnahmen und Ausgaben direkt sichtbar
 - vollständige Buchungsliste pro Konto
 - Buchungen bleiben direkt bearbeitbar
+
+
+FinanceOS 4.7 CSV Import:
+- CSV-Dateien lokal auswählen und verarbeiten
+- automatische Spaltenerkennung für Datum, Beschreibung, Betrag, Soll und Haben
+- Import einem bestehenden Konto zuweisen
+- Händler- und Kategorieerkennung auf importierte Buchungen anwenden
+- Duplikate und ungeklärte Buchungen vor dem Import anzeigen
+- 100 Demo-Buchungen Gemeinschaftskonto, 50 Kreditkarte, 30 Bargeld

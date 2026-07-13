@@ -400,6 +400,7 @@ export function createViews(context) {
     const install = getPWAState?.() ?? { standalone: false };
     const rows = [
       ["dashboard-settings", "Dashboard anpassen", icons.arrange],
+      ["import", "Buchungen importieren", icons.upload ?? icons.restore],
       ["pending", "Später zuordnen", icons.pending],
       ["loans", "Kredite", icons.wallet],
       ["manage", "Konten, Kategorien & Regeln", icons.list],
@@ -422,6 +423,37 @@ export function createViews(context) {
         </button>
       ` : ""}
       <div class="card grouped-card settings-group">${rows}</div>
+    `;
+  }
+
+  function importTransactions() {
+    return `
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Buchungen importieren</h2>
+      </div>
+
+      <div class="card import-card">
+        <div class="import-intro">
+          <span class="import-icon">${icons.upload ?? icons.restore}</span>
+          <div>
+            <strong>CSV-Datei auswählen</strong>
+            <p>FinanceOS erkennt Datum, Beschreibung, Betrag und Kategorien automatisch.</p>
+          </div>
+        </div>
+
+        <label class="btn primary import-file-button" for="csvImportInput">
+          CSV-Datei auswählen
+          <input id="csvImportInput" type="file" accept=".csv,text/csv,text/plain" hidden>
+        </label>
+
+        <div class="privacy-note">
+          <span aria-hidden="true">✓</span>
+          <span>Die Datei wird ausschließlich auf diesem Gerät verarbeitet.</span>
+        </div>
+      </div>
+
+      <div id="importWorkspace"></div>
     `;
   }
 
@@ -644,7 +676,7 @@ export function createViews(context) {
 
   return {
     dashboard, transactions, addTransaction, pending, budgets,
-    loans, more, manage, dashboardSettings, settings,
+    loans, more, importTransactions, manage, dashboardSettings, settings,
     accounts, accountDetail, income, expenses, addTransactionSheet, transactionRow
   };
 }

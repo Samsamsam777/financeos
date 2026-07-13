@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-6-account-details";
+const CACHE = "financeos-v4-7-csv-import";
 const ASSETS = [
   "./",
   "./index.html",
@@ -6,6 +6,7 @@ const ASSETS = [
   "./src/app.js",
   "./src/constants.js",
   "./src/icons.js",
+  "./src/import.js",
   "./src/logic.js",
   "./src/motion.js",
   "./src/storage.js",

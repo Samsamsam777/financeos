@@ -53,25 +53,93 @@ const seed = {
   ]
 };
 
-function seedExamples(data) {
-  const date = new Date().toISOString().slice(0, 10);
+
+const DEMO_MERCHANTS = [
+  ["REWE", "c1", 18, 95],
+  ["EDEKA", "c1", 15, 82],
+  ["Lidl", "c1", 12, 70],
+  ["Spotify", "c6", 10.99, 10.99],
+  ["Netflix", "c6", 13.99, 17.99],
+  ["Amazon", "c5", 12, 145],
+  ["Shell", "c4", 35, 92],
+  ["Deutsche Bahn", "c4", 14, 120],
+  ["Restaurant", "c3", 22, 86],
+  ["Apotheke", "c7", 8, 55],
+  ["Kino", "c8", 10, 38]
+];
+
+function seededNumber(seedValue) {
+  let seed = seedValue % 2147483647;
+  if (seed <= 0) seed += 2147483646;
+  return () => {
+    seed = seed * 16807 % 2147483647;
+    return (seed - 1) / 2147483646;
+  };
+}
+
+function createDemoTransactions(accountId, count, seedOffset) {
+  const random = seededNumber(4700 + seedOffset);
+  const transactions = [];
+  const todayDate = new Date();
+
+  for (let index = 0; index < count; index += 1) {
+    const merchant = DEMO_MERCHANTS[Math.floor(random() * DEMO_MERCHANTS.length)];
+    const [description, categoryId, minimum, maximum] = merchant;
+    const date = new Date(todayDate);
+    date.setDate(date.getDate() - Math.floor(random() * 180));
+
+    const isIncome = index % 23 === 0;
+    const amount = isIncome
+      ? 600 + Math.round(random() * 2800)
+      : Math.round((minimum + random() * (maximum - minimum)) * 100) / 100;
+
+    transactions.push({
+      id: `demo-${accountId}-${index + 1}`,
+      createdAt: Date.now() - index * 1000 - seedOffset,
+      date: date.toISOString().slice(0, 10),
+      type: isIncome ? "income" : "expense",
+      amount,
+      description: isIncome ? (index % 46 === 0 ? "Gehalt" : "Erstattung") : description,
+      originalDescription: isIncome ? "" : description,
+      accountId,
+      categoryId: isIncome ? "c9" : categoryId,
+      person: accountId === "a3" ? "Gemeinsam" : (index % 5 === 0 ? "Partnerin" : "Gemeinsam"),
+      status: "done",
+      source: "demo"
+    });
+  }
+
+  return transactions;
+}
+
+function isLegacyDemoState(data) {
+  if (!Array.isArray(data.transactions) || data.transactions.length > 3) return false;
+  const descriptions = new Set(data.transactions.map(item => item.description));
+  return descriptions.has("Gehalt") &&
+    descriptions.has("REWE Markt") &&
+    [...descriptions].some(value => String(value).includes("PAYPAL"));
+}
+
+function installExpandedDemoData(data) {
+  if (data.settings?.expandedDemoDataInstalled) return data;
+  if (!isLegacyDemoState(data)) return data;
+
   data.transactions = [
-    {
-      id: makeId(), createdAt: Date.now() - 2000, date, type: "income",
-      amount: 3200, description: "Gehalt", accountId: "a1",
-      categoryId: "c9", person: "Gemeinsam", status: "done"
-    },
-    {
-      id: makeId(), createdAt: Date.now() - 1000, date, type: "expense",
-      amount: 74.60, description: "REWE Markt", accountId: "a1",
-      categoryId: "c1", person: "Gemeinsam", status: "done"
-    },
-    {
-      id: makeId(), createdAt: Date.now(), date, type: "expense",
-      amount: 47.90, description: "PAYPAL *M32H8KD", accountId: "a1",
-      categoryId: "c10", person: "Unklar", status: "pending"
-    }
+    ...createDemoTransactions("a1", 100, 1),
+    ...createDemoTransactions("a2", 50, 2),
+    ...createDemoTransactions("a3", 30, 3)
   ];
+  data.settings.expandedDemoDataInstalled = true;
+  return data;
+}
+
+function seedExamples(data) {
+  data.transactions = [
+    ...createDemoTransactions("a1", 100, 1),
+    ...createDemoTransactions("a2", 50, 2),
+    ...createDemoTransactions("a3", 30, 3)
+  ];
+  data.settings.expandedDemoDataInstalled = true;
 }
 
 function migrate(data) {
@@ -132,6 +200,7 @@ function migrate(data) {
     );
   }
 
+  installExpandedDemoData(data);
   return data;
 }
 

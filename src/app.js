@@ -8,6 +8,7 @@ import {
 } from "./storage.js";
 import { closeSheet, esc, field, showSheet } from "./ui.js";
 import { createViews } from "./views.js";
+import { buildImportPreview, detectColumns, parseCSV } from "./import.js";
 import { initPWA, installState, requestInstall } from "./pwa.js";
 
 let data = loadData();
@@ -134,6 +135,7 @@ function render() {
     budgets: views.budgets,
     loans: views.loans,
     more: views.more,
+    import: views.importTransactions,
     manage: views.manage,
     "dashboard-settings": views.dashboardSettings,
     settings: views.settings,
@@ -189,6 +191,7 @@ function bindView() {
   if (view === "dashboard-settings") bindDashboardSettings();
   if (view === "settings") bindSettings();
   if (view === "accounts") bindAccounts();
+  if (view === "import") bindImport();
 
   document.querySelectorAll("[data-install-app]").forEach(button => {
     button.onclick = async () => {
@@ -199,6 +202,162 @@ function bindView() {
       if (result.status === "unavailable") showInstallInstructions();
     };
   });
+}
+
+function bindImport() {
+  const fileInput = document.querySelector("#csvImportInput");
+  if (!fileInput) return;
+
+  fileInput.onchange = async event => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    try {
+      const text = await file.text();
+      const parsed = parseCSV(text);
+      const columns = detectColumns(parsed.headers);
+      renderImportSetup(parsed, columns, file.name);
+    } catch (error) {
+      haptic("error");
+      showToast(error.message || "CSV-Datei konnte nicht gelesen werden", "error");
+    }
+  };
+}
+
+function renderImportSetup(parsed, detectedColumns, fileName) {
+  const workspace = document.querySelector("#importWorkspace");
+  if (!workspace) return;
+
+  const columnOptions = (selected, allowEmpty = false) => `
+    ${allowEmpty ? '<option value="">Nicht vorhanden</option>' : ""}
+    ${parsed.headers.map(header => `
+      <option value="${esc(header)}" ${header === selected ? "selected" : ""}>${esc(header)}</option>
+    `).join("")}
+  `;
+
+  workspace.innerHTML = `
+    <div class="card import-setup-card">
+      <div class="import-file-summary">
+        <strong>${esc(fileName)}</strong>
+        <span>${parsed.rows.length} Zeilen erkannt</span>
+      </div>
+
+      <div class="form">
+        ${field("Zielkonto", `
+          <select id="importAccount">
+            ${data.accounts.map(account => `<option value="${account.id}">${esc(account.name)}</option>`).join("")}
+          </select>
+        `)}
+
+        <div class="grid two">
+          ${field("Datum", `<select id="importDateColumn">${columnOptions(detectedColumns.date)}</select>`)}
+          ${field("Beschreibung", `<select id="importDescriptionColumn">${columnOptions(detectedColumns.description)}</select>`)}
+          ${field("Betrag", `<select id="importAmountColumn">${columnOptions(detectedColumns.amount, true)}</select>`)}
+          ${field("Soll", `<select id="importDebitColumn">${columnOptions(detectedColumns.debit, true)}</select>`)}
+          ${field("Haben", `<select id="importCreditColumn">${columnOptions(detectedColumns.credit, true)}</select>`)}
+          ${field("Typ", `<select id="importTypeColumn">${columnOptions(detectedColumns.type, true)}</select>`)}
+        </div>
+
+        <button class="btn primary" id="buildImportPreview">Vorschau erstellen</button>
+      </div>
+    </div>
+  `;
+
+  document.querySelector("#buildImportPreview").onclick = () => {
+    const columns = {
+      date: document.querySelector("#importDateColumn").value,
+      description: document.querySelector("#importDescriptionColumn").value,
+      amount: document.querySelector("#importAmountColumn").value,
+      debit: document.querySelector("#importDebitColumn").value,
+      credit: document.querySelector("#importCreditColumn").value,
+      type: document.querySelector("#importTypeColumn").value
+    };
+
+    const preview = buildImportPreview({
+      parsed,
+      columns,
+      accountId: document.querySelector("#importAccount").value,
+      data,
+      makeId
+    });
+
+    renderImportPreview(preview);
+  };
+}
+
+function renderImportPreview(items) {
+  const workspace = document.querySelector("#importWorkspace");
+  if (!workspace) return;
+
+  const valid = items.filter(item => item.valid);
+  const duplicates = valid.filter(item => item.duplicate);
+  const unresolved = valid.filter(item => item.status === "pending" && !item.duplicate);
+  const selected = valid.filter(item => item.selected);
+
+  const rows = items.slice(0, 80).map(item => {
+    const categoryName = category(item.categoryId)?.name ?? "Nicht erkannt";
+    const state = !item.valid
+      ? "Ungültig"
+      : item.duplicate
+        ? "Duplikat"
+        : item.status === "pending"
+          ? "Zu prüfen"
+          : categoryName;
+
+    return `
+      <label class="import-preview-row ${!item.valid || item.duplicate ? "is-muted" : ""}">
+        <input type="checkbox" data-import-select="${item.id}" ${item.selected ? "checked" : ""} ${!item.valid || item.duplicate ? "disabled" : ""}>
+        <span class="import-preview-copy">
+          <strong>${esc(item.description)}</strong>
+          <small>${esc(item.date || "Kein Datum")} · ${esc(state)}</small>
+        </span>
+        <span class="import-preview-amount ${item.type === "income" ? "positive" : "negative"}">
+          ${item.type === "income" ? "+" : "-"}${euro(item.amount)}
+        </span>
+      </label>
+    `;
+  }).join("");
+
+  workspace.innerHTML = `
+    <div class="import-summary-grid">
+      <div class="card"><span>Neue Buchungen</span><strong>${selected.length}</strong></div>
+      <div class="card"><span>Zu prüfen</span><strong>${unresolved.length}</strong></div>
+      <div class="card"><span>Duplikate</span><strong>${duplicates.length}</strong></div>
+    </div>
+
+    <div class="card import-preview-card">
+      <div class="section-title import-preview-title">
+        <h2 class="section-heading">Vorschau</h2>
+        <span class="section-context">${items.length}</span>
+      </div>
+      <div class="import-preview-list">${rows}</div>
+      ${items.length > 80 ? `<div class="notice">Es werden die ersten 80 Zeilen angezeigt. Importiert werden alle ausgewählten Buchungen.</div>` : ""}
+      <button class="btn primary" id="confirmImport">Ausgewählte Buchungen importieren</button>
+    </div>
+  `;
+
+  document.querySelector("#confirmImport").onclick = () => {
+    const selectedIds = new Set(
+      [...document.querySelectorAll("[data-import-select]:checked")]
+        .map(input => input.dataset.importSelect)
+    );
+
+    const toImport = items.filter(item =>
+      item.valid && !item.duplicate &&
+      (selectedIds.has(item.id) || (items.length > 80 && item.selected))
+    );
+
+    if (!toImport.length) {
+      showToast("Keine Buchungen ausgewählt", "warning");
+      return;
+    }
+
+    data.transactions.push(...toImport.map(({ duplicate, valid, selected, recognition, rowNumber, ...transaction }) => transaction));
+    saveData(data);
+    haptic("success");
+    showToast(`${toImport.length} Buchungen importiert`, "success");
+    navigate("transactions");
+  };
 }
 
 function bindAccounts() {

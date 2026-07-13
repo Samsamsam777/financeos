@@ -773,3 +773,8 @@ werden. Undo ersetzt unnötige Bestätigungsdialoge.
 
 Lokale Datenhaltung, Offline-Verfügbarkeit und fehlende Anmeldepflicht sind
 Bestandteil der Produktidentität und werden ruhig sichtbar gemacht.
+
+
+# FinanceOS 4.7 — Import
+
+Importe werden vollständig lokal verarbeitet. Vor dem Speichern zeigt FinanceOS neue Buchungen, ungeklärte Kategorien und mögliche Duplikate. Nichts wird ohne bewusste Bestätigung in den Datenbestand übernommen.

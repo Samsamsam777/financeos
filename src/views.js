@@ -5,7 +5,7 @@ import {
   monthKey, monthSummary, sortNewest, today, totalBalance
 } from "./logic.js";
 import { esc, field } from "./ui.js";
-import { groupedCard, sectionHeader } from "./components/components.js";
+import { emptyState, groupedCard, privacyNote, sectionHeader } from "./components/components.js";
 
 export function createViews(context) {
   const { getData, navigate, openTransaction, openLoan, saveDashboard, getPWAState } = context;
@@ -193,22 +193,31 @@ export function createViews(context) {
           </div>
         </div>
       </div>
-      <div class="card transaction-list">${items.length ? items.map(item => transactionRow(item, true)).join("") : '<div class="empty">Keine Treffer</div>'}</div>
+      <div class="card transaction-list">${items.length ? items.map(item => transactionRow(item, true)).join("") : emptyState({
+        title: "Keine Buchungen gefunden",
+        text: "Passe die Filter an oder erfasse eine neue Buchung.",
+        action: "Neue Buchung",
+        actionTarget: "add",
+        icon: icons.search
+      })}</div>
     `;
   }
 
   function transactionFormMarkup() {
+    const preferences = data().settings.entryPreferences ?? {};
+    const selectedAccount = preferences.accountId ?? data().accounts[0]?.id ?? "";
+    const selectedPerson = preferences.person ?? data().settings.people[0] ?? "";
     return `
-      <form id="transactionForm" class="form entry-form">
+      <form id="transactionForm" class="form entry-form" autocomplete="off">
         ${field("Datum", `<input name="date" type="date" value="${today()}" required>`)}
         <div class="form-grid-two">
           ${field("Typ", `<select name="type"><option value="expense">Ausgabe</option><option value="income">Einnahme</option></select>`)}
-          ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" step="0.01" placeholder="0,00" required>`)}
+          ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" enterkeyhint="next" step="0.01" placeholder="0,00" required autofocus>`)}
         </div>
-        ${field("Beschreibung", `<input name="description" placeholder="z. B. REWE Markt" required>`)}
-        ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
+        ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. REWE Markt" required>`)}
+        ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}" ${item.id === selectedAccount ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
         ${field("Kategorie", `<select name="categoryId"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
-        ${field("Person", `<select name="person">${data().settings.people.map(item => `<option>${esc(item)}</option>`).join("")}</select>`)}
+        ${field("Person", `<select name="person">${data().settings.people.map(item => `<option ${item === selectedPerson ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
         <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
       </form>
     `;
@@ -251,7 +260,11 @@ export function createViews(context) {
             <div><strong>${esc(item.description)}</strong><div class="meta">${euro(item.amount)} · ${esc(item.person)}</div></div>
             <button class="btn ghost" data-resolve="${item.id}">Zuordnen</button>
           </div>
-        `).join("") : '<div class="empty">Alles erledigt</div>'}
+        `).join("") : emptyState({
+          title: "Alles zugeordnet",
+          text: "Aktuell wartet keine Buchung auf eine Kategorie.",
+          icon: icons.pending
+        })}
       </div>
     `;
   }
@@ -292,7 +305,13 @@ export function createViews(context) {
 
     return `
       ${sectionHeader({ title: "Budgets", context: key })}
-      ${items.length ? groupedCard(rows, "budget-group") : '<div class="card empty">Keine Budgets eingerichtet</div>'}
+      ${items.length ? groupedCard(rows, "budget-group") : emptyState({
+        title: "Keine Budgets eingerichtet",
+        text: "Lege Kategorien mit Monatsbudget an.",
+        action: "Kategorien verwalten",
+        actionTarget: "manage",
+        icon: icons.budget
+      })}
     `;
   }
 
@@ -365,7 +384,11 @@ export function createViews(context) {
         <h2 class="page-heading">Kredite</h2>
       </div>
       <div class="loan-overview-list">
-        ${cards || '<div class="card empty">Keine Kredite vorhanden</div>'}
+        ${cards || emptyState({
+          title: "Keine Kredite vorhanden",
+          text: "Neue Kredite werden später hier zusammengefasst.",
+          icon: icons.wallet
+        })}
       </div>
     `;
   }
@@ -493,8 +516,9 @@ export function createViews(context) {
         </button>
       </div>
 
+      ${privacyNote("Daten bleiben auf diesem Gerät. Keine Anmeldung erforderlich.")}
       <div class="notice settings-version">
-        FinanceOS ${APP_VERSION} · Backups können über „In Dateien sichern“ in iCloud Drive oder lokal gespeichert werden.
+        FinanceOS ${APP_VERSION} · Backups werden lokal erstellt und nur von dir weitergegeben.
       </div>
     `;
   }

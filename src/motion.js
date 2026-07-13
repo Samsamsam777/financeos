@@ -44,18 +44,36 @@ export function animateNumber(element, endValue, formatter, duration = MOTION.nu
   requestAnimationFrame(frame);
 }
 
-export function showToast(message, tone = "neutral") {
+export function showToast(message, tone = "neutral", options = {}) {
   document.querySelector(".toast")?.remove();
   const toast = document.createElement("div");
   toast.className = `toast toast-${tone}`;
-  toast.textContent = message;
-  document.body.appendChild(toast);
 
+  const label = document.createElement("span");
+  label.className = "toast-label";
+  label.textContent = message;
+  toast.appendChild(label);
+
+  if (options.actionLabel && typeof options.onAction === "function") {
+    const action = document.createElement("button");
+    action.className = "toast-action";
+    action.textContent = options.actionLabel;
+    action.onclick = () => {
+      options.onAction();
+      toast.remove();
+    };
+    toast.appendChild(action);
+  }
+
+  document.body.appendChild(toast);
   requestAnimationFrame(() => toast.classList.add("toast-visible"));
-  setTimeout(() => {
+
+  const timeout = window.setTimeout(() => {
     toast.classList.remove("toast-visible");
     setTimeout(() => toast.remove(), MOTION.toast);
-  }, 1800);
+  }, options.duration ?? 3200);
+
+  toast.addEventListener("pointerenter", () => clearTimeout(timeout), { once: true });
 }
 
 export function enterPage(container) {

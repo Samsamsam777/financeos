@@ -244,12 +244,30 @@ function openAddTransactionSheet() {
 }
 
 function bindAddTransaction() {
-  document.querySelector("#transactionForm").onsubmit = event => {
+  const formElement = document.querySelector("#transactionForm");
+  if (!formElement) return;
+
+  const amountInput = formElement.elements.amount;
+  requestAnimationFrame(() => amountInput?.focus({ preventScroll: true }));
+
+  const ordered = [...formElement.querySelectorAll("input:not([type=hidden]), select, textarea")];
+  ordered.forEach((control, index) => {
+    control.addEventListener("keydown", event => {
+      if (event.key !== "Enter" || control.tagName === "TEXTAREA") return;
+      if (index < ordered.length - 1) {
+        event.preventDefault();
+        ordered[index + 1]?.focus({ preventScroll: false });
+      }
+    });
+  });
+
+  formElement.onsubmit = event => {
     event.preventDefault();
     const form = new FormData(event.target);
-    const description = form.get("description");
+    const description = String(form.get("description") || "").trim();
     const categoryId = form.get("categoryId") || detectCategory(data, description);
-    data.transactions.push({
+
+    const transaction = {
       id: makeId(),
       createdAt: Date.now(),
       date: form.get("date"),
@@ -260,13 +278,28 @@ function bindAddTransaction() {
       categoryId,
       person: form.get("person"),
       status: category(categoryId)?.name === "Später zuordnen" ? "pending" : "done"
-    });
+    };
+
+    data.transactions.push(transaction);
+    data.settings.entryPreferences = {
+      accountId: transaction.accountId,
+      person: transaction.person
+    };
     saveData(data);
     haptic("success");
-    showToast("Buchung gespeichert", "success");
     closeSheet();
     view = "dashboard";
     render();
+
+    showToast("Buchung gespeichert", "success", {
+      actionLabel: "Rückgängig",
+      onAction: () => {
+        data.transactions = data.transactions.filter(item => item.id !== transaction.id);
+        saveData(data);
+        haptic("light");
+        render();
+      }
+    });
   };
 }
 
@@ -371,13 +404,23 @@ function openTransaction(id) {
   };
 
   document.querySelector("#deleteTransaction").onclick = () => {
-    if (!confirm("Buchung löschen?")) return;
-    data.transactions = data.transactions.filter(item => item.id !== id);
+    const index = data.transactions.findIndex(item => item.id === id);
+    if (index < 0) return;
+    const removed = data.transactions[index];
+    data.transactions.splice(index, 1);
     saveData(data);
     haptic("warning");
-    showToast("Buchung gelöscht", "warning");
     closeSheet();
     render();
+    showToast("Buchung gelöscht", "warning", {
+      actionLabel: "Rückgängig",
+      onAction: () => {
+        data.transactions.splice(index, 0, removed);
+        saveData(data);
+        haptic("light");
+        render();
+      }
+    });
   };
 }
 
@@ -602,6 +645,16 @@ pwaState = initPWA({
     if (view === "more") render();
   }
 });
+
+window.addEventListener("offline", () => {
+  document.documentElement.classList.add("is-offline");
+  showToast("Offline verfügbar", "neutral", { duration: 2400 });
+});
+window.addEventListener("online", () => {
+  document.documentElement.classList.remove("is-offline");
+  showToast("Verbindung wiederhergestellt", "success", { duration: 2200 });
+});
+document.documentElement.classList.toggle("is-offline", !navigator.onLine);
 
 render();
 

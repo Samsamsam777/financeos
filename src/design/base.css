@@ -138,3 +138,24 @@ html.is-standalone .app{
   opacity:.78;
   animation-duration:44s;
 }
+
+
+/* FinanceOS 4.4.8 — final system precision */
+:focus-visible{
+  outline:2px solid var(--color-focus);
+  outline-offset:3px;
+}
+html.is-offline::after{
+  content:"Offline";
+  position:fixed;
+  top:calc(env(safe-area-inset-top) + 8px);
+  right:12px;
+  z-index:150;
+  padding:4px 8px;
+  border-radius:999px;
+  color:var(--color-text-1);
+  background:rgba(17,23,37,.88);
+  font-size:var(--font-micro);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}

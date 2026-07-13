@@ -133,3 +133,12 @@ FinanceOS 4.4.7:
 - Violett-, Blau- und Türkistöne kommen stärker zur Geltung
 - Karten dunkler und nur minimal transparent
 - Card-Blur auf ein zurückhaltendes Niveau reduziert
+
+
+FinanceOS 4.4.8 Final System Polish:
+- typografische Rollen, Abstände und optische Ausrichtung vereinheitlicht
+- Buchungsformular merkt Konto und Person, fokussiert Betrag und verbessert Tastaturfluss
+- Undo für neue und gelöschte Buchungen
+- standardisierte Leer- und Offline-Zustände
+- einheitliche Press-, Fokus- und Kontrastregeln
+- ruhige Privatsphärenkommunikation in Einstellungen

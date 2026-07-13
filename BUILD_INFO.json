@@ -1,13 +1,16 @@
 {
-  "version": "4.4.7",
-  "source": "FinanceOS_4_4_6_iOS_Form_Zoom_Fix.zip",
-  "change": "Clearer ambient background and darker translucent cards",
+  "version": "4.4.8",
+  "source": "FinanceOS_4_4_7_Material_Background_Tuning.zip",
+  "javascript_files_checked": 11,
   "checks": {
-    "version_4_4_7": true,
-    "ambient_blur_reduced": true,
-    "ambient_colors_stronger": true,
-    "cards_darker": true,
-    "cards_slightly_transparent": true,
-    "restrained_card_blur": true
-  }
+    "version_4_4_8": true,
+    "entry_preferences": true,
+    "undo_create": true,
+    "undo_delete": true,
+    "empty_state_component": true,
+    "offline_state": true,
+    "privacy_identity": true,
+    "contrast_support": true
+  },
+  "browser_device_tested": false
 }

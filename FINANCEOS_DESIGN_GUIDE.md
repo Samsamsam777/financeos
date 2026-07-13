@@ -734,3 +734,42 @@ beim Loslassen zurück. Seitenbewegung berücksichtigt die Navigationsrichtung.
 
 Dashboard-Struktur, Dashboard-Kreditlayout, Navigation, Plus-Button und
 Ambient-Hintergrund bleiben strukturell eingefroren.
+
+
+# FinanceOS 4.4.8 — Freeze Candidate
+
+## Sprache
+
+FinanceOS beschreibt Zustände ruhig und präzise. Es bewertet nicht und
+gamifiziert nicht.
+
+Bevorzugt:
+- Noch 24 € verfügbar
+- Restschuld um 420 € reduziert
+- Daten bleiben auf diesem Gerät
+
+Nicht bevorzugt:
+- Achtung!
+- Super!
+- Du hast gewonnen
+
+## Zustände
+
+Jede Datenansicht besitzt definierte Leer-, Offline-, Erfolgs- und
+Fehlerzustände. Jeder leere Zustand erklärt den nächsten sinnvollen Schritt.
+
+## Eingaben
+
+FinanceOS merkt das zuletzt verwendete Konto und die Person. Betragseingaben
+erhalten direkten Fokus. Kein teilweise ausgefülltes Formular darf durch eine
+unbeabsichtigte Interaktion verloren gehen.
+
+## Undo
+
+Buchungen können nach Erstellen oder Löschen unmittelbar rückgängig gemacht
+werden. Undo ersetzt unnötige Bestätigungsdialoge.
+
+## Privatsphäre
+
+Lokale Datenhaltung, Offline-Verfügbarkeit und fehlende Anmeldepflicht sind
+Bestandteil der Produktidentität und werden ruhig sichtbar gemacht.

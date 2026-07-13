@@ -18,3 +18,25 @@ export function groupedCard(content, className = "") {
 export function materialCard(content, className = "") {
   return `<div class="card material-card ${className}">${content}</div>`;
 }
+
+
+export function emptyState({
+  title,
+  text = "",
+  action = "",
+  actionTarget = "",
+  icon = ""
+}) {
+  return `
+    <div class="card empty-state">
+      ${icon ? `<span class="empty-state-icon">${icon}</span>` : ""}
+      <strong>${title}</strong>
+      ${text ? `<p>${text}</p>` : ""}
+      ${action && actionTarget ? `<button class="btn ghost" data-nav="${actionTarget}">${action}</button>` : ""}
+    </div>
+  `;
+}
+
+export function privacyNote(text = "Daten bleiben auf diesem Gerät.") {
+  return `<div class="privacy-note"><span aria-hidden="true">✓</span><span>${text}</span></div>`;
+}

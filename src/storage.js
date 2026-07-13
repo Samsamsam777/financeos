@@ -79,6 +79,10 @@ function migrate(data) {
   data.settings.currency ??= "EUR";
   data.settings.people ??= clone(DEFAULT_PEOPLE);
   data.settings.dashboard ??= clone(DEFAULT_DASHBOARD);
+  data.settings.entryPreferences ??= {
+    accountId: data.accounts?.[0]?.id ?? "",
+    person: data.settings.people?.[0] ?? ""
+  };
 
   if (data.settings.dashboard.today && !data.settings.dashboard.summary) {
     data.settings.dashboard.summary = data.settings.dashboard.today;

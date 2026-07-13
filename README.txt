@@ -177,3 +177,11 @@ FinanceOS 4.8.1 Parser System:
 - generischer Tabellen- und Text-Fallback
 - Diagnoseansicht mit Bank, PDF-Typ und verwendetem Parser
 - klare OCR-Rückmeldung bei bildbasierten PDFs
+
+
+FinanceOS 4.8.2 Sparkasse Table Fix:
+- Sparkassen-Dreispaltenlayout Datum / Erläuterung / Betrag unterstützt
+- mehrzeilige Erläuterungen werden bis zur nächsten Datumszeile zusammengeführt
+- separat extrahierte Beträge der rechten Spalte werden zugeordnet
+- PDF.js Worker-Fallback für iPhone/Safari
+- technische Fehlermeldung ist bei Bedarf einsehbar

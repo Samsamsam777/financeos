@@ -1,19 +1,16 @@
 {
-  "version": "4.8.1",
-  "source": "FinanceOS_4_8_PDF_Statements.zip",
-  "feature": "Bank-specific PDF parser registry",
-  "limitations": [
-    "Sparkasse parser is heuristic until validated with a real anonymized statement",
-    "Image PDFs still require OCR"
-  ],
+  "version": "4.8.2",
+  "source": "FinanceOS_4_8_1_Parser_System.zip",
+  "feature": "Coordinate-aware Sparkasse statement parser",
+  "reference_layout": "Datum | Erl\u00e4uterung | Betrag EUR",
   "checks": {
-    "version_4_8_1": true,
-    "parser_registry": true,
-    "sparkasse_parser": true,
-    "pdf_classification": true,
-    "ocr_detection": true,
-    "diagnostic_ui": true,
-    "parser_cached": true
+    "version_4_8_2": true,
+    "coordinate_rows": true,
+    "worker_fallback": true,
+    "sparkasse_table_headers": true,
+    "multi_line_grouping": true,
+    "amount_separate_row": true,
+    "error_details": true
   },
   "browser_device_tested": false
 }

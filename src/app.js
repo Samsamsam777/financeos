@@ -269,7 +269,11 @@ async function processPDFStatement(file) {
     workspace.innerHTML = `
       <div class="card empty-state">
         <strong>PDF konnte nicht gelesen werden</strong>
-        <p>Das Format ist möglicherweise geschützt, bildbasiert oder verwendet ein unbekanntes Layout.</p>
+        <p>Das Dokument konnte technisch nicht geöffnet werden. Prüfe, ob es passwortgeschützt ist, und exportiere es erneut aus der Sparkassen-App.</p>
+        <details class="pdf-error-details">
+          <summary>Technische Details</summary>
+          <code>${esc(error?.message ?? String(error))}</code>
+        </details>
       </div>
     `;
   } finally {
@@ -332,7 +336,9 @@ function renderPDFPreview(items, fileName, result) {
         `).join("") : `
           <div class="empty-state">
             <strong>Keine Buchungszeilen erkannt</strong>
-            <p>Der Kontoauszug verwendet möglicherweise ein bildbasiertes oder noch nicht unterstütztes Layout.</p>
+            <p>${result.diagnostic.bank === "sparkasse"
+              ? "Der Sparkassen-Auszug wurde erkannt, aber seine Tabellenstruktur weicht vom bisher unterstützten Layout ab."
+              : "Der Kontoauszug verwendet möglicherweise ein noch nicht unterstütztes Layout."}</p>
           </div>
         `}
       </div>

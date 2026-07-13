@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-8-1-parser-system";
+const CACHE = "financeos-v4-8-2-sparkasse-table-fix";
 const ASSETS = [
   "./",
   "./index.html",

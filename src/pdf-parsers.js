@@ -91,14 +91,18 @@ function transactionFromParts({
 }
 
 function flattenPages(pages) {
-  return pages.flatMap(page =>
-    page.lines.map(line => ({ line, pageNumber: page.pageNumber }))
-  );
+  return pages.flatMap(page => {
+    const lines = page.lines ?? page.rows?.map(row => row.text) ?? [];
+    return lines.map(line => ({ line, pageNumber: page.pageNumber }));
+  });
 }
 
 function detectBank(text) {
   const upper = text.toUpperCase();
-  if (/SPARKASSE|KREISSPARKASSE|STADTSPARKASSE|NASPA|HASPA/.test(upper)) return "sparkasse";
+  if (
+    /SPARKASSE|KREISSPARKASSE|STADTSPARKASSE|NASPA|HASPA/.test(upper) ||
+    (/DATUM/.test(upper) && /ERLÄUTERUNG|ERLAEUTERUNG/.test(upper) && /BETRAG EUR/.test(upper))
+  ) return "sparkasse";
   if (/ING-DIBA|ING BANK|ING.DE/.test(upper)) return "ing";
   if (/DEUTSCHE KREDITBANK|\bDKB\b/.test(upper)) return "dkb";
   if (/N26 BANK/.test(upper)) return "n26";
@@ -152,44 +156,91 @@ function parseGeneric({ pages, accountId, data, makeId }) {
 }
 
 function parseSparkasse({ pages, accountId, data, makeId }) {
-  const lines = flattenPages(pages);
   const results = [];
 
-  for (let index = 0; index < lines.length; index += 1) {
-    const current = lines[index];
-    const date = toISODate(current.line);
-    if (!date) continue;
+  for (const page of pages) {
+    const rows = page.rows ?? (page.lines ?? []).map((text, index) => ({
+      y: 10000 - index,
+      text,
+      items: [{ text, x: 0, y: 10000 - index }]
+    }));
 
-    const combined = [
-      current.line,
-      lines[index + 1]?.line ?? "",
-      lines[index + 2]?.line ?? ""
-    ].join(" ");
+    let current = null;
 
-    const amounts = [...combined.matchAll(AMOUNT_REGEX)].map(match => toAmount(match[1]));
-    if (!amounts.length) continue;
+    const flush = () => {
+      if (!current) return;
 
-    const amount = amounts.at(-1);
-    let description = cleanLine(combined)
-      .replace(/\b(SEPA|LASTSCHRIFT|ÜBERWEISUNG|UEBERWEISUNG|KARTENZAHLUNG|GUTSCHRIFT)\b/gi, " ")
-      .replace(/\s+/g, " ")
-      .trim();
+      const description = current.descriptionParts
+        .join(" ")
+        .replace(/\b(ÜBERWEISUNG ONLINE|ÜBERWEISUNG ÜBERTRAG|LASTSCHRIFT BASIS|DAUERAUFTRAG|GUTSCHRIFT|KARTENZAHLUNG)\b/gi, " ")
+        .replace(/\b(BIC|IBAN|DATUM|UHR)\b[:\s]*/gi, " ")
+        .replace(/\b[A-Z]{2}\d{2}(?:\s?\d{4}){3,7}\b/gi, " ")
+        .replace(/\b\d{10,}\b/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
 
-    if (!description || description.length < 2) {
-      description = cleanLine(current.line);
+      const transaction = transactionFromParts({
+        date: current.date,
+        amount: current.amount,
+        rawDescription: description || current.raw,
+        accountId,
+        data,
+        makeId,
+        pageNumber: page.pageNumber
+      });
+
+      if (transaction) results.push(transaction);
+      current = null;
+    };
+
+    for (const row of rows) {
+      const rowText = String(row.text ?? "").trim();
+      if (!rowText) continue;
+
+      const dateMatch = rowText.match(DATE_REGEX);
+      const amountMatches = [...rowText.matchAll(AMOUNT_REGEX)]
+        .map(match => ({ raw: match[1], value: toAmount(match[1]) }))
+        .filter(item => Number.isFinite(item.value));
+
+      if (dateMatch) {
+        flush();
+
+        const date = toISODate(dateMatch[0]);
+        const amount = amountMatches.length ? amountMatches.at(-1).value : null;
+
+        const middleItems = (row.items ?? [])
+          .filter(item => {
+            const text = String(item.text ?? "");
+            return !DATE_REGEX.test(text) && !new RegExp(AMOUNT_REGEX.source, "g").test(text);
+          })
+          .map(item => item.text)
+          .filter(Boolean);
+
+        current = {
+          date,
+          amount,
+          raw: rowText,
+          descriptionParts: middleItems.length ? middleItems : [cleanLine(rowText)]
+        };
+
+        continue;
+      }
+
+      if (!current) continue;
+
+      if (current.amount == null && amountMatches.length) {
+        current.amount = amountMatches.at(-1).value;
+      }
+
+      const descriptionPart = rowText
+        .replace(new RegExp(AMOUNT_REGEX.source, "g"), " ")
+        .replace(/\s+/g, " ")
+        .trim();
+
+      if (descriptionPart) current.descriptionParts.push(descriptionPart);
     }
 
-    const transaction = transactionFromParts({
-      date,
-      amount,
-      rawDescription: description,
-      accountId,
-      data,
-      makeId,
-      pageNumber: current.pageNumber
-    });
-
-    if (transaction) results.push(transaction);
+    flush();
   }
 
   return deduplicateParsed(results);

@@ -1799,3 +1799,29 @@ button.is-pressed,
     grid-template-columns:1fr;
   }
 }
+
+
+/* FinanceOS 4.8.2 — PDF error diagnostics */
+.pdf-error-details{
+  width:100%;
+  max-width:520px;
+  margin-top:12px;
+  padding:10px 12px;
+  color:var(--color-text-2);
+  background:rgba(10,15,27,.72);
+  border-radius:var(--radius-md);
+  text-align:left;
+}
+.pdf-error-details summary{
+  cursor:pointer;
+  font-size:var(--font-caption);
+  font-weight:var(--weight-semibold);
+}
+.pdf-error-details code{
+  display:block;
+  margin-top:8px;
+  overflow-wrap:anywhere;
+  color:var(--color-warning);
+  font-size:var(--font-micro);
+  line-height:1.45;
+}

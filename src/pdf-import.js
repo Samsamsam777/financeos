@@ -2,80 +2,84 @@ import * as pdfjsLib from "../vendor/pdfjs/pdf.mjs";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.mjs";
 
-const DATE_PATTERN = /\b(\d{2})[.\/-](\d{2})[.\/-](\d{2,4})\b/;
-const AMOUNT_PATTERN = /(-?\d{1,3}(?:[.\s]\d{3})*,\d{2})\s*(?:EUR|€)?\b/g;
-
-function isoDate(value) {
-  const match = String(value).match(DATE_PATTERN);
-  if (!match) return "";
-  let [, day, month, year] = match;
-  if (year.length === 2) year = `20${year}`;
-  return `${year}-${month}-${day}`;
-}
-
-function amountNumber(value) {
-  return Number(
-    String(value)
-      .replace(/\s/g, "")
-      .replace(/\.(?=\d{3}(?:\D|$))/g, "")
-      .replace(",", ".")
-  );
-}
-
-function cleanDescription(line) {
-  return String(line)
-    .replace(DATE_PATTERN, " ")
-    .replace(AMOUNT_PATTERN, " ")
-    .replace(/\b(EUR|Soll|Haben|Umsatz|Buchungstag|Valuta)\b/gi, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
 function groupTextItems(items) {
   const rows = new Map();
 
   for (const item of items) {
-    const y = Math.round(item.transform?.[5] ?? 0);
-    if (!rows.has(y)) rows.set(y, []);
-    rows.get(y).push(item);
+    const x = Number(item.transform?.[4] ?? 0);
+    const y = Number(item.transform?.[5] ?? 0);
+    const roundedY = Math.round(y * 2) / 2;
+
+    if (!rows.has(roundedY)) rows.set(roundedY, []);
+    rows.get(roundedY).push({
+      text: String(item.str ?? "").trim(),
+      x,
+      y
+    });
   }
 
   return [...rows.entries()]
     .sort((a, b) => b[0] - a[0])
-    .map(([, rowItems]) =>
-      rowItems
-        .sort((a, b) => (a.transform?.[4] ?? 0) - (b.transform?.[4] ?? 0))
-        .map(item => item.str)
-        .join(" ")
-        .replace(/\s+/g, " ")
-        .trim()
-    )
-    .filter(Boolean);
+    .map(([y, rowItems]) => {
+      const sorted = rowItems.filter(item => item.text).sort((a, b) => a.x - b.x);
+      return {
+        y,
+        items: sorted,
+        text: sorted.map(item => item.text).join(" ").replace(/\s+/g, " ").trim()
+      };
+    })
+    .filter(row => row.text);
+}
+
+async function loadDocument(bytes) {
+  const baseOptions = {
+    data: bytes,
+    useWorkerFetch: false,
+    isEvalSupported: false,
+    useSystemFonts: true
+  };
+
+  try {
+    const loadingTask = pdfjsLib.getDocument(baseOptions);
+    const document = await loadingTask.promise;
+    return { loadingTask, document };
+  } catch (workerError) {
+    console.warn("FinanceOS PDF worker fallback", workerError);
+    const fallbackTask = pdfjsLib.getDocument({
+      ...baseOptions,
+      disableWorker: true
+    });
+    const document = await fallbackTask.promise;
+    return { loadingTask: fallbackTask, document };
+  }
 }
 
 export async function extractPDFLines(file) {
-  const bytes = new Uint8Array(await file.arrayBuffer());
-  const loadingTask = pdfjsLib.getDocument({
-    data: bytes,
-    useWorkerFetch: false,
-    isEvalSupported: false
-  });
-  const document = await loadingTask.promise;
+  const buffer = await file.arrayBuffer();
+  const bytes = new Uint8Array(buffer);
+  const { loadingTask, document } = await loadDocument(bytes);
   const pages = [];
 
   try {
     for (let pageNumber = 1; pageNumber <= document.numPages; pageNumber += 1) {
       const page = await document.getPage(pageNumber);
-      const content = await page.getTextContent();
+      const content = await page.getTextContent({
+        includeMarkedContent: false,
+        disableNormalization: false
+      });
+      const rows = groupTextItems(content.items);
+
       pages.push({
         pageNumber,
-        lines: groupTextItems(content.items)
+        rows,
+        lines: rows.map(row => row.text)
       });
+
       page.cleanup();
     }
   } finally {
-    await document.destroy();
-    loadingTask.destroy?.();
+    try { await document.destroy(); } catch {}
+    try { loadingTask.destroy?.(); } catch {}
     bytes.fill(0);
   }
 

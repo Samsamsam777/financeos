@@ -400,7 +400,7 @@ export function createViews(context) {
     const install = getPWAState?.() ?? { standalone: false };
     const rows = [
       ["dashboard-settings", "Dashboard anpassen", icons.arrange],
-      ["import", "Buchungen importieren", icons.upload ?? icons.restore],
+      ["pdf-import", "Kontoauszug importieren", icons.document ?? icons.upload],
       ["pending", "Später zuordnen", icons.pending],
       ["loans", "Kredite", icons.wallet],
       ["manage", "Konten, Kategorien & Regeln", icons.list],
@@ -423,6 +423,51 @@ export function createViews(context) {
         </button>
       ` : ""}
       <div class="card grouped-card settings-group">${rows}</div>
+    `;
+  }
+
+  function importStatement() {
+    return `
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Kontoauszug importieren</h2>
+      </div>
+
+      <div class="card pdf-import-card">
+        <div class="import-intro">
+          <span class="import-icon">${icons.document ?? icons.upload}</span>
+          <div>
+            <strong>PDF-Kontoauszug</strong>
+            <p>FinanceOS liest Buchungen lokal aus dem Dokument und zeigt vor dem Speichern eine Vorschau.</p>
+          </div>
+        </div>
+
+        <div class="form">
+          ${field("Zielkonto", `
+            <select id="pdfImportAccount">
+              ${data().accounts.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}
+            </select>
+          `)}
+
+          <label class="btn primary import-file-button" for="pdfImportInput">
+            Kontoauszug auswählen
+            <input id="pdfImportInput" type="file" accept="application/pdf,.pdf" hidden>
+          </label>
+        </div>
+
+        <div class="mobile-share-note">
+          <strong>iPhone</strong>
+          <span>In der Sparkassen-App „In Dateien sichern“ wählen und das PDF anschließend hier auswählen.</span>
+        </div>
+        <div class="mobile-share-note">
+          <strong>Android</strong>
+          <span>Bei installierter FinanceOS-App kann das PDF direkt über „Teilen → FinanceOS“ übergeben werden.</span>
+        </div>
+
+        ${privacyNote("Das PDF wird nur im Arbeitsspeicher verarbeitet und nach der Analyse verworfen.")}
+      </div>
+
+      <div id="pdfImportWorkspace"></div>
     `;
   }
 
@@ -676,7 +721,7 @@ export function createViews(context) {
 
   return {
     dashboard, transactions, addTransaction, pending, budgets,
-    loans, more, importTransactions, manage, dashboardSettings, settings,
+    loans, more, importStatement, importTransactions, manage, dashboardSettings, settings,
     accounts, accountDetail, income, expenses, addTransactionSheet, transactionRow
   };
 }

@@ -1,19 +1,22 @@
 {
-  "version": "4.7.0",
-  "source": "FinanceOS_4_6_Account_Details.zip",
-  "feature": "CSV import with preview and expanded demo transactions",
-  "javascript_files_checked": 12,
+  "version": "4.8.0",
+  "source": "FinanceOS_4_7_CSV_Import.zip",
+  "feature": "Local PDF account statement import with Android share target",
+  "limitations": [
+    "iOS Safari PWAs cannot register as system share targets",
+    "image-only PDFs require future OCR support",
+    "bank PDF layouts vary and require device testing"
+  ],
   "checks": {
-    "version_4_7": true,
-    "csv_parser": true,
-    "column_detection": true,
-    "duplicate_detection": true,
-    "import_route": true,
-    "import_menu": true,
-    "demo_100": true,
-    "demo_50": true,
-    "demo_30": true,
-    "preserves_real_data": true
+    "version_4_8": true,
+    "pdfjs_vendored": true,
+    "pdf_parser": true,
+    "sparkasse_heuristics": true,
+    "android_share_target": true,
+    "share_post_handler": true,
+    "cache_deleted_after_consumption": true,
+    "pdf_memory_cleanup": true,
+    "iphone_truthful_flow": true
   },
   "browser_device_tested": false
 }

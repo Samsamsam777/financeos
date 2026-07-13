@@ -319,3 +319,8 @@
   width:100%;
   min-height:48px;
 }
+
+
+#pdfImportWorkspace{
+  margin-top:var(--space-3);
+}

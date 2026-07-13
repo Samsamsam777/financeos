@@ -1698,3 +1698,52 @@ button.is-pressed,
     grid-template-columns:1fr;
   }
 }
+
+
+/* FinanceOS 4.8 — PDF statements */
+.pdf-import-card{
+  padding:var(--space-4);
+}
+.mobile-share-note{
+  margin-top:var(--space-3);
+  padding:11px 12px;
+  display:grid;
+  grid-template-columns:64px 1fr;
+  gap:10px;
+  border-radius:var(--radius-md);
+  background:rgba(17,23,37,.54);
+  border:1px solid rgba(255,255,255,.05);
+}
+.mobile-share-note strong{
+  color:var(--color-text-1);
+  font-size:var(--font-caption);
+}
+.mobile-share-note span{
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+  line-height:1.45;
+}
+.pdf-processing{
+  padding:18px;
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.pdf-processing strong{
+  font-size:var(--font-headline);
+}
+.pdf-processing p{
+  margin:4px 0 0;
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.pdf-spinner{
+  width:26px;
+  height:26px;
+  flex:0 0 auto;
+  border:3px solid rgba(134,92,255,.18);
+  border-top-color:var(--color-accent);
+  border-radius:50%;
+  animation:pdf-spin .8s linear infinite;
+}
+@keyframes pdf-spin{to{transform:rotate(360deg)}}

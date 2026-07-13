@@ -9,6 +9,8 @@ import {
 import { closeSheet, esc, field, showSheet } from "./ui.js";
 import { createViews } from "./views.js";
 import { buildImportPreview, detectColumns, parseCSV } from "./import.js";
+import { clearPDFResources, extractPDFLines, parseStatementPages } from "./pdf-import.js";
+import { consumeSharedPDF } from "./share-target.js";
 import { initPWA, installState, requestInstall } from "./pwa.js";
 
 let data = loadData();
@@ -136,6 +138,7 @@ function render() {
     loans: views.loans,
     more: views.more,
     import: views.importTransactions,
+    "pdf-import": views.importStatement,
     manage: views.manage,
     "dashboard-settings": views.dashboardSettings,
     settings: views.settings,
@@ -192,6 +195,7 @@ function bindView() {
   if (view === "settings") bindSettings();
   if (view === "accounts") bindAccounts();
   if (view === "import") bindImport();
+  if (view === "pdf-import") bindPDFImport();
 
   document.querySelectorAll("[data-install-app]").forEach(button => {
     button.onclick = async () => {
@@ -202,6 +206,146 @@ function bindView() {
       if (result.status === "unavailable") showInstallInstructions();
     };
   });
+}
+
+let activePDFFile = null;
+let activePDFItems = [];
+
+function bindPDFImport() {
+  const input = document.querySelector("#pdfImportInput");
+  if (!input) return;
+
+  input.onchange = async event => {
+    const file = event.target.files?.[0];
+    if (file) await processPDFStatement(file);
+  };
+}
+
+async function processPDFStatement(file) {
+  const workspace = document.querySelector("#pdfImportWorkspace");
+  const accountId = document.querySelector("#pdfImportAccount")?.value ?? data.accounts[0]?.id;
+  if (!workspace || !accountId) return;
+
+  activePDFFile = file;
+  workspace.innerHTML = `
+    <div class="card pdf-processing">
+      <span class="pdf-spinner" aria-hidden="true"></span>
+      <div><strong>Kontoauszug wird analysiert</strong><p>Text und Buchungszeilen werden lokal verarbeitet.</p></div>
+    </div>
+  `;
+
+  try {
+    const pages = await extractPDFLines(file);
+    activePDFItems = parseStatementPages({
+      pages,
+      accountId,
+      data,
+      makeId
+    });
+
+    pages.forEach(page => page.lines.splice(0));
+    pages.splice(0);
+
+    renderPDFPreview(activePDFItems, file.name);
+  } catch (error) {
+    console.error(error);
+    haptic("error");
+    workspace.innerHTML = `
+      <div class="card empty-state">
+        <strong>PDF konnte nicht gelesen werden</strong>
+        <p>Manche Kontoauszüge enthalten nur Bilder oder ein unbekanntes Tabellenformat. Ein OCR-Import folgt als nächster Schritt.</p>
+      </div>
+    `;
+  } finally {
+    await clearPDFResources(file);
+    activePDFFile = null;
+    const input = document.querySelector("#pdfImportInput");
+    if (input) input.value = "";
+  }
+}
+
+function renderPDFPreview(items, fileName) {
+  const workspace = document.querySelector("#pdfImportWorkspace");
+  if (!workspace) return;
+
+  const duplicates = items.filter(item => item.duplicate);
+  const pending = items.filter(item => item.status === "pending" && !item.duplicate);
+  const selected = items.filter(item => item.selected);
+
+  workspace.innerHTML = `
+    <div class="import-summary-grid">
+      <div class="card"><span>Neue Buchungen</span><strong>${selected.length}</strong></div>
+      <div class="card"><span>Zu prüfen</span><strong>${pending.length}</strong></div>
+      <div class="card"><span>Duplikate</span><strong>${duplicates.length}</strong></div>
+    </div>
+
+    <div class="card import-preview-card">
+      <div class="import-file-summary">
+        <strong>${esc(fileName)}</strong>
+        <span>${items.length} Buchungen erkannt</span>
+      </div>
+
+      <div class="import-preview-list">
+        ${items.length ? items.map(item => `
+          <label class="import-preview-row ${item.duplicate ? "is-muted" : ""}">
+            <input type="checkbox" data-pdf-select="${item.id}" ${item.selected ? "checked" : ""} ${item.duplicate ? "disabled" : ""}>
+            <span class="import-preview-copy">
+              <strong>${esc(item.description)}</strong>
+              <small>${esc(item.date)} · ${esc(category(item.categoryId)?.name ?? "Zu prüfen")}</small>
+            </span>
+            <span class="import-preview-amount ${item.type === "income" ? "positive" : "negative"}">
+              ${item.type === "income" ? "+" : "-"}${euro(item.amount)}
+            </span>
+          </label>
+        `).join("") : `
+          <div class="empty-state">
+            <strong>Keine Buchungszeilen erkannt</strong>
+            <p>Der Kontoauszug verwendet möglicherweise ein bildbasiertes oder noch nicht unterstütztes Layout.</p>
+          </div>
+        `}
+      </div>
+
+      ${items.length ? '<button class="btn primary" id="confirmPDFImport">Ausgewählte Buchungen importieren</button>' : ""}
+    </div>
+  `;
+
+  document.querySelector("#confirmPDFImport")?.addEventListener("click", async () => {
+    const selectedIds = new Set(
+      [...document.querySelectorAll("[data-pdf-select]:checked")]
+        .map(input => input.dataset.pdfSelect)
+    );
+
+    const selectedItems = activePDFItems.filter(item =>
+      selectedIds.has(item.id) && !item.duplicate
+    );
+
+    if (!selectedItems.length) {
+      showToast("Keine Buchungen ausgewählt", "warning");
+      return;
+    }
+
+    data.transactions.push(...selectedItems.map(({ duplicate, selected, recognized, pageNumber, ...item }) => item));
+    saveData(data);
+
+    activePDFItems.splice(0);
+    activePDFItems = [];
+    document.querySelector("#pdfImportWorkspace").replaceChildren();
+
+    haptic("success");
+    showToast(`${selectedItems.length} Buchungen importiert`, "success");
+    navigate("transactions");
+  });
+}
+
+async function openSharedPDFIfPresent() {
+  if (!new URLSearchParams(location.search).has("shared-pdf")) return;
+  history.replaceState({}, "", location.pathname);
+  const file = await consumeSharedPDF();
+  if (!file) return;
+
+  view = "pdf-import";
+  render();
+  requestAnimationFrame(() => processPDFStatement(file));
 }
 
 function bindImport() {
@@ -828,6 +972,8 @@ try {
   console.error("FinanceOS start failed", error);
   app.innerHTML = `<div class="startup-error"><strong>FinanceOS konnte nicht gestartet werden.</strong><p>Bitte Seite neu laden. Deine lokalen Daten bleiben erhalten.</p><button onclick="location.reload()">Neu laden</button></div>`;
 }
+
+openSharedPDFIfPresent().catch(error => console.error(error));
 
 const launchAction = new URLSearchParams(location.search).get("action");
 if (launchAction === "add") {

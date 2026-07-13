@@ -159,3 +159,12 @@ FinanceOS 4.7 CSV Import:
 - Händler- und Kategorieerkennung auf importierte Buchungen anwenden
 - Duplikate und ungeklärte Buchungen vor dem Import anzeigen
 - 100 Demo-Buchungen Gemeinschaftskonto, 50 Kreditkarte, 30 Bargeld
+
+
+FinanceOS 4.8 PDF Statements:
+- PDF-Kontoauszüge lokal im Browser analysieren
+- Android Web Share Target für Teilen → FinanceOS
+- iPhone-Ablauf über In Dateien sichern → Kontoauszug auswählen
+- Sparkassen-typische Datums- und Betragszeilen erkennen
+- Importvorschau, Kategorien und Duplikate
+- PDF-Bytes, Seiten und Textzeilen nach Verarbeitung freigeben

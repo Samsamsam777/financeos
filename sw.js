@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-7-csv-import";
+const CACHE = "financeos-v4-8-pdf-statements";
 const ASSETS = [
   "./",
   "./index.html",
@@ -7,6 +7,10 @@ const ASSETS = [
   "./src/constants.js",
   "./src/icons.js",
   "./src/import.js",
+  "./vendor/pdfjs/pdf.worker.mjs",
+  "./vendor/pdfjs/pdf.mjs",
+  "./src/share-target.js",
+  "./src/pdf-import.js",
   "./src/logic.js",
   "./src/motion.js",
   "./src/storage.js",
@@ -46,8 +50,39 @@ self.addEventListener("activate", event => {
   );
 });
 
+
+const SHARE_CACHE = "financeos-shared-files";
+const SHARE_KEY = "./__shared_pdf__";
+
+async function handleShareTarget(request) {
+  const formData = await request.formData();
+  const file = formData.get("statement");
+  if (!(file instanceof File) || file.type !== "application/pdf") {
+    return Response.redirect("./?shared-pdf-error=1", 303);
+  }
+
+  const cache = await caches.open(SHARE_CACHE);
+  await cache.put(
+    SHARE_KEY,
+    new Response(file, {
+      headers: {
+        "content-type": file.type,
+        "x-financeos-filename": file.name
+      }
+    })
+  );
+
+  return Response.redirect("./?shared-pdf=1", 303);
+}
+
 self.addEventListener("fetch", event => {
   const request = event.request;
+
+  if (request.method === "POST" && new URL(request.url).pathname.endsWith("/share-target")) {
+    event.respondWith(handleShareTarget(request));
+    return;
+  }
+
   if (request.method !== "GET") return;
 
   const url = new URL(request.url);

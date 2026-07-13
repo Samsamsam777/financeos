@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-5-merchant-intelligence";
+const CACHE = "financeos-v4-5-1-runtime-fix";
 const ASSETS = [
   "./",
   "./index.html",

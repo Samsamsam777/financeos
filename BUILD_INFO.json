@@ -1,14 +1,7 @@
 {
-  "version": "4.5.0",
+  "version": "4.5.1",
   "source": "FinanceOS_4_4_8_Final_System_Polish.zip",
-  "checks": {
-    "version": true,
-    "normalizer": true,
-    "matcher": true,
-    "learner": true,
-    "status": true,
-    "checkbox": true
-  },
-  "javascript_files_checked": 11,
+  "syntax_checked": 11,
+  "logic_smoke_test": true,
   "browser_device_tested": false
 }

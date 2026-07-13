@@ -92,73 +92,51 @@ export function loanProgress(loan) {
 
 
 const MERCHANT_ALIASES = [
-  { canonical: "PayPal", patterns: ["PAYPAL", "PP*"] },
-  { canonical: "Apple", patterns: ["APPLE.COM/BILL", "APPLE SERVICES", "ITUNES.COM/BILL", "APPLE"] },
-  { canonical: "Amazon", patterns: ["AMAZON", "AMZN"] },
-  { canonical: "REWE", patterns: ["REWE"] },
-  { canonical: "EDEKA", patterns: ["EDEKA"] },
-  { canonical: "Lidl", patterns: ["LIDL"] },
-  { canonical: "ALDI", patterns: ["ALDI"] },
-  { canonical: "Spotify", patterns: ["SPOTIFY"] },
-  { canonical: "Netflix", patterns: ["NETFLIX"] },
-  { canonical: "Shell", patterns: ["SHELL"] },
-  { canonical: "Aral", patterns: ["ARAL"] },
-  { canonical: "Deutsche Bahn", patterns: ["DB VERTRIEB", "DEUTSCHE BAHN", "BAHN.DE"] }
-];
-
-const PAYMENT_PREFIXES = [
-  /^PAYPAL\s*[*\-]?\s*/i,
-  /^PP\s*[*\-]?\s*/i,
-  /^SUMUP\s*[*\-]?\s*/i,
-  /^STRIPE\s*[*\-]?\s*/i,
-  /^EC\s*[- ]?KARTE\s*/i,
-  /^KARTENZAHLUNG\s*/i,
-  /^APPLE PAY\s*/i,
-  /^GOOGLE PAY\s*/i
+  ["REWE", ["REWE"]], ["EDEKA", ["EDEKA"]], ["Lidl", ["LIDL"]],
+  ["ALDI", ["ALDI"]], ["Spotify", ["SPOTIFY"]], ["Netflix", ["NETFLIX"]],
+  ["Amazon", ["AMAZON", "AMZN"]], ["Apple", ["APPLE.COM/BILL", "APPLE SERVICES", "ITUNES", "APPLE"]],
+  ["Shell", ["SHELL"]], ["Aral", ["ARAL"]], ["Deutsche Bahn", ["DB VERTRIEB", "DEUTSCHE BAHN", "BAHN.DE"]]
 ];
 
 export function normalizeMerchant(description = "") {
-  let value = String(description ?? "").normalize("NFKC").replace(/\s+/g, " ").trim();
-  if (!value) return { raw:"", normalized:"", canonical:"", key:"", changed:false };
-  const raw=value;
-  PAYMENT_PREFIXES.forEach(pattern => { value=value.replace(pattern, ""); });
-  value=value.replace(/\b\d{5,}\b/g," ").replace(/\b[A-Z0-9]{8,}\b/gi," ").replace(/[|_/]+/g," ").replace(/\s+/g," ").trim();
-  const upper=value.toUpperCase();
-  const alias=MERCHANT_ALIASES.find(item => item.patterns.some(pattern => upper.includes(pattern)));
-  let canonical=alias?.canonical || value;
-  if (!alias && canonical) canonical=canonical.toLowerCase().replace(/(^|\s|-)\p{L}/gu, m => m.toUpperCase());
-  const key=canonical.toUpperCase().replace(/[^A-ZÄÖÜ0-9]+/g," ").replace(/\s+/g," ").trim();
-  return { raw, normalized:value, canonical, key, changed:canonical!==raw };
+  const raw = String(description || "").replace(/\s+/g, " ").trim();
+  let value = raw
+    .replace(/^(PAYPAL|PP|SUMUP|STRIPE)\s*[\*\-]?\s*/i, "")
+    .replace(/^(EC[- ]?KARTE|KARTENZAHLUNG|APPLE PAY|GOOGLE PAY)\s*/i, "")
+    .replace(/\b\d{5,}\b/g, " ")
+    .replace(/\b[A-Z0-9]{8,}\b/gi, " ")
+    .replace(/[|_/]+/g, " ")
+    .replace(/\s+/g, " ").trim();
+  const upper = value.toUpperCase();
+  const alias = MERCHANT_ALIASES.find(([, patterns]) => patterns.some(pattern => upper.includes(pattern)));
+  const canonical = alias?.[0] || value || raw;
+  const key = canonical.toUpperCase().replace(/[^A-ZÄÖÜ0-9]+/g, " ").trim();
+  return { raw, canonical, key };
 }
 
 export function matchCategoryRule(data, description = "") {
-  const merchant=normalizeMerchant(description);
-  const rawUpper=String(description ?? "").toUpperCase();
-  const candidates=(data.rules ?? []).map(rule => {
-    const needleRaw=String(rule.needle ?? "");
-    const needleMerchant=normalizeMerchant(needleRaw);
-    const needleUpper=needleRaw.toUpperCase();
-    let score=0;
-    if (merchant.key && needleMerchant.key && merchant.key===needleMerchant.key) score=100;
-    else if (merchant.key && needleMerchant.key && merchant.key.includes(needleMerchant.key)) score=80;
-    else if (merchant.key && needleMerchant.key && needleMerchant.key.includes(merchant.key)) score=70;
-    else if (needleUpper && rawUpper.includes(needleUpper)) score=60;
-    return {rule,score};
-  }).filter(item=>item.score>0).sort((a,b)=>b.score-a.score);
-  const best=candidates[0];
-  return { merchant, categoryId:best?.rule?.categoryId ?? "", ruleId:best?.rule?.id ?? "", confidence:best?.score ?? 0, matched:Boolean(best) };
+  const merchant = normalizeMerchant(description);
+  const rawUpper = String(description || "").toUpperCase();
+  let best = null;
+  for (const rule of data.rules || []) {
+    const needle = normalizeMerchant(rule.needle);
+    let score = 0;
+    if (merchant.key && needle.key && merchant.key === needle.key) score = 100;
+    else if (merchant.key && needle.key && merchant.key.includes(needle.key)) score = 80;
+    else if (String(rule.needle || "") && rawUpper.includes(String(rule.needle).toUpperCase())) score = 60;
+    if (!best || score > best.score) best = { rule, score };
+  }
+  return { merchant, categoryId: best?.score ? best.rule.categoryId : "", matched: Boolean(best?.score) };
 }
 
-export function upsertMerchantRule(data, description, categoryId) {
-  const merchant=normalizeMerchant(description);
-  if (!merchant.key || !categoryId) return null;
-  const existing=(data.rules ?? []).find(rule => normalizeMerchant(rule.needle).key===merchant.key);
+export function upsertMerchantRule(data, description, categoryId, makeId) {
+  const merchant = normalizeMerchant(description);
+  if (!merchant.key || !categoryId) return;
+  const existing = (data.rules || []).find(rule => normalizeMerchant(rule.needle).key === merchant.key);
   if (existing) {
-    existing.needle=merchant.canonical || description;
-    existing.categoryId=categoryId;
-    existing.updatedAt=Date.now();
-    return existing;
+    existing.needle = merchant.canonical;
+    existing.categoryId = categoryId;
+  } else {
+    data.rules.push({ id: makeId(), needle: merchant.canonical, categoryId });
   }
-  const rule={ id:crypto.randomUUID?.() ?? `${Date.now()}-${Math.random().toString(16).slice(2)}`, needle:merchant.canonical || description, categoryId, createdAt:Date.now() };
-  data.rules ??= []; data.rules.push(rule); return rule;
 }

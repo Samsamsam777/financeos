@@ -2,8 +2,7 @@ import { APP_VERSION } from "./constants.js";
 import { categoryIcon, icons, loanIcon, merchantVisual } from "./icons.js";
 import {
   accountBalance, euro, filterTransactions, loanProgress,
-  matchCategoryRule, monthKey, monthSummary, normalizeMerchant,
-  sortNewest, today, totalBalance
+  monthKey, monthSummary, sortNewest, today, totalBalance
 } from "./logic.js";
 import { esc, field } from "./ui.js";
 import { emptyState, groupedCard, privacyNote, sectionHeader } from "./components/components.js";
@@ -189,7 +188,8 @@ export function createViews(context) {
           <div class="grid two">
             ${field("Konto", `<select id="filterAccount"><option value="">Alle</option>${data().accounts.map(item => `<option value="${item.id}" ${filters.account === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
             ${field("Kategorie", `<select id="filterCategory"><option value="">Alle</option>${data().categories.map(item => `<option value="${item.id}" ${filters.category === item.id ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
-            ${field("Person", `<select id="filterPerson"><option value="">Alle</option>${data().settings.people.map(item => `<option ${filters.person === item ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
+            <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>Für denselben Händler künftig automatisch verwenden.</small></span></label>
+        ${field("Person", `<select id="filterPerson"><option value="">Alle</option>${data().settings.people.map(item => `<option ${filters.person === item ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
             ${field("Sortierung", `<select id="filterSort"><option value="newest">Neueste zuerst</option><option value="amount-desc" ${filters.sort === "amount-desc" ? "selected" : ""}>Betrag absteigend</option><option value="amount-asc" ${filters.sort === "amount-asc" ? "selected" : ""}>Betrag aufsteigend</option></select>`)}
           </div>
         </div>
@@ -216,10 +216,10 @@ export function createViews(context) {
           ${field("Betrag", `<input name="amount" type="number" inputmode="decimal" enterkeyhint="next" step="0.01" placeholder="0,00" required autofocus>`)}
         </div>
         ${field("Beschreibung", `<input name="description" enterkeyhint="next" placeholder="z. B. PAYPAL *REWE Markt" required>`)}
-        <div class="recognition-status recognition-idle" id="recognitionStatus"><span class="recognition-dot" aria-hidden="true"></span><span>Händler und Kategorie werden automatisch erkannt.</span></div>
+        <div class="recognition-status" id="recognitionStatus"><span class="recognition-dot"></span><span>Händler und Kategorie werden automatisch erkannt.</span></div>
         ${field("Konto", `<select name="accountId">${data().accounts.map(item => `<option value="${item.id}" ${item.id === selectedAccount ? "selected" : ""}>${esc(item.name)}</option>`).join("")}</select>`)}
         ${field("Kategorie", `<select name="categoryId" id="transactionCategory"><option value="">Automatisch erkennen</option>${data().categories.map(item => `<option value="${item.id}">${esc(item.name)}</option>`).join("")}</select>`)}
-        <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>FinanceOS verwendet diese Kategorie künftig für denselben Händler.</small></span></label>
+        <label class="learn-rule-row"><input type="checkbox" name="learnRule" checked><span><strong>Zuordnung merken</strong><small>Für denselben Händler künftig automatisch verwenden.</small></span></label>
         ${field("Person", `<select name="person">${data().settings.people.map(item => `<option ${item === selectedPerson ? "selected" : ""}>${esc(item)}</option>`).join("")}</select>`)}
         <div class="entry-actions"><button class="btn primary">Buchung speichern</button></div>
       </form>

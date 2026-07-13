@@ -246,62 +246,55 @@ function openAddTransactionSheet() {
 function bindAddTransaction() {
   const formElement = document.querySelector("#transactionForm");
   if (!formElement) return;
-  const amountInput=formElement.elements.amount;
-  const descriptionInput=formElement.elements.description;
-  const categorySelect=formElement.elements.categoryId;
-  const recognitionStatus=document.querySelector("#recognitionStatus");
-  requestAnimationFrame(() => amountInput?.focus({ preventScroll:true }));
+  const amountInput = formElement.elements.amount;
+  const descriptionInput = formElement.elements.description;
+  const categorySelect = formElement.elements.categoryId;
+  const status = document.querySelector("#recognitionStatus");
+  requestAnimationFrame(() => amountInput?.focus({ preventScroll: true }));
 
-  const updateRecognition=() => {
-    const description=String(descriptionInput?.value ?? "").trim();
+  const updateRecognition = () => {
+    const description = String(descriptionInput?.value || "").trim();
     if (!description) {
-      recognitionStatus.className="recognition-status recognition-idle";
-      recognitionStatus.innerHTML='<span class="recognition-dot" aria-hidden="true"></span><span>Händler und Kategorie werden automatisch erkannt.</span>';
+      status.className = "recognition-status";
+      status.innerHTML = '<span class="recognition-dot"></span><span>Händler und Kategorie werden automatisch erkannt.</span>';
       return;
     }
-    const match=matchCategoryRule(data,description);
-    const merchantName=match.merchant.canonical || description;
-    const matchedCategory=category(match.categoryId);
+    const match = matchCategoryRule(data, description);
+    const merchant = match.merchant.canonical || description;
+    const matchedCategory = category(match.categoryId);
     if (match.matched && matchedCategory) {
-      if (!categorySelect.value) categorySelect.value=match.categoryId;
-      recognitionStatus.className="recognition-status recognition-success";
-      recognitionStatus.innerHTML=`<span class="recognition-dot" aria-hidden="true"></span><span><strong>${esc(merchantName)}</strong> erkannt · ${esc(matchedCategory.name)}</span>`;
+      if (!categorySelect.value) categorySelect.value = match.categoryId;
+      status.className = "recognition-status recognition-success";
+      status.innerHTML = `<span class="recognition-dot"></span><span><strong>${esc(merchant)}</strong> erkannt · ${esc(matchedCategory.name)}</span>`;
     } else {
-      recognitionStatus.className="recognition-status recognition-pending";
-      recognitionStatus.innerHTML=`<span class="recognition-dot" aria-hidden="true"></span><span><strong>${esc(merchantName)}</strong> erkannt · Kategorie auswählen</span>`;
+      status.className = "recognition-status recognition-pending";
+      status.innerHTML = `<span class="recognition-dot"></span><span><strong>${esc(merchant)}</strong> erkannt · Kategorie auswählen</span>`;
     }
   };
-  descriptionInput?.addEventListener("input",updateRecognition);
-  descriptionInput?.addEventListener("blur",updateRecognition);
-  categorySelect?.addEventListener("change",updateRecognition);
+  descriptionInput?.addEventListener("input", updateRecognition);
+  categorySelect?.addEventListener("change", updateRecognition);
 
-  const ordered=[...formElement.querySelectorAll("input:not([type=hidden]), select, textarea")];
-  ordered.forEach((control,index)=>control.addEventListener("keydown",event=>{
-    if (event.key!=="Enter" || control.tagName==="TEXTAREA") return;
-    if (index<ordered.length-1) { event.preventDefault(); ordered[index+1]?.focus({preventScroll:false}); }
-  }));
-
-  formElement.onsubmit=event=>{
+  formElement.onsubmit = event => {
     event.preventDefault();
-    const form=new FormData(event.target);
-    const description=String(form.get("description") || "").trim();
-    const automaticCategory=detectCategory(data,description);
-    const categoryId=form.get("categoryId") || automaticCategory;
-    const merchant=normalizeMerchant(description);
-    const transaction={
-      id:makeId(), createdAt:Date.now(), date:form.get("date"), type:form.get("type"), amount:Number(form.get("amount")),
-      description:merchant.canonical || description, originalDescription:description, merchantKey:merchant.key,
-      accountId:form.get("accountId"), categoryId, person:form.get("person"),
-      status:category(categoryId)?.name === "Später zuordnen" ? "pending" : "done"
+    const form = new FormData(event.target);
+    const original = String(form.get("description") || "").trim();
+    const merchant = normalizeMerchant(original);
+    const categoryId = form.get("categoryId") || detectCategory(data, original);
+    const transaction = {
+      id: makeId(), createdAt: Date.now(), date: form.get("date"), type: form.get("type"),
+      amount: Number(form.get("amount")), description: merchant.canonical || original,
+      originalDescription: original, merchantKey: merchant.key, accountId: form.get("accountId"),
+      categoryId, person: form.get("person"),
+      status: category(categoryId)?.name === "Später zuordnen" ? "pending" : "done"
     };
-    if (form.get("learnRule") && categoryId) upsertMerchantRule(data,description,categoryId);
+    if (form.get("learnRule") && categoryId) upsertMerchantRule(data, original, categoryId, makeId);
     data.transactions.push(transaction);
-    data.settings.entryPreferences={accountId:transaction.accountId,person:transaction.person};
-    saveData(data); haptic("success"); closeSheet(); view="dashboard"; render();
-    const categoryName=category(categoryId)?.name;
-    showToast(categoryName ? `${merchant.canonical || description} · ${categoryName}` : "Buchung gespeichert", "success", {
-      actionLabel:"Rückgängig", onAction:()=>{ data.transactions=data.transactions.filter(item=>item.id!==transaction.id); saveData(data); haptic("light"); render(); }
-    });
+    data.settings.entryPreferences = { accountId: transaction.accountId, person: transaction.person };
+    saveData(data);
+    haptic("success"); closeSheet(); view = "dashboard"; render();
+    showToast("Buchung gespeichert", "success", { actionLabel: "Rückgängig", onAction: () => {
+      data.transactions = data.transactions.filter(item => item.id !== transaction.id); saveData(data); render();
+    }});
   };
 }
 
@@ -448,7 +441,11 @@ function resolvePending(id) {
     transaction.person = form.get("person");
     transaction.status = "done";
     if (form.get("learn")) {
-      upsertMerchantRule(data, transaction.originalDescription || transaction.description, transaction.categoryId);
+      data.rules.push({
+        id: makeId(),
+        needle: transaction.description.toUpperCase(),
+        categoryId: transaction.categoryId
+      });
     }
     saveData(data);
     haptic("success");
@@ -654,7 +651,12 @@ window.addEventListener("online", () => {
 });
 document.documentElement.classList.toggle("is-offline", !navigator.onLine);
 
-render();
+try {
+  render();
+} catch (error) {
+  console.error("FinanceOS start failed", error);
+  app.innerHTML = `<div class="startup-error"><strong>FinanceOS konnte nicht gestartet werden.</strong><p>Bitte Seite neu laden. Deine lokalen Daten bleiben erhalten.</p><button onclick="location.reload()">Neu laden</button></div>`;
+}
 
 const launchAction = new URLSearchParams(location.search).get("action");
 if (launchAction === "add") {

@@ -1,6 +1,6 @@
-import * as pdfjsLib from "../vendor/pdfjs/pdf.mjs";
+import * as pdfjsLib from "../vendor/pdfjs/pdf.mjs?v=4.8.4";
 
-pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.mjs";
+pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.mjs?v=4.8.4";
 
 function groupTextItems(items) {
   const rows = new Map();
@@ -38,56 +38,61 @@ function groupTextItems(items) {
     .filter(row => row.text);
 }
 
-function freshBytes(sourceBuffer) {
-  return new Uint8Array(sourceBuffer.slice(0));
+function isIOSWebKit() {
+  const userAgent = navigator.userAgent || "";
+  const platform = navigator.platform || "";
+  const touchMac = platform === "MacIntel" && navigator.maxTouchPoints > 1;
+  return /iPhone|iPad|iPod/i.test(userAgent) || touchMac;
 }
 
-async function openWithWorker(sourceBuffer) {
-  const loadingTask = pdfjsLib.getDocument({
-    data: freshBytes(sourceBuffer),
-    useWorkerFetch: false,
-    isEvalSupported: false,
-    useSystemFonts: true
-  });
-
-  return {
-    loadingTask,
-    document: await loadingTask.promise
-  };
+async function readFreshBytes(file) {
+  const buffer = await file.arrayBuffer();
+  return new Uint8Array(buffer);
 }
 
-async function openWithoutWorker(sourceBuffer) {
+async function openDocument(file, disableWorker) {
+  const bytes = await readFreshBytes(file);
+
   const loadingTask = pdfjsLib.getDocument({
-    data: freshBytes(sourceBuffer),
+    data: bytes,
     useWorkerFetch: false,
     isEvalSupported: false,
     useSystemFonts: true,
-    disableWorker: true
+    disableWorker
   });
 
-  return {
-    loadingTask,
-    document: await loadingTask.promise
-  };
+  try {
+    const document = await loadingTask.promise;
+    return { loadingTask, document };
+  } catch (error) {
+    try { loadingTask.destroy?.(); } catch {}
+    throw error;
+  }
 }
 
-async function loadDocument(sourceBuffer) {
+async function loadDocument(file) {
+  // Safari/iOS has repeatedly detached worker buffers during fallback.
+  // Use the stable main-thread parser immediately on those devices.
+  if (isIOSWebKit()) {
+    return openDocument(file, true);
+  }
+
   try {
-    return await openWithWorker(sourceBuffer);
+    return await openDocument(file, false);
   } catch (workerError) {
     console.warn("FinanceOS PDF worker fallback", workerError);
-    return openWithoutWorker(sourceBuffer);
+    // Read the physical File again. No ArrayBuffer or Uint8Array is reused.
+    return openDocument(file, true);
   }
 }
 
 export async function extractPDFLines(file) {
-  const sourceBuffer = await file.arrayBuffer();
   let loadingTask = null;
   let document = null;
   const pages = [];
 
   try {
-    const opened = await loadDocument(sourceBuffer);
+    const opened = await loadDocument(file);
     loadingTask = opened.loadingTask;
     document = opened.document;
 
@@ -113,12 +118,6 @@ export async function extractPDFLines(file) {
   } finally {
     try { await document?.destroy(); } catch {}
     try { loadingTask?.destroy?.(); } catch {}
-
-    // sourceBuffer is never handed directly to PDF.js and therefore remains
-    // owned by FinanceOS. It can be overwritten safely after extraction.
-    try {
-      new Uint8Array(sourceBuffer).fill(0);
-    } catch {}
   }
 }
 

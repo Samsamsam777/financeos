@@ -192,3 +192,11 @@ FinanceOS 4.8.3 iOS PDF Buffer Fix:
 - abgetrennte ArrayBuffer werden nicht erneut verwendet
 - Safari/iPhone-Fallback kann das PDF jetzt erneut öffnen
 - Originalpuffer wird erst nach vollständiger Verarbeitung überschrieben
+
+
+FinanceOS 4.8.4 iOS PDF Reload Fix:
+- iPhone und iPad überspringen den instabilen PDF.js-Worker
+- Worker und Fallback lesen die Datei jeweils vollständig neu
+- keinerlei Wiederverwendung von ArrayBuffer oder Uint8Array
+- PDF.js- und App-Module mit 4.8.4-Cache-Busting
+- JavaScript und PDF.js werden im Service Worker netzwerkbevorzugt geladen

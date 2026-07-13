@@ -1,5 +1,8 @@
-const CACHE = "financeos-v4-8-3-ios-pdf-buffer-fix";
+const CACHE = "financeos-v4-8-4-ios-pdf-reload-fix";
 const ASSETS = [
+  "./vendor/pdfjs/pdf.worker.mjs?v=4.8.4",
+  "./vendor/pdfjs/pdf.mjs?v=4.8.4",
+  "./src/app.js?v=4.8.4",
   "./",
   "./index.html",
   "./manifest.webmanifest",
@@ -88,6 +91,21 @@ self.addEventListener("fetch", event => {
 
   const url = new URL(request.url);
   if (url.origin !== self.location.origin) return;
+
+  if (url.pathname.endsWith(".js") || url.pathname.endsWith(".mjs")) {
+    event.respondWith(
+      fetch(request)
+        .then(response => {
+          if (response.ok) {
+            const copy = response.clone();
+            caches.open(CACHE).then(cache => cache.put(request, copy));
+          }
+          return response;
+        })
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
 
   if (request.mode === "navigate") {
     event.respondWith(

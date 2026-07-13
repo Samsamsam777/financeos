@@ -1,13 +1,14 @@
 {
-  "version": "4.8.3",
-  "source": "FinanceOS_4_8_2_Sparkasse_Table_Fix.zip",
-  "fix": "Prevent detached ArrayBuffer reuse in PDF.js worker fallback",
+  "version": "4.8.4",
+  "source": "FinanceOS_4_8_3_iOS_PDF_Buffer_Fix.zip",
+  "fix": "Read PDF file independently per attempt and bypass worker on iOS",
   "checks": {
-    "version_4_8_3": true,
-    "fresh_worker_copy": true,
-    "separate_fallback": true,
-    "original_not_transferred": true,
-    "cleanup_after_processing": true,
+    "version_4_8_4": true,
+    "ios_worker_skipped": true,
+    "fresh_file_read_each_attempt": true,
+    "no_buffer_reuse": true,
+    "module_cache_busting": true,
+    "network_first_modules": true,
     "cache_bumped": true
   },
   "browser_device_tested": false

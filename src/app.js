@@ -655,9 +655,7 @@ function evaluateRecurringTransactions() {
 }
 
 function parseEPCQRCode(rawValue) {
-  const lines = String(rawValue || "").split(/
-?
-/);
+  const lines = String(rawValue || "").split(/\r?\n/);
   if (lines[0] !== "BCD") return null;
   const name = lines[5] || "QR-Zahlung";
   const iban = lines[6] || "";

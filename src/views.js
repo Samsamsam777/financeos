@@ -76,6 +76,7 @@ export function createViews(context) {
         </section>
       `,
       pending: () => {
+        if (!pending.length) return "";
         const oldestPending = sortNewest(pending).at(-1);
         const oldestLabel = oldestPending
           ? new Date(`${oldestPending.date}T00:00:00`).toLocaleDateString("de-DE", {
@@ -410,12 +411,43 @@ export function createViews(context) {
 
   function settings() {
     return `
-      <div class="section-title"><h2 class="page-heading">Einstellungen & Daten</h2></div>
-      <div class="card page-card form">
-        <button class="btn primary" id="backupButton">Backup erstellen</button>
-        <label class="btn ghost" style="text-align:center">Backup wiederherstellen<input id="restoreInput" type="file" accept="application/json" hidden></label>
-        <button class="btn danger ghost" id="resetButton">Beispieldaten zurücksetzen</button>
-        <div class="notice">FinanceOS ${APP_VERSION} · Backups auf dem iPhone über „In Dateien sichern“ in iCloud Drive ablegen.</div>
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Einstellungen & Daten</h2>
+      </div>
+
+      <div class="card grouped-card settings-group settings-actions">
+        <button class="settings-row" id="backupButton">
+          <span class="settings-icon">${icons.download}</span>
+          <span class="settings-copy">
+            <strong>Backup erstellen</strong>
+            <small>Lokale Finanzdaten als Datei sichern</small>
+          </span>
+          <span class="row-chevron">${icons.chevron}</span>
+        </button>
+
+        <label class="settings-row settings-file-row" for="restoreInput">
+          <span class="settings-icon">${icons.restore}</span>
+          <span class="settings-copy">
+            <strong>Backup wiederherstellen</strong>
+            <small>Eine FinanceOS-Sicherung importieren</small>
+          </span>
+          <span class="row-chevron">${icons.chevron}</span>
+          <input id="restoreInput" type="file" accept="application/json" hidden>
+        </label>
+
+        <button class="settings-row settings-danger-row" id="resetButton">
+          <span class="settings-icon">${icons.reset}</span>
+          <span class="settings-copy">
+            <strong>Beispieldaten zurücksetzen</strong>
+            <small>Lokale Daten auf den Ausgangszustand setzen</small>
+          </span>
+          <span class="row-chevron">${icons.chevron}</span>
+        </button>
+      </div>
+
+      <div class="notice settings-version">
+        FinanceOS ${APP_VERSION} · Backups können über „In Dateien sichern“ in iCloud Drive oder lokal gespeichert werden.
       </div>
     `;
   }

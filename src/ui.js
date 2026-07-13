@@ -7,6 +7,7 @@ export const field = (label, control) =>
   `<div class="field"><label>${label}</label>${control}</div>`;
 
 export function showSheet(content) {
+  const trigger = document.activeElement;
   document.body.insertAdjacentHTML("beforeend", `
     <div class="modal" id="modal">
       <div class="sheet sheet-enter">
@@ -17,17 +18,32 @@ export function showSheet(content) {
       </div>
     </div>
   `);
-  document.querySelector("#closeModal").onclick = closeSheet;
-  document.querySelector("#modal").onclick = event => {
-    if (event.target.id === "modal") closeSheet();
+  const modal = document.querySelector("#modal");
+  const closeButton = document.querySelector("#closeModal");
+
+  closeButton.onclick = () => closeSheet(trigger);
+  modal.onclick = event => {
+    if (event.target.id === "modal") closeSheet(trigger);
   };
+
+  modal.onkeydown = event => {
+    if (event.key === "Escape") closeSheet(trigger);
+  };
+
+  closeButton.focus({ preventScroll: true });
 }
 
-export function closeSheet() {
+export function closeSheet(returnFocus = null) {
   const modal = document.querySelector("#modal");
   const sheet = modal?.querySelector(".sheet");
   if (!modal || !sheet) return;
   sheet.classList.add("sheet-exit");
   modal.classList.add("modal-exit");
-  setTimeout(() => modal.remove(), 220);
+  setTimeout(() => {
+    modal.remove();
+    if (returnFocus instanceof HTMLElement && document.contains(returnFocus)) {
+      returnFocus.focus({ preventScroll: true });
+    }
+  }, 220);
 }
+

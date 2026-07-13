@@ -15,6 +15,9 @@ let view = "dashboard";
 const viewHistory = [];
 let filters = { query: "", account: "", category: "", person: "", sort: "newest" };
 let pwaState = installState();
+const rootTabs = new Set(["dashboard", "transactions", "budgets", "more"]);
+const tabScrollPositions = new Map();
+let shellInitialized = false;
 
 const app = document.querySelector("#app");
 const getData = () => data;
@@ -37,16 +40,18 @@ function navButton(id, label, icon) {
   `;
 }
 
-function shell(content) {
+function initializeShell() {
+  if (shellInitialized) return;
+
   app.innerHTML = `
     <div class="ambient-layer" aria-hidden="true"></div>
-    <main class="app" id="pageRoot">
+    <main class="app">
       <div class="topbar app-header">
         <div class="brand"><h1>FinanceOS</h1></div>
       </div>
-      ${content}
+      <div id="pageRoot" class="page-host"></div>
     </main>
-    <nav class="nav">
+    <nav class="nav" aria-label="Hauptnavigation">
       <div class="nav-inner">
         ${navButton("dashboard", "Heute", icons.home)}
         ${navButton("transactions", "Buchungen", icons.list)}
@@ -56,37 +61,69 @@ function shell(content) {
       </div>
     </nav>
   `;
+
+  shellInitialized = true;
   bindNavigation();
-  enterPage(document.querySelector("#pageRoot"));
-  bindPressFeedback();
-  document.querySelectorAll("[data-animate-number]").forEach(element => {
+  bindPressFeedback(document.querySelector(".nav"));
+  bindHeaderBehavior();
+}
+
+function updateShellState() {
+  document.querySelectorAll(".nav [data-nav]").forEach(button => {
+    const target = button.dataset.nav;
+    button.classList.toggle("active", target === view);
+  });
+}
+
+function renderContent(content) {
+  initializeShell();
+  const pageRoot = document.querySelector("#pageRoot");
+  pageRoot.innerHTML = content;
+  updateShellState();
+
+  enterPage(pageRoot);
+  bindPressFeedback(pageRoot);
+  pageRoot.querySelectorAll("[data-animate-number]").forEach(element => {
     animateNumber(element, Number(element.dataset.animateNumber), value => euro(value));
   });
   animateLoanFills();
-  bindHeaderBehavior();
 }
 
 function goBack() {
   const target = viewHistory.pop() ?? "dashboard";
+  const previous = view;
   view = target;
   haptic("selection");
-  window.scrollTo({ top: 0, behavior: "instant" });
+  document.documentElement.dataset.navigationDirection = "back";
   render();
+
+  requestAnimationFrame(() => {
+    const position = rootTabs.has(target) ? (tabScrollPositions.get(target) ?? 0) : 0;
+    window.scrollTo({ top: position, behavior: "auto" });
+  });
 }
 
 function navigate(target, options = {}) {
   if (view === target) return;
-  if (!options.replace) viewHistory.push(view);
-  haptic("selection");
+
   const previous = view;
+  if (rootTabs.has(previous)) tabScrollPositions.set(previous, window.scrollY);
+  if (!options.replace) viewHistory.push(previous);
+
+  haptic("selection");
   view = target;
+
+  const previousIndex = ["dashboard", "transactions", "budgets", "more"].indexOf(previous);
+  const targetIndex = ["dashboard", "transactions", "budgets", "more"].indexOf(target);
   document.documentElement.dataset.navigationDirection =
-    ["dashboard", "transactions", "budgets", "more"].indexOf(target) >=
-    ["dashboard", "transactions", "budgets", "more"].indexOf(previous)
-      ? "forward"
-      : "back";
-  window.scrollTo({ top: 0, behavior: "auto" });
+    targetIndex >= previousIndex ? "forward" : "back";
+
   render();
+
+  requestAnimationFrame(() => {
+    const position = rootTabs.has(target) ? (tabScrollPositions.get(target) ?? 0) : 0;
+    window.scrollTo({ top: position, behavior: "auto" });
+  });
 }
 
 function render() {
@@ -106,12 +143,12 @@ function render() {
     expenses: views.expenses
   }[view]?.() ?? views.more();
 
-  shell(content);
+  renderContent(content);
   bindView();
 }
 
-function bindNavigation() {
-  document.querySelectorAll("[data-nav]").forEach(button => {
+function bindNavigation(root = document) {
+  root.querySelectorAll("[data-nav]").forEach(button => {
     button.onclick = event => {
       const target = button.dataset.nav;
       if (target === "add") {
@@ -123,7 +160,7 @@ function bindNavigation() {
     };
   });
 
-  document.querySelectorAll("[data-open-add]").forEach(button => {
+  root.querySelectorAll("[data-open-add]").forEach(button => {
     button.onclick = event => {
       event.preventDefault();
       openAddTransactionSheet();
@@ -135,7 +172,7 @@ function bindView() {
   document.querySelectorAll("[data-back]").forEach(button => {
     button.onclick = () => goBack();
   });
-  bindNavigation();
+  bindNavigation(document.querySelector("#pageRoot"));
   document.querySelectorAll("[data-transaction]").forEach(row => {
     row.onclick = event => {
       if (event.target.closest("[data-edit]")) return;
@@ -550,13 +587,14 @@ function showInstallInstructions() {
 
 function bindHeaderBehavior() {
   const header = document.querySelector(".app-header");
-  if (!header) return;
+  if (!header || header.dataset.scrollBound === "true") return;
 
   const update = () => {
     header.classList.toggle("is-scrolled", window.scrollY > 12);
   };
 
-  window.onscroll = update;
+  header.dataset.scrollBound = "true";
+  window.addEventListener("scroll", update, { passive: true });
   update();
 }
 

@@ -963,3 +963,85 @@ button.is-pressed,
   margin:0;
   color:var(--color-text-2);
 }
+
+
+/* =========================================================
+   FinanceOS 4.4 — Stability fixes
+   ========================================================= */
+
+/* Persistent shell prevents the fixed navigation from being recreated. */
+.page-host{
+  min-height:calc(100dvh - 130px - env(safe-area-inset-bottom));
+}
+
+/* Navbar stays on its own compositor layer during page changes. */
+.nav{
+  transform:translateZ(0);
+  will-change:transform;
+  contain:layout paint style;
+}
+.nav-inner{
+  transform:translateZ(0);
+}
+
+/* Geometrically centered close glyph. */
+.sheet-toolbar{
+  min-height:40px;
+  align-items:center;
+}
+.sheet-toolbar .sheet-close{
+  width:36px;
+  height:36px;
+  min-height:36px;
+  padding:0;
+  display:grid;
+  place-items:center;
+  flex:0 0 36px;
+  line-height:0;
+}
+.sheet-close span{
+  position:absolute;
+  left:50%;
+  top:50%;
+  width:15px;
+  height:1.5px;
+  margin:0;
+  transform-origin:center;
+}
+.sheet-close span:first-child{
+  transform:translate(-50%,-50%) rotate(45deg);
+}
+.sheet-close span:last-child{
+  transform:translate(-50%,-50%) rotate(-45deg);
+}
+
+/* Settings use the same grouped-row visual language as the rest of FinanceOS. */
+.settings-actions{
+  margin-top:var(--space-2);
+}
+.settings-copy{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.settings-copy strong{
+  color:var(--color-text-1);
+  font-size:var(--font-headline);
+  font-weight:var(--weight-semibold);
+}
+.settings-copy small{
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+  line-height:1.35;
+}
+.settings-file-row{
+  cursor:pointer;
+}
+.settings-danger-row .settings-icon{
+  color:var(--color-danger);
+  background:rgba(255,92,112,.12);
+}
+.settings-version{
+  margin-top:var(--space-4);
+}

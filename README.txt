@@ -80,3 +80,14 @@ FinanceOS 4.3 Cross-Platform PWA:
 - iOS- und Android-spezifische Installationshilfe
 - Android-App-Shortcut „Neue Buchung“
 - bestehende lokale Daten bleiben kompatibel
+
+
+FinanceOS 4.4 Stability Fixes:
+- persistente App-Shell: Navbar, Header und Ambient werden beim Tabwechsel nicht neu aufgebaut
+- separate Scrollposition pro Haupt-Tab
+- feste Navbar-Compositor-Ebene gegen vertikales Springen
+- geometrisch mittiges X in allen Bottom Sheets
+- Einstellungen mit Zurück-Button
+- Einstellungsaktionen mit FinanceOS-Line-Icons
+- „Zu prüfen“ verschwindet bei null offenen Buchungen vollständig vom Dashboard
+- verbesserte Sheet-Schließung per X, Hintergrund und Escape

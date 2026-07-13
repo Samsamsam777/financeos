@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-3-cross-platform";
+const CACHE = "financeos-v4-4-stability-fixes";
 const ASSETS = [
   "./",
   "./index.html",

@@ -91,3 +91,32 @@ FinanceOS 4.4 Stability Fixes:
 - Einstellungsaktionen mit FinanceOS-Line-Icons
 - „Zu prüfen“ verschwindet bei null offenen Buchungen vollständig vom Dashboard
 - verbesserte Sheet-Schließung per X, Hintergrund und Escape
+
+
+FinanceOS 4.4.1:
+- fehlerhafte Icon-Zuordnung im Mehr-Menü korrigiert
+- defensiver Fallback verhindert sichtbares `undefined` bei fehlenden Icons
+
+
+FinanceOS 4.4.2:
+- abgeschnittenen Plus-Button in der unteren Navigation korrigiert
+- Paint-Containment der Navbar entfernt, ohne die stabile Shell zurückzunehmen
+
+
+FinanceOS 4.4.3:
+- Haupt-Tabs starten bei jedem Wechsel am Seitenanfang
+- gespeicherte Scrollpositionen entfernt
+- erneutes Tippen auf den aktiven Tab scrollt ebenfalls nach oben
+
+
+FinanceOS 4.4.4:
+- Kreditverlauf: Türkis und Grün deutlich nach hinten verschoben
+- Budgetverlauf umgekehrt: Grün am Anfang, Dunkellila erst am Ende
+- Kredit- und Budgetbalken verwenden getrennte Farbdefinitionen
+
+
+FinanceOS 4.4.5:
+- Kreditübersicht als einzelne Detailkacheln
+- Restschuld, abbezahlt und Fortschritt direkt sichtbar
+- vorhandene Rate, Zinssatz, Laufzeit und ursprünglicher Betrag werden eingeblendet
+- kleiner Fortschrittsbalken am unteren Rand jeder Kreditkachel

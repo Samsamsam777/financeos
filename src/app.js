@@ -16,7 +16,6 @@ const viewHistory = [];
 let filters = { query: "", account: "", category: "", person: "", sort: "newest" };
 let pwaState = installState();
 const rootTabs = new Set(["dashboard", "transactions", "budgets", "more"]);
-const tabScrollPositions = new Map();
 let shellInitialized = false;
 
 const app = document.querySelector("#app");
@@ -91,23 +90,23 @@ function renderContent(content) {
 
 function goBack() {
   const target = viewHistory.pop() ?? "dashboard";
-  const previous = view;
   view = target;
   haptic("selection");
   document.documentElement.dataset.navigationDirection = "back";
   render();
 
   requestAnimationFrame(() => {
-    const position = rootTabs.has(target) ? (tabScrollPositions.get(target) ?? 0) : 0;
-    window.scrollTo({ top: position, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   });
 }
 
 function navigate(target, options = {}) {
-  if (view === target) return;
+  if (view === target) {
+    window.scrollTo({ top: 0, behavior: "auto" });
+    return;
+  }
 
   const previous = view;
-  if (rootTabs.has(previous)) tabScrollPositions.set(previous, window.scrollY);
   if (!options.replace) viewHistory.push(previous);
 
   haptic("selection");
@@ -121,8 +120,7 @@ function navigate(target, options = {}) {
   render();
 
   requestAnimationFrame(() => {
-    const position = rootTabs.has(target) ? (tabScrollPositions.get(target) ?? 0) : 0;
-    window.scrollTo({ top: position, behavior: "auto" });
+    window.scrollTo({ top: 0, behavior: "auto" });
   });
 }
 

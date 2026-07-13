@@ -297,20 +297,65 @@ export function createViews(context) {
   }
 
   function loans() {
-    const rows = [...data().loans]
-      .sort((a,b) => Number(b.remaining) - Number(a.remaining))
+    const cards = [...data().loans]
+      .sort((a, b) => Number(b.remaining) - Number(a.remaining))
       .map(loan => {
         const { paid, percent } = loanProgress(loan);
+        const initial = Number(loan.initial || loan.amount || 0);
+        const remaining = Number(loan.remaining || 0);
+        const monthlyRate = Number(loan.rate || loan.monthlyRate || 0);
+        const interest = Number(loan.interest || loan.interestRate || 0);
+        const term = Number(loan.term || loan.months || 0);
+
+        const meta = [
+          monthlyRate > 0 ? `Rate ${euro(monthlyRate)}` : "",
+          interest > 0 ? `${interest.toLocaleString("de-DE", { maximumFractionDigits: 2 })} % Zins` : "",
+          term > 0 ? `${term} Monate` : ""
+        ].filter(Boolean);
+
         return `
-          <button class="grouped-row loan-detail-row" data-loan="${loan.id}">
-            <span class="grouped-icon loan-symbol">${loanIcon(loan.type)}</span>
-            <span class="grouped-main">
-              <span class="grouped-title">${esc(loan.name)}</span>
-              <span class="grouped-meta">${euro(paid)} abbezahlt · ${Math.round(percent)} %</span>
-            </span>
-            <span class="grouped-values"><strong>${euro(loan.remaining)}</strong></span>
-            <span class="row-chevron">${icons.chevron}</span>
-          </button>
+          <article class="card loan-overview-card" data-loan="${loan.id}">
+            <div class="loan-overview-head">
+              <span class="loan-overview-icon">${loanIcon(loan.type)}</span>
+              <div class="loan-overview-title">
+                <h3>${esc(loan.name)}</h3>
+                <p>${esc(loan.type || "Kredit")}</p>
+              </div>
+              <div class="loan-overview-remaining">
+                <span>Restschuld</span>
+                <strong>${euro(remaining)}</strong>
+              </div>
+            </div>
+
+            <div class="loan-overview-grid">
+              <div>
+                <span>Abbezahlt</span>
+                <strong>${euro(paid)}</strong>
+              </div>
+              <div>
+                <span>Fortschritt</span>
+                <strong>${Math.round(percent)} %</strong>
+              </div>
+              ${initial > 0 ? `
+                <div>
+                  <span>Ursprünglich</span>
+                  <strong>${euro(initial)}</strong>
+                </div>
+              ` : ""}
+              ${meta.map((item, index) => `
+                <div>
+                  <span>${index === 0 && monthlyRate > 0 ? "Monatliche Rate" : index === 1 && interest > 0 ? "Zinssatz" : "Laufzeit"}</span>
+                  <strong>${item.replace(/^Rate /, "").replace(/ Zins$/, "")}</strong>
+                </div>
+              `).join("")}
+            </div>
+
+            <div class="loan-overview-progress" aria-label="${Math.round(percent)} Prozent abbezahlt">
+              <span class="slim-progress">
+                <span class="slim-progress-fill" style="--row-progress:${Math.max(0, Math.min(100, percent))}%"></span>
+              </span>
+            </div>
+          </article>
         `;
       }).join("");
 
@@ -319,7 +364,9 @@ export function createViews(context) {
         <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
         <h2 class="page-heading">Kredite</h2>
       </div>
-      <div class="card grouped-card loan-detail-group">${rows}</div>
+      <div class="loan-overview-list">
+        ${cards || '<div class="card empty">Keine Kredite vorhanden</div>'}
+      </div>
     `;
   }
 
@@ -328,12 +375,12 @@ export function createViews(context) {
     const rows = [
       ["dashboard-settings", "Dashboard anpassen", icons.arrange],
       ["pending", "Später zuordnen", icons.pending],
-      ["loans", "Kredite", icons.credit],
-      ["manage", "Konten, Kategorien & Regeln", icons.settings],
+      ["loans", "Kredite", icons.wallet],
+      ["manage", "Konten, Kategorien & Regeln", icons.list],
       ["settings", "Einstellungen & Backup", icons.backup]
     ].map(([target, label, icon]) => `
       <button class="settings-row" data-nav="${target}">
-        <span class="settings-icon">${icon}</span>
+        <span class="settings-icon">${icon ?? icons.list}</span>
         <span class="settings-label">${label}</span>
         <span class="row-chevron">${icons.chevron}</span>
       </button>

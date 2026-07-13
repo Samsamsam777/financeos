@@ -1,15 +1,12 @@
 {
-  "version": "4.4.0",
-  "source": "src.zip",
-  "javascript_files_checked": 11,
+  "version": "4.4.5",
+  "source": "FinanceOS_4_4_4_Progress_Color_Tuning.zip",
+  "change": "Detailed standalone loan cards",
   "checks": {
-    "version_4_4": true,
-    "persistent_shell": true,
-    "tab_scroll_positions": true,
-    "settings_back_button": true,
-    "settings_icons": true,
-    "pending_hidden_at_zero": true,
-    "centered_close": true,
-    "sheet_escape": true
+    "version_4_4_5": true,
+    "individual_cards": true,
+    "all_core_information": true,
+    "progress_bottom": true,
+    "no_grouped_loan_list": true
   }
 }

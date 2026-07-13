@@ -978,7 +978,8 @@ button.is-pressed,
 .nav{
   transform:translateZ(0);
   will-change:transform;
-  contain:layout paint style;
+  contain:layout style;
+  overflow:visible;
 }
 .nav-inner{
   transform:translateZ(0);
@@ -1044,4 +1045,156 @@ button.is-pressed,
 }
 .settings-version{
   margin-top:var(--space-4);
+}
+
+
+/* FinanceOS 4.4.2 — FAB clipping fix */
+.nav,
+.nav-inner{
+  overflow:visible;
+}
+.nav .plus{
+  position:relative;
+  z-index:3;
+  clip-path:none;
+}
+
+
+/* FinanceOS 4.4.4 — contextual progress gradients */
+
+/*
+  Kredite:
+  Violett bleibt lange dominant.
+  Türkis erscheint erst im letzten Viertel.
+  Grün ist ausschließlich dem sehr hohen Fortschritt vorbehalten.
+*/
+.loan-row .slim-progress-fill,
+.loan-detail-row .slim-progress-fill,
+.loan-group .slim-progress-fill,
+.loan-detail-group .slim-progress-fill{
+  background:
+    linear-gradient(
+      90deg,
+      #6f42d9 0%,
+      #744ee6 38%,
+      #675ee8 62%,
+      #5577e4 78%,
+      #42a9ca 92%,
+      #4fc98b 100%
+    );
+}
+
+/*
+  Budgets:
+  Umgekehrte Semantik.
+  Grün signalisiert viel verfügbaren Spielraum.
+  Dunkellila erscheint erst sehr spät bei hoher Ausschöpfung.
+*/
+.budget-row .slim-progress-fill,
+.budget-group .slim-progress-fill{
+  background:
+    linear-gradient(
+      90deg,
+      #4fc98b 0%,
+      #4bc38f 38%,
+      #42b8aa 60%,
+      #3e9bc9 76%,
+      #4f70d9 89%,
+      #5230a8 100%
+    );
+}
+
+
+/* FinanceOS 4.4.5 — detailed loan cards */
+.loan-overview-list{
+  display:grid;
+  gap:var(--space-4);
+}
+.loan-overview-card{
+  padding:var(--space-4);
+}
+.loan-overview-head{
+  display:grid;
+  grid-template-columns:auto minmax(0,1fr) auto;
+  align-items:center;
+  gap:var(--space-3);
+}
+.loan-overview-icon{
+  width:40px;
+  height:40px;
+  display:grid;
+  place-items:center;
+  color:var(--color-accent);
+  background:var(--color-accent-soft);
+  border-radius:var(--radius-md);
+}
+.loan-overview-icon svg{
+  width:22px;
+  height:22px;
+}
+.loan-overview-title{
+  min-width:0;
+}
+.loan-overview-title h3{
+  margin:0;
+  font-size:var(--font-title);
+  font-weight:var(--weight-semibold);
+  letter-spacing:-.02em;
+}
+.loan-overview-title p{
+  margin:3px 0 0;
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.loan-overview-remaining{
+  display:flex;
+  flex-direction:column;
+  align-items:flex-end;
+  text-align:right;
+}
+.loan-overview-remaining span,
+.loan-overview-grid span{
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.loan-overview-remaining strong{
+  margin-top:2px;
+  font-size:var(--font-headline);
+}
+.loan-overview-grid{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:var(--space-3);
+  margin-top:var(--space-4);
+  padding-top:var(--space-3);
+  border-top:1px solid var(--color-divider);
+}
+.loan-overview-grid>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:3px;
+}
+.loan-overview-grid strong{
+  overflow:hidden;
+  font-size:var(--font-body);
+  text-overflow:ellipsis;
+  white-space:nowrap;
+}
+.loan-overview-progress{
+  margin-top:var(--space-4);
+}
+.loan-overview-progress .slim-progress{
+  height:4px;
+}
+@media(max-width:390px){
+  .loan-overview-head{
+    grid-template-columns:auto minmax(0,1fr);
+  }
+  .loan-overview-remaining{
+    grid-column:2;
+    align-items:flex-start;
+    margin-top:2px;
+    text-align:left;
+  }
 }

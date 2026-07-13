@@ -1,22 +1,19 @@
 {
-  "version": "4.8.0",
-  "source": "FinanceOS_4_7_CSV_Import.zip",
-  "feature": "Local PDF account statement import with Android share target",
+  "version": "4.8.1",
+  "source": "FinanceOS_4_8_PDF_Statements.zip",
+  "feature": "Bank-specific PDF parser registry",
   "limitations": [
-    "iOS Safari PWAs cannot register as system share targets",
-    "image-only PDFs require future OCR support",
-    "bank PDF layouts vary and require device testing"
+    "Sparkasse parser is heuristic until validated with a real anonymized statement",
+    "Image PDFs still require OCR"
   ],
   "checks": {
-    "version_4_8": true,
-    "pdfjs_vendored": true,
-    "pdf_parser": true,
-    "sparkasse_heuristics": true,
-    "android_share_target": true,
-    "share_post_handler": true,
-    "cache_deleted_after_consumption": true,
-    "pdf_memory_cleanup": true,
-    "iphone_truthful_flow": true
+    "version_4_8_1": true,
+    "parser_registry": true,
+    "sparkasse_parser": true,
+    "pdf_classification": true,
+    "ocr_detection": true,
+    "diagnostic_ui": true,
+    "parser_cached": true
   },
   "browser_device_tested": false
 }

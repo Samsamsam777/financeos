@@ -1,4 +1,4 @@
-const CACHE = "financeos-v4-8-pdf-statements";
+const CACHE = "financeos-v4-8-1-parser-system";
 const ASSETS = [
   "./",
   "./index.html",
@@ -11,6 +11,7 @@ const ASSETS = [
   "./vendor/pdfjs/pdf.mjs",
   "./src/share-target.js",
   "./src/pdf-import.js",
+  "./src/pdf-parsers.js",
   "./src/logic.js",
   "./src/motion.js",
   "./src/storage.js",

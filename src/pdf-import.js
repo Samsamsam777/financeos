@@ -1,5 +1,4 @@
 import * as pdfjsLib from "../vendor/pdfjs/pdf.mjs";
-import { normalizeMerchant, matchCategoryRule } from "./logic.js";
 
 pdfjsLib.GlobalWorkerOptions.workerSrc = "./vendor/pdfjs/pdf.worker.mjs";
 
@@ -81,72 +80,6 @@ export async function extractPDFLines(file) {
   }
 
   return pages;
-}
-
-export function parseStatementPages({ pages, accountId, data, makeId }) {
-  const existingKeys = new Set(
-    (data.transactions ?? []).map(item =>
-      [item.accountId, item.date, Number(item.amount).toFixed(2), String(item.description).toUpperCase()].join("|")
-    )
-  );
-
-  const parsed = [];
-
-  for (const page of pages) {
-    for (const line of page.lines) {
-      const date = isoDate(line);
-      const amounts = [...line.matchAll(AMOUNT_PATTERN)].map(match => ({
-        raw: match[1],
-        value: amountNumber(match[1])
-      }));
-
-      if (!date || !amounts.length) continue;
-
-      const lastAmount = amounts.at(-1)?.value ?? 0;
-      if (!Number.isFinite(lastAmount) || lastAmount === 0) continue;
-
-      const rawDescription = cleanDescription(line);
-      if (!rawDescription || rawDescription.length < 2) continue;
-
-      const merchant = normalizeMerchant(rawDescription);
-      const match = matchCategoryRule(data, rawDescription);
-      const fallback = data.categories.find(item => item.name === "Später zuordnen")?.id ?? "";
-      const categoryId = match.categoryId || fallback;
-      const type = lastAmount < 0 ? "expense" : "income";
-      const amount = Math.abs(lastAmount);
-      const description = merchant.canonical || rawDescription;
-
-      const duplicateKey = [
-        accountId,
-        date,
-        amount.toFixed(2),
-        description.toUpperCase()
-      ].join("|");
-
-      parsed.push({
-        id: makeId(),
-        createdAt: Date.now() + parsed.length,
-        pageNumber: page.pageNumber,
-        date,
-        type,
-        amount,
-        description,
-        originalDescription: rawDescription,
-        merchantKey: merchant.key,
-        accountId,
-        categoryId,
-        person: data.settings.people?.[0] ?? "Gemeinsam",
-        status: data.categories.find(item => item.id === categoryId)?.name === "Später zuordnen"
-          ? "pending"
-          : "done",
-        duplicate: existingKeys.has(duplicateKey),
-        selected: !existingKeys.has(duplicateKey),
-        recognized: match.matched
-      });
-    }
-  }
-
-  return parsed;
 }
 
 export async function clearPDFResources(file) {

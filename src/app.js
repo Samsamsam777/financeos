@@ -9,7 +9,8 @@ import {
 import { closeSheet, esc, field, showSheet } from "./ui.js";
 import { createViews } from "./views.js";
 import { buildImportPreview, detectColumns, parseCSV } from "./import.js";
-import { clearPDFResources, extractPDFLines, parseStatementPages } from "./pdf-import.js";
+import { clearPDFResources, extractPDFLines } from "./pdf-import.js";
+import { parseWithRegistry } from "./pdf-parsers.js";
 import { consumeSharedPDF } from "./share-target.js";
 import { initPWA, installState, requestInstall } from "./pwa.js";
 
@@ -230,30 +231,45 @@ async function processPDFStatement(file) {
   workspace.innerHTML = `
     <div class="card pdf-processing">
       <span class="pdf-spinner" aria-hidden="true"></span>
-      <div><strong>Kontoauszug wird analysiert</strong><p>Text und Buchungszeilen werden lokal verarbeitet.</p></div>
+      <div><strong>Kontoauszug wird analysiert</strong><p>PDF-Typ, Bank und Buchungsstruktur werden lokal erkannt.</p></div>
     </div>
   `;
 
   try {
     const pages = await extractPDFLines(file);
-    activePDFItems = parseStatementPages({
+    const result = parseWithRegistry({
       pages,
       accountId,
       data,
       makeId
     });
 
+    activePDFItems = result.items;
+
     pages.forEach(page => page.lines.splice(0));
     pages.splice(0);
 
-    renderPDFPreview(activePDFItems, file.name);
+    if (result.requiresOCR) {
+      workspace.innerHTML = `
+        <div class="card pdf-diagnostic-card">
+          <div class="pdf-diagnostic-head">
+            <strong>Bildbasiertes PDF erkannt</strong>
+            <span class="diagnostic-badge">OCR erforderlich</span>
+          </div>
+          <p>Dieser Kontoauszug enthält keinen ausreichend auslesbaren Text. FinanceOS benötigt dafür den kommenden OCR-Importer.</p>
+        </div>
+      `;
+      return;
+    }
+
+    renderPDFPreview(activePDFItems, file.name, result);
   } catch (error) {
     console.error(error);
     haptic("error");
     workspace.innerHTML = `
       <div class="card empty-state">
         <strong>PDF konnte nicht gelesen werden</strong>
-        <p>Manche Kontoauszüge enthalten nur Bilder oder ein unbekanntes Tabellenformat. Ein OCR-Import folgt als nächster Schritt.</p>
+        <p>Das Format ist möglicherweise geschützt, bildbasiert oder verwendet ein unbekanntes Layout.</p>
       </div>
     `;
   } finally {
@@ -264,7 +280,7 @@ async function processPDFStatement(file) {
   }
 }
 
-function renderPDFPreview(items, fileName) {
+function renderPDFPreview(items, fileName, result) {
   const workspace = document.querySelector("#pdfImportWorkspace");
   if (!workspace) return;
 
@@ -272,7 +288,23 @@ function renderPDFPreview(items, fileName) {
   const pending = items.filter(item => item.status === "pending" && !item.duplicate);
   const selected = items.filter(item => item.selected);
 
+  const bankLabels = {
+    sparkasse: "Sparkasse",
+    ing: "ING",
+    dkb: "DKB",
+    n26: "N26",
+    unknown: "Nicht erkannt"
+  };
+
   workspace.innerHTML = `
+    <div class="card pdf-diagnostic-card">
+      <div class="pdf-diagnostic-grid">
+        <div><span>Bank</span><strong>${bankLabels[result.diagnostic.bank] ?? "Nicht erkannt"}</strong></div>
+        <div><span>PDF-Typ</span><strong>${result.diagnostic.pdfType === "table" ? "Tabelle" : "Text"}</strong></div>
+        <div><span>Parser</span><strong>${esc(result.parser?.label ?? "Keiner")}</strong></div>
+      </div>
+    </div>
+
     <div class="import-summary-grid">
       <div class="card"><span>Neue Buchungen</span><strong>${selected.length}</strong></div>
       <div class="card"><span>Zu prüfen</span><strong>${pending.length}</strong></div>

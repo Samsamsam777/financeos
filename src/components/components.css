@@ -1747,3 +1747,55 @@ button.is-pressed,
   animation:pdf-spin .8s linear infinite;
 }
 @keyframes pdf-spin{to{transform:rotate(360deg)}}
+
+
+/* FinanceOS 4.8.1 — PDF parser diagnostics */
+.pdf-diagnostic-card{
+  padding:var(--space-4);
+}
+.pdf-diagnostic-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:var(--space-3);
+}
+.pdf-diagnostic-grid>div{
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  gap:4px;
+}
+.pdf-diagnostic-grid span{
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+}
+.pdf-diagnostic-grid strong{
+  overflow:hidden;
+  text-overflow:ellipsis;
+  white-space:nowrap;
+  font-size:var(--font-headline);
+}
+.pdf-diagnostic-head{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:var(--space-3);
+}
+.pdf-diagnostic-card p{
+  margin:10px 0 0;
+  color:var(--color-text-2);
+  font-size:var(--font-caption);
+  line-height:1.5;
+}
+.diagnostic-badge{
+  padding:5px 8px;
+  border-radius:999px;
+  color:var(--color-warning);
+  background:rgba(245,197,66,.12);
+  font-size:var(--font-micro);
+  font-weight:var(--weight-semibold);
+}
+@media(max-width:390px){
+  .pdf-diagnostic-grid{
+    grid-template-columns:1fr;
+  }
+}

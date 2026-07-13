@@ -324,3 +324,8 @@
 #pdfImportWorkspace{
   margin-top:var(--space-3);
 }
+
+
+.pdf-diagnostic-card + .import-summary-grid{
+  margin-top:var(--space-3);
+}

@@ -168,3 +168,12 @@ FinanceOS 4.8 PDF Statements:
 - Sparkassen-typische Datums- und Betragszeilen erkennen
 - Importvorschau, Kategorien und Duplikate
 - PDF-Bytes, Seiten und Textzeilen nach Verarbeitung freigeben
+
+
+FinanceOS 4.8.1 Parser System:
+- automatische Erkennung von Text-, Tabellen- und Bild-PDFs
+- Parser-Registry statt Universalparser
+- Sparkassen-Parser mit typischen Layoutmustern
+- generischer Tabellen- und Text-Fallback
+- Diagnoseansicht mit Bank, PDF-Typ und verwendetem Parser
+- klare OCR-Rückmeldung bei bildbasierten PDFs

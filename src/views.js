@@ -528,15 +528,88 @@ export function createViews(context) {
 
 
   function accounts() {
+    const rows = data().accounts.map(item => `
+      <button class="account-row" data-account-open="${item.id}">
+        <span class="account-row-icon">${icons.wallet}</span>
+        <span class="account-row-copy">
+          <strong>${esc(item.name)}</strong>
+          <small>${esc(item.type)}</small>
+        </span>
+        <span class="account-row-balance">${euro(accountBalance(data(), item.id))}</span>
+        <span class="row-chevron">${icons.chevron}</span>
+      </button>
+    `).join("");
+
     return `
-      <div class="section-title"><h2 class="page-heading">Konten</h2></div>
-      <div class="card page-list">
-        ${data().accounts.map(item => `
-          <div class="page-row">
-            <div><strong>${esc(item.name)}</strong><div class="meta">${esc(item.type)}</div></div>
-            <strong>${euro(accountBalance(data(), item.id))}</strong>
-          </div>
-        `).join("")}
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">Konten</h2>
+      </div>
+      <div class="card account-list">
+        ${rows || '<div class="empty">Keine Konten vorhanden</div>'}
+      </div>
+    `;
+  }
+
+  function accountDetail(accountId) {
+    const currentAccount = account(accountId);
+    if (!currentAccount) {
+      return `
+        <div class="page-header">
+          <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+          <h2 class="page-heading">Konto</h2>
+        </div>
+        <div class="card empty">Konto nicht gefunden</div>
+      `;
+    }
+
+    const items = sortNewest(
+      data().transactions.filter(item => item.accountId === currentAccount.id)
+    );
+    const incomeTotal = items
+      .filter(item => item.type === "income")
+      .reduce((sum, item) => sum + Number(item.amount), 0);
+    const expenseTotal = items
+      .filter(item => item.type === "expense")
+      .reduce((sum, item) => sum + Number(item.amount), 0);
+    const balance = accountBalance(data(), currentAccount.id);
+
+    return `
+      <div class="page-header">
+        <button class="back-button" data-back aria-label="Zurück">${icons.back}</button>
+        <h2 class="page-heading">${esc(currentAccount.name)}</h2>
+      </div>
+
+      <section class="card account-detail-hero">
+        <div class="account-detail-icon">${icons.wallet}</div>
+        <div class="account-detail-copy">
+          <span>${esc(currentAccount.type)}</span>
+          <strong class="${balance > 0 ? "positive" : balance < 0 ? "negative" : ""}">${euro(balance)}</strong>
+          <small>Aktueller Kontostand</small>
+        </div>
+      </section>
+
+      <section class="card account-detail-summary">
+        <div>
+          <span>Einnahmen</span>
+          <strong class="positive">${euro(incomeTotal)}</strong>
+        </div>
+        <div class="account-detail-divider"></div>
+        <div>
+          <span>Ausgaben</span>
+          <strong class="negative">${euro(expenseTotal)}</strong>
+        </div>
+      </section>
+
+      <div class="section-title">
+        <h2 class="section-heading">Buchungen</h2>
+        <span class="section-context">${items.length}</span>
+      </div>
+
+      <div class="card transaction-list account-transaction-list">
+        ${items.length
+          ? items.map(item => transactionRow(item, true)).join("")
+          : '<div class="empty">Noch keine Buchungen auf diesem Konto</div>'}
       </div>
     `;
   }
@@ -572,6 +645,6 @@ export function createViews(context) {
   return {
     dashboard, transactions, addTransaction, pending, budgets,
     loans, more, manage, dashboardSettings, settings,
-    accounts, income, expenses, addTransactionSheet, transactionRow
+    accounts, accountDetail, income, expenses, addTransactionSheet, transactionRow
   };
 }

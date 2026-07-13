@@ -1,7 +1,16 @@
 {
-  "version": "4.5.1",
-  "source": "FinanceOS_4_4_8_Final_System_Polish.zip",
-  "syntax_checked": 11,
-  "logic_smoke_test": true,
+  "version": "4.6.0",
+  "source": "financeos_4_6_accounts_work",
+  "feature": "Account detail pages with filtered transactions",
+  "javascript_files_checked": 11,
+  "checks": {
+    "version_4_6": true,
+    "account_detail_view": true,
+    "account_navigation": true,
+    "account_route": true,
+    "account_filter": true,
+    "income_expense_summary": true,
+    "back_button": true
+  },
   "browser_device_tested": false
 }

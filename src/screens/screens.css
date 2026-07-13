@@ -303,3 +303,9 @@
 .page-header{
   align-items:center;
 }
+
+
+/* FinanceOS 4.6 — account transaction spacing */
+.account-transaction-list .transaction-row{
+  min-height:60px;
+}

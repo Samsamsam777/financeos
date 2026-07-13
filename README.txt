@@ -142,3 +142,11 @@ FinanceOS 4.4.8 Final System Polish:
 - standardisierte Leer- und Offline-Zustände
 - einheitliche Press-, Fokus- und Kontrastregeln
 - ruhige Privatsphärenkommunikation in Einstellungen
+
+
+FinanceOS 4.6 Account Details:
+- eigene Kontenübersicht mit antippbaren Konten
+- separate Detailseite pro Konto
+- aktueller Kontostand, Einnahmen und Ausgaben direkt sichtbar
+- vollständige Buchungsliste pro Konto
+- Buchungen bleiben direkt bearbeitbar

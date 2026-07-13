@@ -15,6 +15,7 @@ let view = "dashboard";
 const viewHistory = [];
 let filters = { query: "", account: "", category: "", person: "", sort: "newest" };
 let pwaState = installState();
+let selectedAccountId = null;
 const rootTabs = new Set(["dashboard", "transactions", "budgets", "more"]);
 let shellInitialized = false;
 
@@ -137,6 +138,7 @@ function render() {
     "dashboard-settings": views.dashboardSettings,
     settings: views.settings,
     accounts: views.accounts,
+    "account-detail": () => views.accountDetail(selectedAccountId),
     income: views.income,
     expenses: views.expenses
   }[view]?.() ?? views.more();
@@ -186,6 +188,7 @@ function bindView() {
   if (view === "manage") bindManage();
   if (view === "dashboard-settings") bindDashboardSettings();
   if (view === "settings") bindSettings();
+  if (view === "accounts") bindAccounts();
 
   document.querySelectorAll("[data-install-app]").forEach(button => {
     button.onclick = async () => {
@@ -194,6 +197,15 @@ function bindView() {
       });
       if (result.status === "accepted") showToast("FinanceOS wird installiert", "success");
       if (result.status === "unavailable") showInstallInstructions();
+    };
+  });
+}
+
+function bindAccounts() {
+  document.querySelectorAll("[data-account-open]").forEach(button => {
+    button.onclick = () => {
+      selectedAccountId = button.dataset.accountOpen;
+      navigate("account-detail");
     };
   });
 }

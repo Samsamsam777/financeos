@@ -1,6 +1,10 @@
+> Legacy reference. Verbindliche Designregeln stehen in
+> `docs/04_DESIGN_GUIDE.md`; die Implementierung liegt in
+> `src/design/tokens.css`.
+
 # FinanceOS Design Tokens
 
-All visual decisions should use the tokens in `src/styles.css`.
+All visual decisions should use the tokens in `src/design/tokens.css`.
 
 ## Color tokens
 - `--color-bg`

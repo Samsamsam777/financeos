@@ -1,3 +1,5 @@
+> Legacy reference. Die verbindliche Roadmap steht in `docs/08_ROADMAP.md`.
+
 # FinanceOS Roadmap
 
 ## Phase 1 — Vision

@@ -1,0 +1,16 @@
+{
+  "name": "financeos",
+  "version": "4.9.3",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "build": "npm run check && npm run build:artifact",
+    "build:artifact": "node scripts/build.mjs",
+    "check": "npm run check:syntax && npm test",
+    "check:syntax": "node scripts/check-syntax.mjs",
+    "test": "node --test tests/*.test.js"
+  }
+}

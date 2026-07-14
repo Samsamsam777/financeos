@@ -90,6 +90,53 @@ Die Gates werden erst zu Release-Gates, wenn Ablauf, Testdaten, Referenzgerät
 und Messmethode dokumentiert sind. Bis dahin sind sie verbindliche
 Entwicklungsziele, keine bestandenen Produktversprechen.
 
+## D-011-Domänen- und Migrationsgates
+
+D-011 beschreibt einen Zielvertrag und ist im aktuellen App-Code noch nicht
+umgesetzt. Jede spätere Implementierung muss vor Merge mindestens nachweisen:
+
+- Geldwerte bleiben über Laden, Speichern, Rechnen, Export und Restore exakte
+  Integer-Minor-Units.
+- Einnahmen, Ausgaben, Splits, Umbuchungen, Erstattungen, Kreditzahlungen,
+  Anfangsbestände, Korrekturen und Bewertungen erfüllen ihre Invarianten.
+- offene Kategoriezuordnungen behalten ihre vollständige Finanzwirkung.
+- `posted`, `pending`, `voided` sowie Prüf- und Zuordnungsstatus beeinflussen
+  Berechnungen ausschließlich gemäß Vertrag.
+- Realität, Erwartung und Szenario verändern sich nicht gegenseitig.
+- Import-Commit und Rollback sind atomar; Abbrüche erzeugen keine Teildaten.
+- rückdatierte Änderungen markieren betroffene Kontenabgleiche als veraltet.
+- jede wichtige Kennzahl liefert Formelversion, Komponenten, Ausschlüsse,
+  Annahmen und Vertrauensevidenz.
+- Delta-Beiträge summieren sich exakt zur erklärten Veränderung.
+- mehrere Währungen werden ohne dokumentierte Umrechnung nicht aggregiert.
+- der read-only Integritätscheck erkennt Fehler, verändert aber keine Daten.
+
+### Golden Datasets
+
+Die Referenzdatensätze aus `18_DOMAIN_MODEL.md` werden versioniert und enthalten
+für jede Formel erwartete Minor-Unit-Werte, Komponenten, Ausschlüsse und
+Vertrauensbefunde. Sie werden unverändert gegen Web, iOS und Android ausgeführt.
+Plattformabweichungen sind Blocker und dürfen nicht als Rundungsunterschied
+akzeptiert werden.
+
+### Migrationstest
+
+Jede Schemamigration wird mindestens mit folgenden Fällen getestet:
+
+1. gültiger produktiver Ausgangsstand,
+2. leere und minimale Datensätze,
+3. große realistische Datensätze,
+4. bekannte historische Sonder- und Fehlerfälle,
+5. Abbruch in jedem Migrationsschritt,
+6. vollständiger Rollback,
+7. Export-/Restore-Roundtrip vor und nach Migration,
+8. verständlicher Bericht für Rundungen und Mehrdeutigkeiten.
+
+Eine Migration gilt nur als bestanden, wenn Sicherung, sequenzielle Schritte,
+Zielvalidierung, Integritätscheck und Berechnungsreproduzierbarkeit erfolgreich
+sind. Mehrdeutige Umbuchungen werden nicht als korrekt migriert behauptet,
+wenn keine Nutzerentscheidung vorliegt.
+
 ## Bug-Regel
 
 Jeder behobene Fehler erhält einen Regressionstest auf der niedrigsten
@@ -112,6 +159,9 @@ Automatisierung in den Backlog aufgenommen.
 | native Kernabläufe auf realem Gerät | bei Auswirkung | ja |
 | unbeabsichtigte Laufzeit-Netzwerkzugriffe | bei Plattform-/Importauswirkung | ja |
 | D-010-Kernabläufe und Erklärbarkeit | bei UX-/Produktänderung | ja |
+| D-011-Golden-Datasets und Invarianten | bei Daten-/Berechnungsänderung | ja |
+| Migrations- und Rollbackmatrix | bei Schemaänderung | ja |
+| Berechnungsparität Web/iOS/Android | bei Domänenänderung | ja |
 | Export-/Restore-Roundtrip auf sauberem Gerät | bei Daten-/Backupauswirkung | ja |
 
 ## Testnachweis

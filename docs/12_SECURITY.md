@@ -27,6 +27,29 @@ importiert oder einen Export an einen selbst gewählten Speicherort übergibt.
     wesentliche Finanzdaten erst nach bewusster Bestätigung.
 13. Datenstand, Herkunft und Unsicherheit dürfen sicherheitsrelevante oder
     finanzielle Scheingenauigkeit nicht verdecken.
+14. Logs, Telemetrie und Crashberichte enthalten keine vollständigen
+    Finanzereignisse, Salden, Importzeilen oder Rohdateien.
+15. Herkunft, Operationen und Kontenabgleiche werden nur in dem Umfang
+    gespeichert, der für lokale Erklärbarkeit, Undo und Integrität notwendig
+    ist.
+16. Ein vollständiger D-011-Export behandelt den gesamten referenzierten
+    Datengraphen als sensible Finanzinformation.
+
+## Datenschutzgrenzen des D-011-Zielmodells
+
+D-011 erweitert den fachlichen Nachweis, nicht den Kreis zulässiger Empfänger.
+Finanzereignisse, Kontoeffekte, Kategorieauswirkungen, Erwartungen, Szenarien,
+Importnachweise, Abgleiche und Operationsprotokoll verbleiben unter denselben
+Local-first-Grenzen wie alle anderen Finanzdaten.
+
+Diagnoseausgaben verwenden technische IDs, Fehlerklassen und minimierte
+Strukturinformationen. Rohimporte werden ohne fachlich und zeitlich begründete
+Notwendigkeit nicht dauerhaft gespeichert. Ein Supportexport benötigt eine
+bewusste Auswahl und Vorschau; er ist kein versteckter Telemetriekanal.
+
+Das begrenzte Operationsprotokoll darf nicht zu einem unbegrenzten Schatten-
+Auditlog anwachsen. Aufbewahrung, Komprimierung und sichere Löschung werden vor
+seiner Implementierung im Bedrohungsmodell festgelegt.
 
 ## Export- und Cloud-Grenze
 
@@ -101,6 +124,8 @@ bleibt davon unberührt und ist keine Synchronisationsfreigabe.
 - systematische Prüfung aller dynamischen HTML-Ausgaben
 - Content-Security-Policy unter Berücksichtigung von PDF.js, Tesseract und WASM
 - Restore-Validierung und Größenlimits für Backups
+- Bedrohungsmodell für den vollständigen D-011-Datengraphen und das begrenzte
+  Operationsprotokoll
 - dokumentierter Updateprozess für lokal eingebettete Drittanbieter
 - Prüfung des Service-Worker-Cache auf unnötige sensible oder optionale Daten
 

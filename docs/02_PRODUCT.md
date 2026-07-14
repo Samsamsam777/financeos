@@ -194,6 +194,39 @@ mögliche Duplikate und Überschreibungen werden niemals still übernommen.
 FinanceOS verspricht nicht, jedes existierende Bank- oder Brokerformat zu
 unterstützen.
 
+## Fachliche Verlässlichkeit nach D-011
+
+FinanceOS behandelt einen finanziellen Vorgang als zusammengehörendes Ereignis.
+Dadurch bleiben Umbuchungen, Aufteilungen, Erstattungen, Kreditzahlungen und
+Korrekturen auch dann verständlich, wenn mehrere Konten oder Kategorien
+betroffen sind.
+
+Für Nutzer gelten daraus folgende Produktzusagen als Zielstandard:
+
+- Eine schnelle Erfassung darf finanziell vollständig sein, auch wenn die
+  Kategorie noch offen bleibt.
+- Realität, erwartete Vorgänge und Was-wäre-wenn-Szenarien werden sichtbar
+  getrennt und niemals still zusammengerechnet.
+- Bestätigte Salden entstehen ausschließlich aus nachvollziehbaren
+  Kontowirkungen; Anfangsbestände und Korrekturen bleiben sichtbar.
+- Wichtige Kennzahlen führen von der Zahl über ihre Treiber und Bestandteile
+  bis zu den zugrunde liegenden Ereignissen und Quellen.
+- Vertrauen wird mit konkreten Nachweisen wie Datenstand, Kontenabgleich,
+  offenen Zuordnungen, Lücken und Annahmen begründet, nicht mit einem
+  undurchsichtigen Gesamtscore.
+- Import, Korrektur und Undo sind atomar. Ein Abbruch oder Rollback hinterlässt
+  keine teilweise wirksamen Finanzdaten.
+- Verschiedene Währungen werden ohne nachvollziehbare Umrechnung nicht still
+  addiert.
+
+Budgets bleiben von Kategorien und Konten getrennte Planungsobjekte. FinanceOS
+erzwingt weder eine bestimmte Budgetmethode noch vollständige Kategorisierung,
+bevor ein sinnvoller Überblick möglich ist.
+
+Der normative Zielvertrag und die exakten Formeln stehen in
+`18_DOMAIN_MODEL.md`. Diese Regeln beschreiben den Zielzustand und sind noch
+keine Aussage über die aktuelle Implementierung.
+
 ## Harte Nicht-Ziele
 
 FinanceOS bietet dauerhaft keine:
@@ -279,6 +312,10 @@ Code aber vorübergehend deaktiviert. Diese Abweichung wird in Sprint 0 geklärt
 Der aktuelle Code erfüllt D-010 noch nicht vollständig. D-010 ist Zielstandard
 und Priorisierungsgrundlage, keine Behauptung über den bereits implementierten
 Funktionsumfang.
+
+Das aktuelle Daten- und Berechnungsmodell erfüllt auch D-011 noch nicht. Seine
+Einführung benötigt versionierte Migrationen, Golden Datasets und eine
+gesondert freigegebene inkrementelle Umsetzung.
 
 ## Nicht-Ziele für Sprint 0
 

@@ -194,3 +194,74 @@ Datenschutz- und Datenhoheitsgrenzen werden nicht stillschweigend geändert.
 - Roadmap und Backlog führen Validierung vor breiter Feature-Entwicklung.
 - D-010 genehmigt noch kein neues Endnutzer-Feature und ändert nicht den
   Sprint-0-Feature-Freeze.
+
+## D-011 — Hybrides Finanzereignismodell und versionierter Berechnungskanon
+
+- Datum: 2026-07-15
+- Status: angenommen
+- Fassung: Version 2 einschließlich Vertrauens- und Wettbewerbsvorsprung
+
+### Problem
+
+FinanceOS benötigt vor der Umsetzung weiterer Finanzfunktionen einen
+eindeutigen Vertrag für Geldwerte, Konten, Finanzvorgänge, Planung,
+Berechnungen, Herkunft, Korrekturen und Migrationen. Das bisherige implizite
+Datenmodell kann Umbuchungen, Splits, Erstattungen, Kredite, offene
+Zuordnungen, Erwartungen und erklärbare Kennzahlen nicht dauerhaft mit der
+notwendigen Eindeutigkeit absichern.
+
+### Entscheidung
+
+FinanceOS verwendet als Zielmodell ein **hybrides ereignisbasiertes
+Finanzmodell**. Ein `FinancialEvent` bildet einen fachlich zusammengehörenden
+Vorgang ab und trennt Kontoeffekte von Analysewirkungen. Das Modell ist
+präziser als eine flache Buchungsliste, ohne eine vollständige doppelte
+Buchführung einzuführen.
+
+Verbindlich sind insbesondere:
+
+- versionierte Datensatzwurzel, stabile IDs und referenzsichere Archivierung,
+- Geld als Integer-Minor-Units mit Währung, niemals als binärer Float,
+- einheitliche Nettovermögensvorzeichen für Vermögen und Verbindlichkeiten,
+- explizite Ereignisse für Einkommen, Ausgaben, Umbuchungen, Erstattungen,
+  Kreditzahlungen, Anfangsbestände, Korrekturen und Bewertungen,
+- prüfbare Invarianten zwischen Konto- und Kategorieauswirkungen,
+- offene Kategoriezuordnung als gültiger Zustand ohne Verlust der
+  Finanzwirkung,
+- getrennte Status für Buchungswirkung, Prüfbedarf und Zuordnung,
+- strikte Trennung von Realität, Erwartung und Szenario,
+- atomare Importe mit Dublettenklassen, Herkunft und vollständigem Rollback,
+- atomare Operationen, Undo und nachvollziehbares Void statt spurloser
+  Löschung,
+- Kontenabgleich als eigenständiger Nachweis mit Veraltungsregel,
+- konkrete Vertrauensevidenz je Kennzahl statt eines erfundenen Scores,
+- versionierte Formeln und den Erklärungspfad von Kennzahl über Treiber und
+  Ereignisse bis zur Quelle,
+- deterministische Berechnungen, Golden Datasets, Integritätsprüfung und
+  sequenzielle, rückrollbare Migrationen,
+- vollständige Datenportabilität über einen versionierten JSON-Datengraphen.
+
+Der vollständige normative Vertrag einschließlich Berechnungskanon steht in
+`18_DOMAIN_MODEL.md`.
+
+### Abgelehnte Alternativen
+
+- eine flache Sammlung unabhängiger Buchungen ohne Ereigniszusammenhang,
+- vollständige doppelte Buchführung als Nutzer- und Domänenmodell,
+- unbegrenztes Event Sourcing als Persistenzgrundlage,
+- erzwungene Sofortkategorisierung,
+- stille Kategorisierung, Korrektur, Währungsaddition oder Regelbildung,
+- vermischte Ist-, Plan- und Szenariowerte,
+- nicht belegbare Gesamtwerte für Datenvertrauen.
+
+### Konsequenzen
+
+- `18_DOMAIN_MODEL.md` ist der fachliche Detailvertrag für Schema und
+  Berechnungen.
+- `03_ARCHITECTURE.md` trennt aktuellen Legacy-Stand und D-011-Zielmodell.
+- `10_GLOSSARY.md` verwendet die neuen Begriffe verbindlich.
+- Tests und Migrationen müssen die Invarianten vor jeder Umsetzung absichern.
+- Der aktuelle App-Code wird durch diese Dokumentationsentscheidung nicht
+  verändert und erfüllt D-011 noch nicht.
+- D-011 genehmigt weder einen Big-Bang-Umbau noch neue Endnutzerfeatures.
+  Umsetzungspakete benötigen weiterhin Sprint-Scope und D-008-Freigabe.

@@ -22,13 +22,16 @@
 - Wettbewerbsanalyse als Research-Grundlage aufgenommen
 - Produktpositionierung, Kernzielgruppe und harte Nicht-Ziele mit D-010
   Version 3 freigegeben
+- fachliches Finanzereignismodell und Berechnungskanon mit D-011 Version 2
+  freigegeben
 
 ### Offene Sprint-0-Arbeit
 
 - erster GitHub-Actions-Lauf nach Push
 - Architekturentscheidung für Screenshot-Import und Share Target
 - Architekturentscheidung für App-Shell und optionalen OCR-Cache
-- explizite Daten-Schema-Version und Migrationstests
+- aktuelles `financeos_v01`-Format als Ausgangsschema dokumentieren
+- konkrete D-011-Schema- und Migrationsentscheidung mit Golden Datasets
 - Capacitor-Foundation für iOS und Android als technischer Machbarkeitstest
 - Web- und Capacitor-Adaptergrenzen für Plattformfunktionen definieren
 - native Persistenz- und Verschlüsselungslösung bewerten
@@ -55,6 +58,14 @@ Bedienannahmen sind jedoch noch nicht mit realen Nutzern validiert.
 
 ## Priorität P1 — Architektur
 
+- versionierte Datensatzwurzel und Laufzeitverträge aus D-011 spezifizieren
+- Money-, Account-, FinancialEvent- und Status-Primitiven isoliert modellieren
+- Formelregister und standardisiertes Berechnungsergebnis spezifizieren
+- Golden Datasets für Invarianten, Berechnungen und Plattformparität erstellen
+- read-only Integritätscheck definieren
+- sequenzielle Migration mit Sicherung, Bericht und Rollback entwerfen
+- atomare Operationen, Void und begrenztes Undo-Protokoll spezifizieren
+- Kontenabgleich und Veraltungsregeln spezifizieren
 - App-Orchestrierung aus `src/app.js` schrittweise extrahieren
 - Views in fachliche Screen-Module aufteilen
 - Importentwurf als gemeinsames Domänenmodell definieren
@@ -67,6 +78,10 @@ Bedienannahmen sind jedoch noch nicht mit realen Nutzern validiert.
 - FinanceOS Check-in als Ende-zu-Ende-Nutzerablauf definieren
 - Statusmodell für manuell, importiert, bestätigt, geschätzt und geplant festlegen
 - standardisierte „So berechnet“-Ansicht für wichtige Kennzahlen spezifizieren
+- offenen Zuordnungszustand und Review-Ablauf ohne Zwangskategorisierung testen
+- Vertrauensevidenz je Kennzahl und Kontenabgleich prototypisch validieren
+- Realität, Erwartung und Szenario in Sprache und Darstellung testen
+- Planwert als „geplanter Restbetrag“ mit Horizont und Annahmen validieren
 - kontrollierte lokale Vorschläge mit Vorschau, Erklärung und Undo definieren
 - Quick Entry mit wenigen Pflichtfeldern und sicheren lokalen Standardwerten
   spezifizieren
@@ -79,3 +94,6 @@ Bedienannahmen sind jedoch noch nicht mit realen Nutzern validiert.
 Nicht freigegeben sind Mehrbenutzersynchronisation, automatische Cloud-Backups,
 Bank- oder Brokerverbindungen sowie weitere Endnutzerfeatures außerhalb eines
 separat genehmigten Sprints.
+
+Die D-011-Arbeitspakete sind Ziel- und Nachweisplanung. Sie genehmigen weder
+eine Datenmigration noch einen Big-Bang-Umbau im laufenden Sprint 0.

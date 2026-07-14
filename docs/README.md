@@ -9,7 +9,8 @@ Bei Widersprüchen gilt folgende Reihenfolge:
 1. `00_PROJECT_WORKFLOW.md` und `01_AI_CONTEXT.md`
 2. `02_PRODUCT.md`
 3. `03_ARCHITECTURE.md`, `12_SECURITY.md`, `14_PERFORMANCE.md` und
-   `18_DOMAIN_MODEL.md`
+   `18_DOMAIN_MODEL.md`; `19_LEGACY_SCHEMA_V01.md` beschreibt dazu den
+   geprüften, nicht normativen Ist-Zustand vorhandener Daten
 4. `04_DESIGN_GUIDE.md`
 5. `05_ENGINEERING.md`, `11_NAMING_CONVENTIONS.md`, `13_TESTING.md` und
    `15_RELEASE_PROCESS.md`
@@ -51,3 +52,5 @@ geklärt.
   Research-Grundlage für freizugebende Produktentscheidungen
 - `18_DOMAIN_MODEL.md` – normativer D-011-Zielvertrag für Finanzereignisse,
   Datenintegrität, Migration, Berechnungen und Erklärbarkeit
+- `19_LEGACY_SCHEMA_V01.md` – geprüfte Ist-Dokumentation des bestehenden
+  `financeos_v01`-Datensatzes und Migrationsinventar ohne Codefreigabe

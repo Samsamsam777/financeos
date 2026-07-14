@@ -21,6 +21,8 @@ App-Shell und lokale Drittanbieter-Assets offline bereit.
 Die aktuelle Struktur ist ein Legacy-Ausgangszustand: Sie besitzt keine
 explizite Schemaversion und implementiert das in D-011 angenommene
 Finanzereignismodell, Formelregister und Integritätsmodell noch nicht.
+Felder, Schreibpfade, Berechnungssemantik sowie Backup- und Restore-Verhalten
+dieses Zustands sind in `19_LEGACY_SCHEMA_V01.md` geprüft dokumentiert.
 
 ## Zielsystem
 
@@ -118,10 +120,10 @@ wegformatieren.
 ### Migrationsgrenze
 
 Das bestehende `financeos_v01`-Format wird nicht direkt überschrieben. Vor
-einer Umsetzung werden sein Ausgangsschema, eine vollständige Sicherung,
-sequenzielle Migrationsschritte, Golden Datasets, Zielvalidierung und Rollback
-definiert. Mehrdeutige Umbuchungen oder Rundungen werden berichtet und nicht
-geraten.
+einer Umsetzung werden auf Basis des dokumentierten Ausgangsschemas eine
+vollständige Sicherung, sequenzielle Migrationsschritte, Golden Datasets,
+Zielvalidierung und Rollback definiert. Mehrdeutige Umbuchungen oder Rundungen
+werden berichtet und nicht geraten.
 
 ## Bekannte Architektur-Risiken
 
@@ -140,7 +142,7 @@ geraten.
 | A-01 | Produkt- und Modulvertrag des Screenshot-Imports widersprechen sich | hoch | Route und UI sind vorhanden; `src/screenshot-import.js` ist deaktiviert | sauber deaktivieren oder als isolierten OCR-Adapter neu integrieren |
 | A-02 | Share-Target-Vertrag ist inkonsistent | hoch | Manifest akzeptiert PDF und Bilder; Service Worker verarbeitet ausschließlich PDF | unterstützte Dateitypen zwischen Manifest, Handler und Importdomäne vereinheitlichen |
 | A-03 | optionale OCR-Ressourcen liegen im Installations-Precache | hoch | Build 49,75 MiB; Tesseract-Sprachen und WASM werden beim Install vorgeladen | App-Shell- und Feature-Caches mit Offline-Vertrag trennen |
-| A-04 | gespeicherte Daten besitzen keine explizite Schema-Version | hoch | stabiler Storage-Key, aber nur implizite Migration in `src/storage.js` | versioniertes Schema und Migrationstests definieren |
+| A-04 | gespeicherte Daten besitzen keine explizite Schema-Version | hoch | Ist-Vertrag und Risiken in `19_LEGACY_SCHEMA_V01.md`; weiterhin nur implizite Migration in `src/storage.js` | versioniertes Zielschema und Migrationstests definieren |
 | A-05 | Orchestrierung und Views sind zu groß | mittel | `src/app.js` ca. 72 KiB, `src/views.js` ca. 38 KiB | fachliche Extraktion erst nach Verhaltensabsicherung |
 | A-06 | historische Root-Dokumente können die SSoT verwässern | mittel | fünf ältere Design-, Token-, Roadmap- und Release-Dateien | Inhalte kontrolliert migrieren, danach archivieren oder entfernen |
 
@@ -150,7 +152,8 @@ beziehungsweise Datenmigrationspfad.
 
 D-011 entscheidet die fachliche Zielrichtung von A-04. Speichertechnologie,
 Verschlüsselung und konkreter Rollout bleiben vor einer Implementierung separat
-zu entscheiden.
+zu entscheiden. Die Legacy-Dokumentation erfüllt nur die Bestandsaufnahme und
+ist keine Freigabe zur Migration.
 
 ## Zielrichtung nach Sprint 0
 

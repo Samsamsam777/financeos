@@ -628,7 +628,8 @@ kein neues Endnutzerfeature. Die Umsetzung erfolgt inkrementell nach D-003 und
 benötigt vor Codeänderung mindestens:
 
 1. Abbildung des aktuellen `financeos_v01`-Formats auf eine dokumentierte
-   Ausgangsschemaversion,
+   Ausgangsschemaversion — als Ist-Vertrag in `19_LEGACY_SCHEMA_V01.md`
+   abgeschlossen,
 2. konkrete JSON-Schemas oder gleichwertige Laufzeitverträge,
 3. Golden Datasets und Migrationstests,
 4. Entscheidung über lokale Persistenz und Verschlüsselung,

@@ -46,6 +46,12 @@
   Plattformparitätsanforderungen für die spätere Umsetzung
 - D-011-Arbeitspakete in Architektur, Engineering, Testing, Performance,
   Security, Backlog und Roadmap aufgenommen
+- geprüfte Ist-Dokumentation des `financeos_v01`-Datensatzes mit Root-Feldern,
+  Entitäten, optionalen Importfeldern und tatsächlichen Schreibpfaden
+- dokumentierte Legacy-Semantik für Salden, Monatswerte, Budgets,
+  Umbuchungen, Wiederholungen, Kredite, Backup, Restore und implizite Migration
+- priorisiertes Legacy-Risikoregister und Abbildungslücken zum D-011-Zielmodell
+  als Grundlage für die nächste Schemaentscheidung
 
 ### Verified
 
@@ -63,5 +69,8 @@
 - Ein interaktiver Browser-, PWA-Installations- und iPhone-Test wurde in dieser
   Arbeitsumgebung noch nicht durchgeführt.
 - Das aktuelle Daten- und Berechnungsmodell implementiert den angenommenen
-  D-011-Zielvertrag noch nicht. Es wurde in dieser Änderung kein App-Code
-  migriert.
+  D-011-Zielvertrag noch nicht. Das Ausgangsschema ist nun dokumentiert; es
+  wurde in dieser Änderung kein App-Code und kein Bestandsdatensatz migriert.
+- Ein unlesbarer `financeos_v01`-Wert fällt aktuell auf einen neu gespeicherten
+  Demo-Datensatz zurück; Restore validiert nur zwei Root-Arrays. Die
+  Dokumentation behebt diese Laufzeitrisiken noch nicht.

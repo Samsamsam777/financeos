@@ -39,7 +39,8 @@ hebt aber den Sprint-0-Feature-Freeze nicht auf.
 D-011 Version 2 ist als Zielvertrag angenommen. Vor einer produktiven
 Umstellung des Datenmodells werden in dieser Reihenfolge nachgewiesen:
 
-1. dokumentiertes Ausgangsschema des bestehenden `financeos_v01`-Datensatzes,
+1. dokumentiertes Ausgangsschema des bestehenden `financeos_v01`-Datensatzes
+   — mit `19_LEGACY_SCHEMA_V01.md` erfüllt,
 2. konkrete versionierte D-011-Schemaverträge,
 3. Golden Datasets für Ereignisse, Invarianten und Berechnungskanon,
 4. read-only Integritätscheck und Formelregister,
@@ -48,7 +49,8 @@ Umstellung des Datenmodells werden in dieser Reihenfolge nachgewiesen:
 7. Export-/Restore-Roundtrip des vollständigen Datengraphen.
 
 Dieses Gate darf parallel zur Produktvalidierung vorbereitet werden. Es ist
-keine Freigabe für eine Code-Migration oder neue Endnutzerfeatures.
+keine Freigabe für eine Code-Migration oder neue Endnutzerfeatures. Die
+Erfüllung von Punkt 1 ändert diesen Freigabestatus nicht.
 
 ## Phase 1 — Stabilisierung
 

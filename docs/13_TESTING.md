@@ -121,6 +121,12 @@ akzeptiert werden.
 
 ### Migrationstest
 
+Die Legacy-Fälle werden aus dem geprüften Ist-Vertrag in
+`19_LEGACY_SCHEMA_V01.md` abgeleitet. Fixtures müssen insbesondere lose
+Umbuchungspaare, verlorene Importherkunft, Kredit-Aliase, verwaiste Referenzen,
+ungültige Datumswerte, Float-Rundungen und den bisherigen Restore-Minimalvertrag
+abdecken.
+
 Jede Schemamigration wird mindestens mit folgenden Fällen getestet:
 
 1. gültiger produktiver Ausgangsstand,

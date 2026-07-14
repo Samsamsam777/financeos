@@ -1,3 +1,6 @@
+LEGACY RELEASE NOTES
+Verbindliche Projekt- und Release-Dokumentation steht unter docs/.
+
 FinanceOS 4.0.1 – Design System Refinement
 
 FinanceOS 4.0 restructures the UI architecture rather than adding features.

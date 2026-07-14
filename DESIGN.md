@@ -1,3 +1,6 @@
+> Legacy reference. Verbindliche Regeln stehen unter `docs/`, insbesondere in
+> `docs/04_DESIGN_GUIDE.md`.
+
 # FinanceOS Design Principles
 
 ## Product principles

@@ -19,6 +19,28 @@
 | eigener JS-/CSS-Code im Build | höchstens 1 MiB |
 | verpflichtender App-Shell-Precache | höchstens 5 MiB |
 
+## D-010-Produkt- und Bedienziele
+
+Diese Werte konkretisieren den angenommenen Competitive Product Standard. Sie
+sind bis zur dokumentierten Messung Zielbudgets und keine Behauptung über den
+aktuellen Code.
+
+| Ablauf | Eintrittsziel | Angestrebter Zielstandard |
+|---|---:|---:|
+| erster sinnvoller Finanzüberblick | höchstens 10 min | Median höchstens 5 min im moderierten Test |
+| häufige manuelle Standarderfassung | höchstens 10 s | Median höchstens 5 s mit sicheren lokalen Standardwerten |
+| Kennzahl bis Berechnungsgrundlage | höchstens 2 Aktionen | Formel, Filter, Datenstand und Beiträge in derselben Erklärschicht |
+| CSV-Vorschau mit 10.000 typischen Zeilen | keine UI-Blockade | p95 höchstens 3 s auf Referenzhardware |
+| Standardaggregation bei 100.000 Buchungen | kein Absturz | p95 höchstens 500 ms auf Referenzhardware |
+| sichtbare Reaktion auf Eingabe | höchstens 150 ms | höchstens 100 ms |
+| übliche Listen- und Filteroperation | keine blockierende Interaktion | p95 höchstens 200 ms |
+
+Zeitwerte für Einrichtung und manuelle Erfassung werden in beobachteten
+Usability-Tests gemessen. Laufzeitwerte benötigen definierte Datensätze,
+Referenzgeräte, kalten beziehungsweise warmen Zustand und mindestens p50/p95.
+Web-Vitals dürfen nicht als Ersatz für fachliche Ablaufmessungen verwendet
+werden.
+
 Die Web-Vitals-Ziele folgen den veröffentlichten Schwellenwerten von web.dev:
 https://web.dev/articles/vitals
 
@@ -34,6 +56,10 @@ https://web.dev/articles/vitals
 - neue Abhängigkeiten benötigen Größen- und Laufzeitbewertung.
 - native Pakete enthalten nur notwendige Plattformen und Ressourcen; optionale
   OCR-Daten dürfen weder Web- noch nativen Start unnötig blockieren.
+- Datenstand, Erklärbarkeit, Undo und Validierung dürfen nicht zugunsten eines
+  schnelleren, aber fachlich unsicheren Ablaufs entfernt werden.
+- Ein Importabbruch hinterlässt keine Teildaten; Performanceoptimierungen
+  erhalten Atomizität und deterministische Ergebnisse.
 
 ## Aktuelle Baseline und Risiko
 
@@ -46,8 +72,17 @@ https://web.dev/articles/vitals
 Die Trennung von App-Shell und optionalen OCR-Ressourcen ist ein Sprint-0-
 Architekturthema. Eine Änderung erfolgt erst nach Contract- und Offline-Test.
 
+Referenzhardware für iPhone, Android und Web sowie verbindliche Golden
+Datasets für 10.000 Importzeilen und 100.000 Buchungen sind noch festzulegen.
+Ohne diese Festlegung werden die D-010-Laufzeitwerte nicht als bestanden
+markiert.
+
 ## Messprozess
 
 Vor Performance-Freigaben werden Build-Größe, Cacheumfang, Lighthouse-Labwerte
 und reale Gerätebeobachtungen dokumentiert. Einzelne lokale Messungen werden
 nicht als Feldperformance ausgegeben.
+
+Zusätzlich enthält ein D-010-Messnachweis Ablauf, Datenmenge, Datenquelle,
+Gerät, Betriebssystem, Browser beziehungsweise native Laufzeit, Messwiederholung,
+p50/p95 und bekannte Einschränkungen.

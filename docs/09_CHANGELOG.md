@@ -24,6 +24,18 @@
   und Android
 - dokumentierte Grenze zwischen nutzergesteuertem Cloud-Export und einer nicht
   vorgesehenen Cloud-, Bank- oder Brokerintegration
+- angenommene Produktentscheidung D-010 Version 3 für Positionierung,
+  Kernzielgruppe und harte Nicht-Ziele
+- Deutschland-first-Ausrichtung bei internationalisierbarer Architektur
+- progressives Nutzungsmodell vom schnellen Überblick zur vollständigen
+  Finanzkontrolle
+- FinanceOS Check-in als zu validierendes zentrales Produktritual
+- verbindliche Regeln für sichtbare Datenqualität, Erklärbarkeit,
+  kontrollierte lokale Automatisierung und Reversibilität
+- Produktvalidierungs-, Usability- und Competitive-Product-Ziele für die
+  Vorbereitung späterer Sprints
+- ausdrückliche Trennung zwischen zulässigem nutzergesteuertem Cloud-Export
+  und einer nicht freigegebenen späteren Gerätesynchronisation
 
 ### Verified
 

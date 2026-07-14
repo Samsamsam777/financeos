@@ -34,6 +34,8 @@ aktuellen Code.
 | Standardaggregation bei 100.000 Buchungen | kein Absturz | p95 höchstens 500 ms auf Referenzhardware |
 | sichtbare Reaktion auf Eingabe | höchstens 150 ms | höchstens 100 ms |
 | übliche Listen- und Filteroperation | keine blockierende Interaktion | p95 höchstens 200 ms |
+| Standard-Kennzahl mit Erklärung bei 100.000 Ereignissen | kein unvollständiger Nachweis | p95 höchstens 750 ms auf Referenzhardware |
+| read-only Integritätscheck bei 100.000 Ereignissen | UI bleibt bedienbar | p95 höchstens 5 s auf Referenzhardware |
 
 Zeitwerte für Einrichtung und manuelle Erfassung werden in beobachteten
 Usability-Tests gemessen. Laufzeitwerte benötigen definierte Datensätze,
@@ -60,6 +62,14 @@ https://web.dev/articles/vitals
   schnelleren, aber fachlich unsicheren Ablaufs entfernt werden.
 - Ein Importabbruch hinterlässt keine Teildaten; Performanceoptimierungen
   erhalten Atomizität und deterministische Ergebnisse.
+- Caches für Kennzahlen sind an Datensatzrevision, Formelversion, Zeitraum und
+  Filter gebunden und dürfen keine veralteten Ergebnisse als aktuell ausgeben.
+- Erklärkomponenten, Ausschlüsse und Vertrauensevidenz werden nicht zur
+  Laufzeitersparnis weggelassen.
+- Parallelisierung und plattformspezifische Optimierung dürfen weder
+  Summenreihenfolge noch Minor-Unit-Ergebnisse verändern.
+- Integritätsprüfungen dürfen inkrementell oder in Worker ausgelagert werden,
+  bleiben aber read-only und liefern denselben vollständigen Befund.
 
 ## Aktuelle Baseline und Risiko
 
@@ -76,6 +86,11 @@ Referenzhardware für iPhone, Android und Web sowie verbindliche Golden
 Datasets für 10.000 Importzeilen und 100.000 Buchungen sind noch festzulegen.
 Ohne diese Festlegung werden die D-010-Laufzeitwerte nicht als bestanden
 markiert.
+
+D-011 ersetzt in künftigen Baselines die unscharfe Menge „Buchungen“ durch
+versionierte Golden Datasets mit Finanzereignissen, Konto- und
+Kategorieauswirkungen. Laufzeitmessungen protokollieren zusätzlich
+Schemaversion, Formelversion, Datensatzrevision und Erklärungstiefe.
 
 ## Messprozess
 

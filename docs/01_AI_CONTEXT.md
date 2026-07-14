@@ -18,6 +18,8 @@ Vorrang vor kurzfristiger Geschwindigkeit.
 6. Implementierung, Tests und Dokumentation bilden eine gemeinsame Änderung.
 7. Fehlende Informationen werden sichtbar gemacht; sie werden nicht durch
    stillschweigende Annahmen ersetzt.
+8. Änderungen an Finanzmodell oder Berechnungen prüfen zusätzlich D-011 und
+   `18_DOMAIN_MODEL.md`.
 
 ## Sprintablauf
 
@@ -47,3 +49,8 @@ Architekturentscheidungen, wesentliche Datenmodelländerungen, Stackwechsel und
 größere Refactorings untersagt. In diesen Fällen liefert der Agent zuerst eine
 Entscheidungsvorlage mit Problem, Optionen, Auswirkungen, Risiken und
 Empfehlung und wartet auf die Freigabe.
+
+D-011 ist als fachlicher Zielvertrag freigegeben. Diese Freigabe autorisiert
+keine selbstständige Code-Migration. Vor Implementierung sind Sprint-Scope,
+Migrationsnachweise und die in `18_DOMAIN_MODEL.md` genannten offenen
+technischen Entscheidungen erforderlich.

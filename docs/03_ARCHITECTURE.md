@@ -18,6 +18,10 @@ native ES-Module ausgeliefert und speichert Anwendungsdaten unter dem stabilen
 Schlüssel `financeos_v01` in `localStorage`. Ein Service Worker stellt die
 App-Shell und lokale Drittanbieter-Assets offline bereit.
 
+Die aktuelle Struktur ist ein Legacy-Ausgangszustand: Sie besitzt keine
+explizite Schemaversion und implementiert das in D-011 angenommene
+Finanzereignismodell, Formelregister und Integritätsmodell noch nicht.
+
 ## Zielsystem
 
 FinanceOS bleibt eine gemeinsame Webanwendung und wird zusätzlich über
@@ -61,6 +65,63 @@ zulässig und werden vollständig lokal vorbereitet.
 9. Ein Export wird ausschließlich durch eine bewusste Nutzeraktion gestartet;
    FinanceOS betreibt keine automatische Cloud-Synchronisation.
 10. Kernabläufe müssen nach Installation ohne Netzwerkverbindung funktionieren.
+11. Geldwerte werden im D-011-Zielmodell ausschließlich als Integer-Minor-Units
+    mit expliziter Währung verarbeitet.
+12. Domänenberechnungen hängen nicht von UI, Storage-Technologie, Systemzeit,
+    Locale-Formatierung oder Iterationsreihenfolge ab.
+13. Realität, Erwartung und Szenario bleiben in Speicherung, Anwendungsfällen
+    und Darstellung getrennt.
+14. Finanzereignisse werden nur gespeichert, wenn ihre typspezifischen
+    Invarianten erfüllt sind.
+15. Importe und wesentliche Änderungen sind atomar und besitzen einen
+    nachvollziehbaren Rollback- beziehungsweise Undo-Pfad.
+16. Plattformadapter dürfen Geld-, Datums-, Status- oder Formelregeln nicht
+    plattformspezifisch verändern.
+
+## Fachliches Zielmodell nach D-011
+
+Die fachliche Zielarchitektur besteht aus folgenden klaren Schichten:
+
+| Schicht | Verantwortung |
+|---|---|
+| Schema und Migration | Datensatzversion, stabile IDs, sequenzielle Migration und Integritätsprüfung |
+| Finanzdomäne | Konten, Finanzereignisse, Kontoeffekte, Kategorieauswirkungen und Invarianten |
+| Planung | Erwartungen, wiederkehrende Vorlagen, Budgets und isolierte Szenarien |
+| Import und Vorschläge | ImportBatch, Dubletten, Feldherkunft und bestätigungspflichtige lokale Vorschläge |
+| Operationen | atomare Änderungen, Undo, Void und Import-Rollback |
+| Berechnung | versioniertes Formelregister und standardisierte Berechnungsergebnisse |
+| Vertrauen | Kontenabgleich, Vertrauensevidenz, Delta- und Quellen-Erklärung |
+| Persistenzadapter | lokale Speicherung des fachlichen Datengraphen ohne Änderung seiner Semantik |
+
+Der fachliche Kern verwendet `FinancialEvent` mit getrennten
+`accountEffects` und `categoryImpacts`. Kategorien tragen keinen Kontostand;
+Budgets sind eigenständige Periodenobjekte. Ein begrenztes Operationsprotokoll
+unterstützt Undo, ersetzt aber weder Finanzereignisse noch führt es
+vollständiges Event Sourcing ein.
+
+Der Datensatz besitzt eine explizite Schemaversion, Datensatzidentität,
+Basiswährung, Locale und Zeitzone. Das vollständige normative Modell, seine
+Invarianten und der Berechnungskanon stehen in `18_DOMAIN_MODEL.md`.
+
+### Determinismus
+
+Gleiche Eingaben, Schema-, Formel- und Datensatzversionen erzeugen auf Web,
+iOS und Android dieselben Minor-Unit-Werte, Komponenten und Ausschlussgründe.
+Locale beeinflusst nur die Darstellung. Aktuelle Uhrzeit und Plattform-APIs
+werden als explizite Eingaben an Anwendungsfälle übergeben.
+
+Berechnungsergebnisse enthalten Formelversion, Datensatzrevision, Zeitraum,
+Filter, Bestandteile, Ausschlüsse, Annahmen und Vertrauensevidenz. Persistenz
+und UI dürfen diese Nachweise nicht nachträglich rekonstruieren oder
+wegformatieren.
+
+### Migrationsgrenze
+
+Das bestehende `financeos_v01`-Format wird nicht direkt überschrieben. Vor
+einer Umsetzung werden sein Ausgangsschema, eine vollständige Sicherung,
+sequenzielle Migrationsschritte, Golden Datasets, Zielvalidierung und Rollback
+definiert. Mehrdeutige Umbuchungen oder Rundungen werden berichtet und nicht
+geraten.
 
 ## Bekannte Architektur-Risiken
 
@@ -86,6 +147,10 @@ zulässig und werden vollständig lokal vorbereitet.
 Für A-01 bis A-04 sind keine isolierten Patches zulässig. Jede Änderung
 benötigt Akzeptanzkriterien, Contract-Tests und einen dokumentierten Offline-
 beziehungsweise Datenmigrationspfad.
+
+D-011 entscheidet die fachliche Zielrichtung von A-04. Speichertechnologie,
+Verschlüsselung und konkreter Rollout bleiben vor einer Implementierung separat
+zu entscheiden.
 
 ## Zielrichtung nach Sprint 0
 

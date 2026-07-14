@@ -36,6 +36,16 @@
   Vorbereitung späterer Sprints
 - ausdrückliche Trennung zwischen zulässigem nutzergesteuertem Cloud-Export
   und einer nicht freigegebenen späteren Gerätesynchronisation
+- angenommene Entscheidung D-011 Version 2 für ein hybrides
+  Finanzereignismodell und einen versionierten Berechnungskanon
+- normativer Zielvertrag für Geldwerte, Konten, Finanzereignisse, offene
+  Zuordnungen, Status, Realität, Erwartungen und Szenarien
+- verbindliche Regeln für atomare Importe, Undo, Void, Kontenabgleich,
+  Vertrauensevidenz und lückenlose Kennzahlerklärung
+- deterministische Golden-Dataset-, Integritäts-, Migrations- und
+  Plattformparitätsanforderungen für die spätere Umsetzung
+- D-011-Arbeitspakete in Architektur, Engineering, Testing, Performance,
+  Security, Backlog und Roadmap aufgenommen
 
 ### Verified
 
@@ -52,3 +62,6 @@
   vorübergehend deaktiviert und noch nicht architektonisch geklärt.
 - Ein interaktiver Browser-, PWA-Installations- und iPhone-Test wurde in dieser
   Arbeitsumgebung noch nicht durchgeführt.
+- Das aktuelle Daten- und Berechnungsmodell implementiert den angenommenen
+  D-011-Zielvertrag noch nicht. Es wurde in dieser Änderung kein App-Code
+  migriert.

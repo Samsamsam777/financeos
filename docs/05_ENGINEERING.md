@@ -25,6 +25,29 @@
 - kein FinanceOS-Backend und keine Laufzeitabhängigkeit von Bank-, Broker-,
   Tracking- oder Cloud-Diensten
 - schrittweise Migration der bestehenden Module statt Big-Bang-Rewrite
+- D-011-Finanzereignismodell und versionierter Berechnungskanon als
+  verbindlicher fachlicher Zielvertrag
+
+## Fachliche Implementierungsregeln nach D-011
+
+- Geld wird als Integer-Minor-Units mit expliziter Währung modelliert.
+- Invarianten werden an Domänengrenzen validiert, nicht nur in der UI.
+- Formeln sind reine, deterministische Funktionen mit expliziter Version.
+- Locale formatiert Ergebnisse, verändert aber keine Berechnungen.
+- Systemzeit, Zeitzone und Datensatzrevision werden explizit übergeben.
+- Import und wesentliche Änderungen werden atomar ausgeführt.
+- Automatisierung erzeugt Vorschläge; Bestätigung bleibt ein eigener
+  Anwendungsfall.
+- Persistenzadapter bewahren den vollständigen fachlichen Datengraphen und
+  ändern seine Semantik nicht.
+- Jede Schemaänderung besitzt Vorher-Sicherung, sequenzielle Migration,
+  Validierung, Bericht und Rollback.
+- Änderungen am Berechnungskanon benötigen neue Formelversion, Golden Dataset
+  und dokumentierte Auswirkung.
+
+Der Detailvertrag steht in `18_DOMAIN_MODEL.md`. Eine Implementierung darf
+Bezeichner technisch anpassen, aber Vorzeichen, Invarianten,
+Statusdimensionen, Ebenentrennung und Reproduzierbarkeit nicht verändern.
 
 ## Branching
 
@@ -70,6 +93,14 @@ Eine Aufgabe ist fertig, wenn:
 - bestehende lokale Daten kompatibel bleiben,
 - relevante Dokumente aktualisiert sind,
 - keine bekannte kritische Regression verschwiegen wird.
+
+Bei Datenmodell-, Import- oder Berechnungsänderungen gilt zusätzlich:
+
+- Golden Datasets decken neue und bestehende Fachfälle ab,
+- Integritätscheck und Export-/Restore-Roundtrip sind erfolgreich,
+- Web, iOS und Android liefern fachlich identische Ergebnisse,
+- Migration und Rollback wurden mit realistischen Altdaten nachgewiesen,
+- Formel- und Schemaversionen sind dokumentiert.
 
 ## Release-Regel
 

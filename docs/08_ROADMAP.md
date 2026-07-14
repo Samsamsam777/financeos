@@ -34,11 +34,30 @@ Vor einer breiten Feature-Roadmap werden mindestens geprüft:
 Das Gate darf parallel zu technischer Foundation-Arbeit vorbereitet werden,
 hebt aber den Sprint-0-Feature-Freeze nicht auf.
 
+## Fachliches Daten- und Berechnungsgate
+
+D-011 Version 2 ist als Zielvertrag angenommen. Vor einer produktiven
+Umstellung des Datenmodells werden in dieser Reihenfolge nachgewiesen:
+
+1. dokumentiertes Ausgangsschema des bestehenden `financeos_v01`-Datensatzes,
+2. konkrete versionierte D-011-Schemaverträge,
+3. Golden Datasets für Ereignisse, Invarianten und Berechnungskanon,
+4. read-only Integritätscheck und Formelregister,
+5. sequenzielle Migration mit Sicherung, Bericht und vollständigem Rollback,
+6. fachliche Ergebnisparität auf Web, iOS und Android,
+7. Export-/Restore-Roundtrip des vollständigen Datengraphen.
+
+Dieses Gate darf parallel zur Produktvalidierung vorbereitet werden. Es ist
+keine Freigabe für eine Code-Migration oder neue Endnutzerfeatures.
+
 ## Phase 1 — Stabilisierung
 
 - Import- und Datenverträge absichern
 - bekannte Abweichungen zwischen Produkt, UI und Implementierung beheben
 - Datenmigrationen versionieren und testen
+- D-011-Golden-Datasets, Integritätscheck und Formelregister etablieren
+- Migration vom aktuellen Datenformat zum D-011-Zielmodell kontrolliert
+  spezifizieren und erst nach gesonderter Freigabe umsetzen
 - lokale Persistenz und verschlüsselte Exportverträge für Web, iOS und Android
   festlegen
 - progressiven Einstieg und FinanceOS Check-in als Prototyp validieren
@@ -62,6 +81,10 @@ Die Reihenfolge folgt D-010:
 2. Quick Entry, kontrollierter Import und Review
 3. Erklärbarkeit, Undo, Export, Backup und Restore
 4. ruhige Planung von Vergangenheit, Gegenwart und naher Zukunft
+
+Die technische Reihenfolge innerhalb dieser Produktziele folgt D-011:
+fachliche Primitiven und Migration, danach Berechnungen und Erklärbarkeit,
+anschließend darauf aufbauende Nutzerabläufe.
 
 Zusätzliche Sprachen, sichtbare Multiwährung, Haushaltsrollen, automatische
 verschlüsselte Backups oder Gerätesynchronisation sind spätere, separat zu

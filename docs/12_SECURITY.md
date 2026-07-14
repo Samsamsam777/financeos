@@ -107,6 +107,14 @@ bleibt davon unberührt und ist keine Synchronisationsfreigabe.
   Browserprofilschutz ab.
 - JSON-Backups enthalten sensible Finanzdaten im Klartext. Die Nutzeroberfläche
   muss dies vor Export und Wiederherstellung transparent kommunizieren.
+- GiroCode-Entwürfe können aktuell `qrIban` und den vollständigen
+  `qrRawValue` speichern. Diese Felder können nach Bestätigung im Datensatz und
+  im Klartextbackup verbleiben; vor einer Migration sind Datenminimierung und
+  Aufbewahrung ausdrücklich zu entscheiden.
+- Restore prüft aktuell nur, ob `accounts` und `transactions` Arrays sind, und
+  überschreibt anschließend den bestehenden Datensatz ohne automatische
+  Vorher-Sicherung. Der genaue Ist-Vertrag steht in
+  `19_LEGACY_SCHEMA_V01.md`.
 - Eine spätere verschlüsselte Speicherung benötigt eine eigene Bedrohungsanalyse
   und darf nicht als isolierter Kryptografie-Patch eingeführt werden.
 
@@ -124,6 +132,9 @@ bleibt davon unberührt und ist keine Synchronisationsfreigabe.
 - systematische Prüfung aller dynamischen HTML-Ausgaben
 - Content-Security-Policy unter Berücksichtigung von PDF.js, Tesseract und WASM
 - Restore-Validierung und Größenlimits für Backups
+- Schutz beziehungsweise Quarantäne eines nicht lesbaren Legacy-Datensatzes,
+  bevor ein Fallbackzustand unter demselben Schlüssel gespeichert wird
+- Datenminimierung für QR-Rohwerte und quellspezifische Importfelder
 - Bedrohungsmodell für den vollständigen D-011-Datengraphen und das begrenzte
   Operationsprotokoll
 - dokumentierter Updateprozess für lokal eingebettete Drittanbieter

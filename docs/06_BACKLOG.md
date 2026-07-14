@@ -24,13 +24,14 @@
   Version 3 freigegeben
 - fachliches Finanzereignismodell und Berechnungskanon mit D-011 Version 2
   freigegeben
+- bestehendes `financeos_v01`-Format einschließlich Schreibpfaden,
+  Berechnungssemantik, Backup-/Restore-Vertrag und Legacy-Risiken dokumentiert
 
 ### Offene Sprint-0-Arbeit
 
 - erster GitHub-Actions-Lauf nach Push
 - Architekturentscheidung für Screenshot-Import und Share Target
 - Architekturentscheidung für App-Shell und optionalen OCR-Cache
-- aktuelles `financeos_v01`-Format als Ausgangsschema dokumentieren
 - konkrete D-011-Schema- und Migrationsentscheidung mit Golden Datasets
 - Capacitor-Foundation für iOS und Android als technischer Machbarkeitstest
 - Web- und Capacitor-Adaptergrenzen für Plattformfunktionen definieren
@@ -59,6 +60,8 @@ Bedienannahmen sind jedoch noch nicht mit realen Nutzern validiert.
 ## Priorität P1 — Architektur
 
 - versionierte Datensatzwurzel und Laufzeitverträge aus D-011 spezifizieren
+- Legacy-Fixtures für gültige, minimale, beschädigte und mehrdeutige
+  `financeos_v01`-Datensätze aus `19_LEGACY_SCHEMA_V01.md` erstellen
 - Money-, Account-, FinancialEvent- und Status-Primitiven isoliert modellieren
 - Formelregister und standardisiertes Berechnungsergebnis spezifizieren
 - Golden Datasets für Invarianten, Berechnungen und Plattformparität erstellen

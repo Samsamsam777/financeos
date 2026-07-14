@@ -102,3 +102,51 @@ OCR-Ressourcen vorbereiten und historische Root-Dokumente kontrolliert in
 Dokumentationsänderung über einen eigenen Pull Request prüfen und mergen.
 Danach das aktuelle `financeos_v01`-Ausgangsschema dokumentieren, ohne bereits
 eine Migration zu beginnen.
+
+## 2026-07-15 — `financeos_v01`-Ausgangsschema dokumentiert
+
+### Erledigt
+
+- vollständigen Root-Datensatz und alle persistenten Entitäten direkt aus den
+  aktuellen Lese- und Schreibpfaden abgeleitet.
+- Kern- und optionale Felder für Buchungen, Importentwürfe, Wiederholungen,
+  Umbuchungen und Kredite dokumentiert.
+- tatsächliche Salden-, Monats-, Budget- und Kreditberechnungen als
+  Legacy-Paritätsbasis festgehalten.
+- implizite Migration sowie Backup-, Restore-, Reset- und Fehlerverhalten
+  dokumentiert.
+- Abbildungslücken zum D-011-Zielmodell, mehrdeutige Migrationen und ein
+  priorisiertes Legacy-Risikoregister aufgenommen.
+- ausschließlich Dokumentation verändert; keine Datenmigration und keine
+  Laufzeitänderung vorgenommen.
+
+### Wesentliche Befunde
+
+- Ein gespeicherter Datensatz besitzt trotz des Keys `financeos_v01` keine
+  explizite Schemaversion, Datensatz-ID oder Revision.
+- Ein unlesbarer Datensatz kann beim Laden durch Demo-Daten unter demselben
+  Schlüssel ersetzt werden.
+- Geldwerte sind Floats; Umbuchungen sind lose Buchungspaare; bestätigte
+  Importe verlieren allgemeine Herkunfts- und Batchmetadaten.
+- Restore prüft nur `accounts` und `transactions` auf Array-Typen und besitzt
+  keine automatische Vorher-Sicherung oder Rollbackgrenze.
+- QR-Rohwerte und IBAN können im Datensatz und Klartextbackup verbleiben.
+
+### Verifiziert
+
+- Ist-Vertrag gegen `src/constants.js`, `src/storage.js`, `src/app.js`,
+  `src/import.js`, `src/pdf-parsers.js`, `src/logic.js` und `src/views.js`
+  abgeglichen.
+- Dokumentationsindex, Architektur, Backlog, Roadmap, Security, Testing,
+  Changelog und D-011-Implementierungsgrenze konsistent aktualisiert.
+- `git diff --check` ohne Befund.
+- Syntaxprüfung: 18 Dateien erfolgreich.
+- automatisierte Tests: 23 von 23 erfolgreich.
+- reproduzierbarer Build: 60 Dateien, 49,75 MiB.
+
+### Nächster Schritt
+
+Konkrete versionierte D-011-Laufzeitverträge und repräsentative
+`financeos_v01`-Fixtures entwerfen. Vor einer Codeänderung folgen Golden
+Datasets, read-only Integritätsprüfung sowie ein Sicherungs-, Berichts- und
+Rollbackvertrag.

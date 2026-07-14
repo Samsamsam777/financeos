@@ -46,3 +46,5 @@ geklärt.
 - `14_PERFORMANCE.md` – Performancebudgets und Messprozess
 - `15_RELEASE_PROCESS.md` – Versionierung, Build, Freigabe und Rollback
 - `16_DAILY_LOG.md` – chronologischer Arbeits- und Prüfnachweis
+- `17_COMPETITIVE_ANALYSIS.md` – datierte Marktanalyse und nicht bindende
+  Research-Grundlage für freizugebende Produktentscheidungen

@@ -26,6 +26,70 @@ als Test.
 - PWA-Asset-, Modulpfad- und Versionsprüfung
 - noch keine Browserautomation oder Coverage-Schwelle
 
+## Produkt- und Nutzervalidierung nach D-010
+
+D-010 ist eine angenommene Produktrichtung, aber noch kein Nachweis von
+Nutzerfreundlichkeit oder Markterfolg. Vor öffentlicher Veröffentlichung werden
+folgende Annahmen mit Personen aus der Kernzielgruppe überprüft:
+
+- die heutige Finanzübersicht wird tatsächlich als fragmentiert erlebt,
+- der Verzicht auf Bank- und Brokerverbindungen wird akzeptiert oder bevorzugt,
+- ein nützlicher erster Überblick ist innerhalb von höchstens zehn Minuten
+  erreichbar,
+- unvollständige Daten liefern einen verständlichen, ehrlich gekennzeichneten
+  Mehrwert,
+- der regelmäßige Pflegeaufwand bleibt mental und zeitlich akzeptabel,
+- der FinanceOS Check-in hilft und wirkt nicht wie eine zusätzliche Pflicht,
+- Quick Entry und Dateiimport gleichen fehlende Bankanbindungen ausreichend aus,
+- Datenstand, Herkunft, Lücken und Hochrechnungen werden korrekt verstanden,
+- wichtige Kennzahlen lassen sich ohne Hilfe nachvollziehen,
+- es besteht eine realistische Zahlungsbereitschaft,
+- fehlende automatische Geräteübertragung verhindert die Nutzung nicht für
+  einen wesentlichen Teil der Zielgruppe.
+
+### Validierungsstufen
+
+1. **Problemgespräche:** Bedarf und heutige Arbeitsweisen ohne Vorführung einer
+   fertigen Lösung verstehen.
+2. **Klickbare Prototypen:** progressiven Einstieg, Quick Entry, Import Review
+   und Check-in beobachtet testen.
+3. **Aufgabenbasierte Usability-Tests:** Zeit, Fehler, Hilfebedarf und
+   Verständnis messen.
+4. **Wiederholte Nutzung:** Check-in und Pflegeaufwand über mehrere Termine mit
+   realistischen Daten prüfen.
+5. **Preisvalidierung:** Zahlungsbereitschaft getrennt von allgemeinem
+   Produktinteresse untersuchen.
+
+Für wesentliche Abläufe werden je Iteration mindestens fünf geeignete
+Testpersonen angestrebt. Diese Zahl dient dem Auffinden wiederkehrender
+Usability-Probleme und ist kein statistischer Marktnachweis. Marktannahmen
+benötigen zusätzliche Gespräche und quantitative Gegenproben.
+
+### Testnachweis für Validierung
+
+Ein Nachweis enthält Zielgruppe, Rekrutierungskriterien, Hypothese, Aufgabe,
+Prototyp- beziehungsweise Versionsstand, Beobachtungen, Messwerte,
+Abweichungen und Entscheidung. Zustimmung in einem Gespräch wird nicht als
+bestandener Bediennachweis gewertet.
+
+Wird eine Kernannahme wiederholt widerlegt, wird sie nicht durch zusätzliche
+Funktionen kaschiert. Produktleitung und D-010 werden bewusst neu bewertet.
+
+## D-010-Usability-Gates
+
+- erster sinnvoller Überblick: höchstens zehn Minuten
+- häufige manuelle Standarderfassung: Ziel höchstens zehn Sekunden
+- wichtige Dashboardzahl bis zur Berechnungsgrundlage: höchstens zwei gezielte
+  Aktionen
+- eindeutige Unterscheidung von bestätigt, importiert, geschätzt und geplant
+- kein ungeklärter Import ohne bewusste Bestätigung
+- vollständiger Rollback eines Imports
+- verständlicher Fehler- und Wiederherstellungspfad ohne Finanzdatenverlust
+
+Die Gates werden erst zu Release-Gates, wenn Ablauf, Testdaten, Referenzgerät
+und Messmethode dokumentiert sind. Bis dahin sind sie verbindliche
+Entwicklungsziele, keine bestandenen Produktversprechen.
+
 ## Bug-Regel
 
 Jeder behobene Fehler erhält einen Regressionstest auf der niedrigsten
@@ -47,6 +111,8 @@ Automatisierung in den Backlog aufgenommen.
 | Capacitor-Android-Build | bei Android-/Plattformauswirkung | ja |
 | native Kernabläufe auf realem Gerät | bei Auswirkung | ja |
 | unbeabsichtigte Laufzeit-Netzwerkzugriffe | bei Plattform-/Importauswirkung | ja |
+| D-010-Kernabläufe und Erklärbarkeit | bei UX-/Produktänderung | ja |
+| Export-/Restore-Roundtrip auf sauberem Gerät | bei Daten-/Backupauswirkung | ja |
 
 ## Testnachweis
 

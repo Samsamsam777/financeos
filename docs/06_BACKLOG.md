@@ -19,6 +19,9 @@
 - lokaler HTTP-Smoke-Test durchgeführt
 - reproduzierbarer statischer `dist/`-Build mit SHA-256-Dateimanifest
 - Local-first-Cross-Platform-Ziel mit Capacitor für iOS und Android freigegeben
+- Wettbewerbsanalyse als Research-Grundlage aufgenommen
+- Produktpositionierung, Kernzielgruppe und harte Nicht-Ziele mit D-010
+  Version 3 freigegeben
 
 ### Offene Sprint-0-Arbeit
 
@@ -33,6 +36,23 @@
 - Hosting-, Deployment- und Rollbackentscheidung
 - Bewertung und Migration historischer Root-Dokumente
 
+## Priorität P1 — Produktvalidierung
+
+D-010 ist als strategische Richtung angenommen, seine Markt- und
+Bedienannahmen sind jedoch noch nicht mit realen Nutzern validiert.
+
+- Kernzielgruppe in problemorientierten Interviews überprüfen
+- progressiven Einstieg als klickbaren Prototyp testen
+- ersten nützlichen Finanzüberblick innerhalb von höchstens zehn Minuten prüfen
+- FinanceOS Check-in wiederholt mit realistischen Daten testen
+- Quick Entry und Import Review gegeneinander und im Mischbetrieb validieren
+- Verständnis von Datenstand, Herkunft, Lücken und Hochrechnungen prüfen
+- akzeptierten wöchentlichen Pflegeaufwand ermitteln
+- Bedarf an Geräteübertragung beziehungsweise späterer Synchronisation erheben
+- Zahlungsbereitschaft getrennt vom Funktionswunsch untersuchen
+- Ergebnisse dokumentieren und D-010 bei wiederholt widerlegten Kernannahmen
+  bewusst neu bewerten
+
 ## Priorität P1 — Architektur
 
 - App-Orchestrierung aus `src/app.js` schrittweise extrahieren
@@ -43,6 +63,19 @@
 
 ## Priorität P2 — Produkt
 
+- ersten Überblick ohne vollständige Buchhaltung fachlich spezifizieren
+- FinanceOS Check-in als Ende-zu-Ende-Nutzerablauf definieren
+- Statusmodell für manuell, importiert, bestätigt, geschätzt und geplant festlegen
+- standardisierte „So berechnet“-Ansicht für wichtige Kennzahlen spezifizieren
+- kontrollierte lokale Vorschläge mit Vorschau, Erklärung und Undo definieren
+- Quick Entry mit wenigen Pflichtfeldern und sicheren lokalen Standardwerten
+  spezifizieren
+- Import Preview, Dublettenklassen und atomaren Rollback als Produktvertrag
+  definieren
 - Screenshot-Import nach Architekturentscheidung kontrolliert reaktivieren
 - bestehende Importwege hinsichtlich Fehlerzuständen und Barrierefreiheit prüfen
 - erst nach stabiler Basis neue Roadmap-Features priorisieren
+
+Nicht freigegeben sind Mehrbenutzersynchronisation, automatische Cloud-Backups,
+Bank- oder Brokerverbindungen sowie weitere Endnutzerfeatures außerhalb eines
+separat genehmigten Sprints.

@@ -23,6 +23,10 @@ importiert oder einen Export an einen selbst gewählten Speicherort übergibt.
 9. FinanceOS authentifiziert sich nicht gegenüber Cloud-Speicheranbietern.
 10. Ein Datenexport benötigt immer eine bewusste Nutzeraktion.
 11. Tracking-, Werbe- und Analyse-Dienste werden nicht integriert.
+12. Lokale Vorschläge legen Grundlage und Wirkung offen und verändern
+    wesentliche Finanzdaten erst nach bewusster Bestätigung.
+13. Datenstand, Herkunft und Unsicherheit dürfen sicherheitsrelevante oder
+    finanzielle Scheingenauigkeit nicht verdecken.
 
 ## Export- und Cloud-Grenze
 
@@ -36,6 +40,42 @@ gewählten Anbieter.
 Verschlüsselte Exporte sind die Zielvorgabe. Solange Klartext-Backups
 unterstützt werden, müssen Dateiinhalte, Risiko und Zielauswahl vor der Übergabe
 verständlich erkennbar sein.
+
+## Dauerhafte Produkt- und Datenschutzgrenzen
+
+Nach D-009 und D-010 gelten dauerhaft:
+
+- keine direkten Bank-, Broker- oder Zahlungsdienstverbindungen,
+- kein automatischer Abruf persönlicher Finanzdaten,
+- kein verpflichtendes FinanceOS-Konto und keine verpflichtende Cloud,
+- keine unverschlüsselte Speicherung persönlicher Finanzdaten auf
+  FinanceOS-Servern,
+- keine Betreiberprofile aus Finanzdaten,
+- keine Werbung, Finanzproduktvermittlung oder Finanzdatenvermarktung,
+- keine intransparente externe KI-Verarbeitung persönlicher Finanzdaten.
+
+Diese Grenzen dürfen nicht durch ein SDK, einen Supportweg, eine
+Diagnosefunktion oder eine spätere Komfortfunktion indirekt umgangen werden.
+
+## Spätere Synchronisation ist nicht freigegeben
+
+Eine optionale Ende-zu-Ende-verschlüsselte Gerätesynchronisation oder ein
+automatisiertes verschlüsseltes Backup kann später untersucht werden, ist aber
+weder durch D-010 noch durch dieses Dokument zur Umsetzung freigegeben.
+
+Eine Prüfung benötigt mindestens:
+
+- ein dokumentiertes Bedrohungs- und Metadatenmodell,
+- Ende-zu-Ende-Verschlüsselung ohne Betreiberzugriff auf Klartext,
+- Schlüssel-, Recovery-, Widerrufs- und Gerätewechselkonzept,
+- Konflikterkennung und deterministische Zusammenführung,
+- vollständige Offline-Funktion ohne Synchronisation,
+- lokalen Export und Restore unabhängig vom Dienst,
+- Plattformprüfung für Web, iOS und Android,
+- und eine neue formelle Entscheidung, die D-009 ausdrücklich bewertet.
+
+Ein nutzergesteuerter Datei-Export an einen selbst gewählten Cloud-Speicher
+bleibt davon unberührt und ist keine Synchronisationsfreigabe.
 
 ## Datenspeicherung
 
@@ -70,3 +110,5 @@ FinanceOS-Benutzerkonten, serverseitige Schlüsselverwaltung und serverseitige
 Audit-Logs sind aufgrund der angenommenen Local-first-Architektur nicht
 vorgesehen. Eine FinanceOS-Serverkomponente wäre eine neue grundlegende
 Produkt- und Architekturentscheidung und benötigt eine gesonderte Freigabe.
+D-010 hält lediglich eine spätere Prüfung verschlüsselter Geräteübertragung
+offen; die aktuelle Architektur bleibt unverändert.
